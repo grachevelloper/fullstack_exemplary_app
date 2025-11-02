@@ -60,3 +60,8 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 /fe/.temp
 /fe/coverage
 /fe/*.log
+/fe/public/mockServiceWorker.js
+
+nginx.conf
+*/nginx.conf
+**/nginx.conf

@@ -1,0 +1,10 @@
+{
+    "todo.priority.low": "Низкий",
+    "todo.priority.medium": "Средний",
+    "todo.priority.high": "Высокий",
+    "todo.table.col.todo": "Задание",
+    "todo.table.col.priority": "Приоритет",
+    "todo.table.col.updated-at": "Обновлено",
+    "todo.table.col.created-at": "Создано",
+    "todo.table.col.state": "Статус"
+}
