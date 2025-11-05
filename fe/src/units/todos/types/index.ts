@@ -2,6 +2,7 @@ export enum TodoPriority {
     LOW = 'low',
     MEDIUM = 'medium',
     HIGH = 'high',
+    SUPER = 'super',
 }
 
 export enum TodoState {
@@ -22,3 +23,5 @@ export interface Todo {
     createdAt?: Date;
     updatedAt?: Date;
 }
+
+export type EditValue = 'state' | 'priority';

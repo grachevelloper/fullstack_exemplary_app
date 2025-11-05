@@ -22,13 +22,13 @@
         "noUncheckedIndexedAccess": true,
         "skipLibCheck": true,
         "paths": {
-            "@/todos/*": ["src/units/todos/*"],
-            "@/users/*": ["src/units/users/*"],
-            "@/shared/*": ["src/shared/*"],
-            "@/typings/*": ["src/typings/*"],
-            "@/test/*": ["src/__test__/*"],
-            "@/utils/*": ["src/utils/*"],
-            "@/locales/*": ["src/locales/*"]
+            "@/todos/*": ["./src/units/todos/*"],
+            "@/users/*": ["./src/units/users/*"],
+            "@/shared/*": ["./src/shared/*"],
+            "@/typings/*": ["./src/typings/*"],
+            "@/test/*": ["./src/__test__/*"],
+            "@/utils/*": ["./src/utils/*"],
+            "@/locales/*": ["./src/locales/*"]
         }
     },
     "include": ["src/**/*", "/types/**/*"],

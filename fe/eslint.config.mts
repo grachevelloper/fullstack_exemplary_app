@@ -1,14 +1,13 @@
 import js from '@eslint/js';
-import globals from 'globals';
-import tseslint from 'typescript-eslint';
-import pluginReact from 'eslint-plugin-react';
-import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import importPlugin from 'eslint-plugin-import';
 import prettierPlugin from 'eslint-plugin-prettier';
-import reactHooks from 'eslint-plugin-react-hooks';
-import reactI18next from 'eslint-plugin-react-i18next';
-import i18nJson from 'eslint-plugin-i18n-json';
+import reactPlugin from 'eslint-plugin-react';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import {defineConfig} from 'eslint/config';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+
+const reactHooks = require('eslint-plugin-react-hooks');
 
 export default defineConfig([
     {
@@ -18,19 +17,24 @@ export default defineConfig([
             'simple-import-sort': simpleImportSort,
             import: importPlugin,
             prettier: prettierPlugin,
+            'react-hooks': reactHooks,
+            react: reactPlugin,
         },
-        extends: ['js/recommended'],
+        extends: [js.configs.recommended],
         settings: {
+            react: {
+                version: 'detect',
+            },
             'import/resolver': {
                 alias: {
                     map: [
-                        ['@/pages', './src/pages'],
                         ['@/users/*', './src/units/users/*'],
                         ['@/shared/*', './src/shared/*'],
                         ['@/typings/*', './src/typings/*'],
                         ['@/test/*', './src/__test__/*'],
                         ['@/utils/*', './src/utils/*'],
                         ['@/locales/*', './src/locales/*'],
+                        ['@/todos/*', './src/units/todos'],
                     ],
                     extensions: ['.ts', '.tsx', '.js', '.jsx'],
                 },
@@ -47,29 +51,46 @@ export default defineConfig([
             },
         },
     },
-    tseslint.configs.recommended,
-    pluginReact.configs.flat.recommended,
+    tseslint.configs.recommendedTypeChecked,
+    {
+        languageOptions: {
+            parserOptions: {
+                projectService: true,
+            },
+        },
+    },
+    reactPlugin.configs.flat.recommended,
     {
         rules: {
             '@typescript-eslint/no-unused-vars': 'warn',
-            '@typescript-eslint/explicit-function-return-type': 'warn',
+            'react/display-name': 'off',
+            '@typescript-eslint/explicit-function-return-type': 'off',
             '@typescript-eslint/no-explicit-any': 'off',
-            '@typescript-eslint/no-unsafe-argument': 'error',
+            '@typescript-eslint/no-floating-promises': 'off',
+            '@typescript-eslint/no-unsafe-argument': 'off',
+            '@typescript-eslint/no-unsafe-return': 'off',
             'prefer-const': 'error',
             'no-console': 'warn',
-            'simple-import-sort/imports': 'error',
-            'simple-import-sort/exports': 'error',
-            'import/no-unresolved': 'error',
-            'import/named': 'error',
-            'import/default': 'error',
-            'import/namespace': 'error',
-            'import/no-cycle': 'error',
-            'import/no-absolute-path': 'error',
-            'prettier/prettier': 'error',
-            'react-hooks/rules-of-hooks': 'error',
-            'react-hooks/exhaustive-deps': 'warn',
-            'react-i18next/valid-icu-message-syntax': 'error',
-            'react-i18next/no-literal-string': 'warn',
+            'simple-import-sort/imports': 'off',
+            'simple-import-sort/exports': 'off',
+            'import/order': [
+                'error',
+                {
+                    groups: [
+                        'builtin',
+                        'external',
+                        'internal',
+                        ['parent', 'sibling'],
+                        'index',
+                        'object',
+                    ],
+                    'newlines-between': 'always',
+                    alphabetize: {
+                        order: 'asc',
+                        caseInsensitive: true,
+                    },
+                },
+            ],
         },
     },
     {
@@ -80,8 +101,7 @@ export default defineConfig([
             'react/jsx-uses-react': 'off',
             'react/jsx-key': 'error',
             'react/jsx-no-duplicate-props': 'error',
-            'object-curly-spacing': ['warn', 'never'],
-            '@typescript-eslint/object-curly-spacing': ['warn', 'never'],
+            '@/object-curly-spacing': ['warn', 'never'],
         },
     },
     {
@@ -102,6 +122,12 @@ export default defineConfig([
         rules: {
             'i18n-json/valid-message-syntax': 'error',
             'i18n-json/valid-json': 'error',
+        },
+    },
+    {
+        files: ['**/__test__/mocks/**', '**/__test__/utils/**'],
+        rules: {
+            '@typescript-eslint/no-var-requires': 'off',
         },
     },
 ]);

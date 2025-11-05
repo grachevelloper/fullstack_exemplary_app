@@ -2,6 +2,7 @@
     "todo.priority.low": "Низкий",
     "todo.priority.medium": "Средний",
     "todo.priority.high": "Высокий",
+    "todo.priority.super": "Супер",
     "todo.state.in_work": "В работе",
     "todo.state.planning": "Планируется",
     "todo.state.finished": "Закончено",
@@ -10,5 +11,9 @@
     "todo.table.col.priority": "Приоритет",
     "todo.table.col.updated-at": "Обновлено",
     "todo.table.col.created-at": "Создано",
-    "todo.table.col.state": "Статус"
+    "todo.table.col.state": "Статус",
+    "todo.change.state": "Изменить статус",
+    "todo.change.priority": "Изменить приоритет",
+    "todo.change.content": "Изменить описание",
+    "todo.change.title": "Изменить название"
 }

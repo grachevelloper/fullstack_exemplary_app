@@ -1,5 +1,5 @@
 declare module 'eslint-plugin-i18n-json' {
-    import {Linter, ESLint} from 'eslint';
+    import {ESLint, Linter} from 'eslint';
 
     const plugin: ESLint.Plugin;
     export default plugin;

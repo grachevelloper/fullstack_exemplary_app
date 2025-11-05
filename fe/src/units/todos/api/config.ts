@@ -1,4 +1,4 @@
-import axios, {AxiosInstance} from 'axios';
+import axios, { AxiosInstance } from 'axios';
 
 const axiosInstance: AxiosInstance = axios.create({
     baseURL: `/api`,
@@ -19,6 +19,8 @@ export const todoQuery = {
     get: <T = any>(url: string) => axiosInstance.get<T>(url) as Promise<T>,
     post: <T = any>(url: string, data?: any) =>
         axiosInstance.post<T>(url, data) as Promise<T>,
+    patch: <T = any>(url: string, data?: any) =>
+        axiosInstance.patch<T>(url, data) as Promise<T>,
     put: <T = any>(url: string, data?: any) =>
         axiosInstance.put<T>(url, data) as Promise<T>,
     delete: <T = any>(url: string) =>

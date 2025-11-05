@@ -2,6 +2,7 @@
     "todo.priority.low": "Low",
     "todo.priority.medium": "Medium",
     "todo.priority.high": "High",
+    "todo.priority.super": "Super",
     "todo.table.col.todo": "Mission",
     "todo.state.in_work": "In work",
     "todo.state.planning": "Planning",
@@ -10,5 +11,9 @@
     "todo.table.col.priority": "Priority",
     "todo.table.col.updated-at": "Updated",
     "todo.table.col.created-at": "Created",
-    "todo.table.col.state": "State"
+    "todo.table.col.state": "State",
+    "todo.change.state": "Change state",
+    "todo.change.priority": "Change priority",
+    "todo.change.content": "Change text",
+    "todo.change.title": "Change title"
 }

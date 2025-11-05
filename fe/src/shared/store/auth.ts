@@ -1,7 +1,8 @@
-import {MobxQuery, queryClient} from '../lib';
-import authApi from '../api/auth';
-import {TokenManager} from './token-manager';
 import {observable} from 'mobx';
+
+import authApi from '../api/auth';
+import {MobxQuery, queryClient} from '../lib';
+import {TokenManager} from './token-manager';
 interface AuthResponse {
     accessToken?: string;
     refreshToken?: string;

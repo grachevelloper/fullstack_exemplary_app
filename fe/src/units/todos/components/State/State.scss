@@ -1,0 +1,66 @@
+@import 'animate.css';
+
+.state {
+    position: relative;
+    border-width: 1px;
+    width: 125px;
+    border-style: solid;
+    border-radius: 8px;
+    color: #e6f7ff;
+    font-weight: 700;
+    padding: 4px;
+    clip-path: polygon(1% 1%, 94% 1%, 100% 30%, 100% 100%, 6% 100%, 0 70%);
+
+    &_is-edited {
+        animation: fadeOutDown 0.3s ease-out,
+            fadeInDown 0.4s ease-out 0.2s forwards;
+    }
+}
+
+// @keyframes migrate {
+//     0% {
+//         left: 0;
+//         transform: scale(1);
+//     }
+//     20% {
+//         left: calc(40% - var(--element-width, 0px) * 0.4);
+//         transform: scale(1.04);
+//     }
+//     40% {
+//         left: calc(70% - var(--element-width, 0px) * 0.7);
+//         transform: scale(1.08);
+//     }
+//     60% {
+//         left: calc(90% - var(--element-width, 0px) * 0.9);
+//         transform: scale(1.1);
+//     }
+//     80% {
+//         left: calc(95% - var(--element-width, 0px) * 0.95);
+//         transform: scale(1.03);
+//     }
+//     100% {
+//         left: calc(100% - var(--element-width, 0px));
+//         transform: scale(1);
+//     }
+// }
+
+// @keyframes with_rotate {
+//     0% {
+//         transform: rotate(0deg) scale(1);
+//     }
+//     20% {
+//         transform: rotate(60deg) scale(0.8);
+//     }
+//     40% {
+//         transform: rotate(120deg) scale(0.6);
+//     }
+//     60% {
+//         transform: rotate(200deg) scale(0.7);
+//     }
+//     80% {
+//         transform: rotate(300deg) scale(0.9);
+//     }
+//     100% {
+//         transform: rotate(360deg) scale(1);
+//     }
+// }

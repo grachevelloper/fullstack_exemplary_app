@@ -1,0 +1,1 @@
+export const STATE_ANIMATION_TIME_IN_MS = 600;

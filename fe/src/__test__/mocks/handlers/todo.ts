@@ -1,6 +1,8 @@
 import {http, HttpResponse} from 'msw';
+
+import {Todo, TodoPriority, TodoState} from '@/todos/types';
+
 import {createMockTodo} from '../factories/todoFactory';
-import {Todo, TodoPriority, TodoState} from '@/todos/types/todo';
 
 export const todoHandlers = [
     http.get('*/api/listTodos', () => {
@@ -10,7 +12,7 @@ export const todoHandlers = [
                 title: 'Первый мок в моей жизни!',
                 content: 'Настроить MSW и моки для проекта',
                 priority: TodoPriority.HIGH,
-                state: TodoState.IN_WORK,
+                state: TodoState.CANCELED,
             }),
             createMockTodo({
                 id: '2',
@@ -51,7 +53,7 @@ export const todoHandlers = [
         return HttpResponse.json(mockTodos);
     }),
 
-    http.get('*/api/todos/:todoId', ({params}) => {
+    http.get('*/api/todos/:id', ({params}) => {
         const {todoId} = params;
 
         const todoDetails = {
@@ -61,7 +63,7 @@ export const todoHandlers = [
                 content:
                     'Подробное описание настройки MSW: установка, конфигурация, создание моков',
                 priority: TodoPriority.HIGH,
-                state: TodoState.IN_WORK,
+                state: TodoState.CANCELED,
                 authorId: 'user-1',
             }),
             '2': createMockTodo({
@@ -89,19 +91,23 @@ export const todoHandlers = [
                 title: `Todo ${todoId}`,
                 content: `Детальное описание задачи ${todoId}`,
                 priority: TodoPriority.MEDIUM,
-                state: TodoState.IN_WORK,
+                state: TodoState.CANCELED,
             });
 
         return HttpResponse.json(todo);
     }),
 
-    // http.post('*/api/todos', async ({request}) => {
-    //     const newTodo = (await request.json()) as Partial<Todo>;
-    //     const createdTodo = createMockTodo({
-    //         ...newTodo,
-    //         id: `todo-${Date.now()}`,
-    //         createdAt: new Date(),
-    //     });
+    http.patch('*/api/todos/:id', async ({request}) => {
+        const newTodo = (await request.json()) as Todo;
+        console.log(newTodo, '123');
+        const createdTodo = createMockTodo({
+            ...newTodo,
+            updatedAt: new Date(),
+            id: '1',
+        });
+        console.log(createdTodo);
+        return HttpResponse.json(createdTodo);
+    }),
 
     //     return HttpResponse.json(createdTodo, {status: 201});
     // }),
