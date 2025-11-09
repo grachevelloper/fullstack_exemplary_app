@@ -20,7 +20,13 @@
         "forceConsistentCasingInFileNames": true,
         "noImplicitAny": true,
         "strictBindCallApply": true,
-        "noFallthroughCasesInSwitch": true
+        "noFallthroughCasesInSwitch": true,
+        "paths": {
+            "@/todos/*": ["./src/todos/*"],
+            "@/auth/*": ["./src/auth/*"],
+            "@/users/*": ["./src/users/*"],
+            "@/guards/*": ["src/guards/*"]
+        }
     },
     "include": ["src/**/*", "src/types/**/*.d.ts", "test/**/*"]
 }

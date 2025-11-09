@@ -1,11 +1,18 @@
 import {Module} from "@nestjs/common";
 import {ConfigModule, ConfigService} from "@nestjs/config";
+import {APP_GUARD} from "@nestjs/core";
 import {TypeOrmModule} from "@nestjs/typeorm";
+import * as dotenv from "dotenv";
 
 import {AppController} from "./app.controller";
 import {AppService} from "./app.service";
+import {AuthModule} from "./auth/auth.module";
+import {AuthGuard} from "./guards/auth.guard";
 import {Todo} from "./todos/todos.entity";
 import {TodosModule} from "./todos/todos.module";
+import {UsersModule} from "./users/users.module";
+
+dotenv.config();
 
 @Module({
     imports: [
@@ -22,13 +29,25 @@ import {TodosModule} from "./todos/todos.module";
                 password: configService.get("DB_PASSWORD"),
                 database: configService.get("DB_NAME"),
                 entities: [Todo],
-                synchronize: true,
+                synchronize: false,
+                autoLoadEntities: true,
+                migrations: ["dist/migrations/**/*.js"],
+                migrationsRun: process.env.NODE_ENV !== "production",
+                migrationsTableName: "migrations",
             }),
             inject: [ConfigService],
         }),
         TodosModule,
+        AuthModule,
+        UsersModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [
+        AppService,
+        {
+            provide: APP_GUARD,
+            useClass: AuthGuard,
+        },
+    ],
 })
 export class AppModule {}

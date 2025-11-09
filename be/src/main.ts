@@ -1,12 +1,35 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {NestFactory} from "@nestjs/core";
-import {config} from "dotenv";
 
 import {AppModule} from "./app.module";
 
-config({path: "../.env"});
-console.log("Loaded DB_HOST:", process.env.DB_HOST, process.env.DB_PASSWORD);
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
-    await app.listen(process.env.PORT ?? 3000);
+
+    app.setGlobalPrefix("/api");
+    const server = app.getHttpServer();
+    const router = server._router;
+    console.log("=== ALL REGISTERED ROUTES ===");
+    if (router && router.stack) {
+        console.log("=== ALL REGISTERED ROUTES ===");
+        router.stack.forEach((layer: any) => {
+            if (layer.route) {
+                const methods = Object.keys(layer.route.methods)
+                    .join(", ")
+                    .toUpperCase();
+                console.log(`${methods} ${layer.route.path}`);
+            }
+        });
+    } else {
+        console.log("=== GETTING ROUTES AFTER APP INIT ===");
+        // Или просто подождем инициализации
+        await app.init();
+
+        const adapter = app.getHttpAdapter();
+        console.log("HTTP adapter:", adapter.constructor.name);
+    }
+
+    await app.listen(process.env.BE_PORT ?? 3000);
 }
 bootstrap();

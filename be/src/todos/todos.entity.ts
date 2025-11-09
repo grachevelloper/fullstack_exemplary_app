@@ -6,9 +6,11 @@ import {
     UpdateDateColumn,
 } from "typeorm";
 
-@Entity()
+import {TodoPriority, TodoState} from "../types/todo";
+
+@Entity("todos")
 export class Todo {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     id: string;
 
     @Column()
@@ -20,12 +22,15 @@ export class Todo {
     @Column()
     authorId: string;
 
-    @Column({default: true})
-    isActive: boolean;
+    @Column({default: TodoPriority.MEDIUM})
+    priority: TodoPriority;
 
-    @CreateDateColumn()
-    updatedAt: string;
+    @Column({default: TodoState.PLANNING})
+    state: TodoState;
 
     @UpdateDateColumn()
+    updatedAt: string;
+
+    @CreateDateColumn()
     createdAt: string;
 }
