@@ -1,0 +1,12 @@
+.auth-layout {
+    background-image: url('~@/public/assets/auth.jpeg');
+    background-size: cover;
+    background-position: center;
+    width: 100vw;
+    height: 100vh;
+
+    &__content {
+        width: inherit;
+        height: inherit;
+    }
+}

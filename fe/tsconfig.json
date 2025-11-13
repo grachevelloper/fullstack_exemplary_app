@@ -31,6 +31,6 @@
             "@/locales/*": ["src/locales/*"]
         }
     },
-    "include": ["src/**/*", "/types/**/*"],
+    "include": ["src/**/*", "/types/**/*", "webpack.config.js"],
     "exclude": ["node_modules", "dist"]
 }

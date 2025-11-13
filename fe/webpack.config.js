@@ -5,10 +5,10 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
-const {FE_PORT, NODE_ENV} = process.env;
-
-const isDev = NODE_ENV === 'dev' || NODE_ENV === 'development';
+const isDev = true;
+const FE_PORT = 5173;
 
 const optimization = () => {
     const config = {
@@ -64,7 +64,9 @@ module.exports = {
         filename: filename('js'),
         path: path.resolve(__dirname, 'dist'),
         clean: true,
+        publicPath: '/',
     },
+
     resolve: {
         extensions: ['.js', '.json', '.ts', '.tsx', '.jsx'],
         alias: {
@@ -75,6 +77,7 @@ module.exports = {
             '@/utils': path.resolve(__dirname, './src/utils'),
             '@/shared': path.resolve(__dirname, './src/shared'),
             '@/locales': path.resolve(__dirname, './src/locales'),
+            '@/public': path.resolve(__dirname, './public'),
         },
     },
     optimization: optimization(),
@@ -94,7 +97,7 @@ module.exports = {
     },
     plugins: [
         new HTMLWebpackPlugin({
-            template: './index.html',
+            template: path.resolve(__dirname, 'public/index.html'),
             minify: {
                 collapseWhitespace: !isDev,
                 removeComments: true,
@@ -108,10 +111,7 @@ module.exports = {
             filename: filename('css'),
         }),
         isDev && new ReactRefreshWebpackPlugin(),
-        isDev && new webpack.HotModuleReplacementPlugin(),
-        new webpack.DefinePlugin({
-            'process.env': JSON.stringify(process.env),
-        }),
+        new Dotenv(),
     ].filter(Boolean),
     module: {
         rules: [
@@ -124,8 +124,12 @@ module.exports = {
                 use: cssLoaders('sass-loader'),
             },
             {
-                test: /\.(png|jpg|svg|gif)$/,
+                test: /\.(png|jpg|jpeg|svg|gif)$/,
                 type: 'asset/resource',
+                exclude: [path.resolve(__dirname, 'public')],
+                generator: {
+                    filename: 'images/[hash][ext][query]',
+                },
             },
             {
                 test: /\.(ttf|woff|woff2|eot)$/,
@@ -133,7 +137,7 @@ module.exports = {
             },
             {
                 test: /\.(js|jsx|ts|tsx)$/,
-                exclude: /node_modules/,
+                exclude: /node_modules[\\/]/,
                 use: {
                     loader: 'babel-loader',
                     options: {

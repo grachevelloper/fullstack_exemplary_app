@@ -1,0 +1,14 @@
+@import 'animate.css';
+.sign-step {
+    width: auto !important;
+    max-width: 554px;
+    min-width: 400px !important;
+    padding: var(--ant-padding);
+
+    &__button-back {
+        margin-right: auto;
+    }
+    &__button-continue {
+        margin-left: auto;
+    }
+}

@@ -1,7 +1,7 @@
 import {Todo} from '../types';
 
 export type DtoUpdateTodo = Partial<
-    Pick<Todo, 'content' | 'isActive' | 'state' | 'priority' | 'title'>
+    Pick<Todo, 'content' | 'state' | 'priority' | 'title'>
 > & {
     id: string;
 };

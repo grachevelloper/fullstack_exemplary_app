@@ -65,6 +65,7 @@ export default defineConfig([
             '@typescript-eslint/only-throw-error': 'off',
             '@typescript-eslint/no-unused-vars': 'warn',
             'react/display-name': 'off',
+            'react/jsx-key': 'off',
             '@typescript-eslint/explicit-function-return-type': 'off',
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/no-floating-promises': 'off',

@@ -5,7 +5,7 @@ import {TodosListPage} from './TodosList';
 
 export const todosRoutes: RouteProps[] = [
     {
-        path: '/todos/',
+        path: '/todos',
         element: <TodosListPage />,
     },
     {

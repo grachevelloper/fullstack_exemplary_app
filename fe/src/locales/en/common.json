@@ -1,1 +1,9 @@
-{}
+{
+    "validation.required": "This field is required",
+    "validation.email": "Please enter a valid email",
+    "validation.minLength": "Must be at least {{count}} characters",
+    "validation.maxLength": "Must be at most {{count}} characters",
+
+    "button.continue": "Continue",
+    "button.back": "Back"
+}

@@ -5,7 +5,7 @@ import {
     useSuspenseQuery,
 } from '@tanstack/react-query';
 
-import {queryClient} from '@/shared/lib/query-client';
+import {queryClient} from '@/shared/configs/api';
 
 import api from '../api';
 import {DtoUpdateTodo} from '../api/types';

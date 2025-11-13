@@ -1,0 +1,1 @@
+export {ButtonAccept} from './ButtonAccept';

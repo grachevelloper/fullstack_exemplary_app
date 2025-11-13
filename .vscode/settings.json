@@ -1,10 +1,58 @@
 {
-  "typescript.suggest.autoImports": true,
-  "typescript.updateImportsOnFileMove.enabled": "always",
-  "typescript.preferences.importModuleSpecifier": "project-relative",
-  "javascript.preferences.importModuleSpecifier": "project-relative",
-  "git.ignoreLimitWarning": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
+    "typescript.suggest.autoImports": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "typescript.preferences.importModuleSpecifier": "project-relative",
+    "javascript.preferences.importModuleSpecifier": "project-relative",
+    "git.ignoreLimitWarning": true,
+    "typescript.preferences.includePackageJsonAutoImports": "auto"
+
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "true",
+        "source.organizeImports": "true",
+        "source.addMissingImports": "true"
+    },
+
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "eslint.codeActionsOnSave.mode": "all",
+
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "explicit",
+            "source.organizeImports": "explicit"
+        }
+    },
+
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "explicit",
+            "source.organizeImports": "explicit"
+        }
+    },
+
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "explicit",
+            "source.organizeImports": "explicit"
+        }
+    },
+
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "explicit",
+            "source.organizeImports": "explicit"
+        }
+    },
+
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }

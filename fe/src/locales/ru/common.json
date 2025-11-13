@@ -1,1 +1,9 @@
-{}
+{
+    "validation.required": "Это поле обязательно для заполнения",
+    "validation.email": "Пожалуйста, введите корректный email",
+    "validation.minLength": "Должно быть не менее {{count}} символов",
+    "validation.maxLength": "Должно быть не более {{count}} символов",
+
+    "button.continue": "Далее",
+    "button.back": "Назад"
+}

@@ -17,10 +17,7 @@ interface TodoListTableProps {
     todos: Todo[];
 }
 
-type TodoTableColumns = Pick<
-    Todo,
-    'title' | 'createdAt' | 'updatedAt' | 'priority' | 'state' | 'id'
->;
+type TodoTableColumns = Pick<Todo, 'title' | 'priority' | 'state' | 'id'>;
 
 export const TodoListTable = ({todos}: TodoListTableProps) => {
     const {t} = useTranslation('todo');
@@ -54,16 +51,6 @@ export const TodoListTable = ({todos}: TodoListTableProps) => {
             shouldCellUpdate(record, prevRecord) {
                 return record.state !== prevRecord.state;
             },
-        },
-        {
-            key: 'updatedAt',
-            title: t('todo.table.col.updated-at'),
-            dataIndex: 'updatedAt',
-        },
-        {
-            key: 'createdAt',
-            title: t('todo.table.col.created-at'),
-            dataIndex: 'createdAt',
         },
     ];
 

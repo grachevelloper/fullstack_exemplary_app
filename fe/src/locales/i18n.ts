@@ -1,8 +1,10 @@
 import i18next from 'i18next';
 import {initReactI18next} from 'react-i18next';
 
+import enAuth from './en/auth.json';
 import enCommon from './en/common.json';
 import enTodo from './en/todo.json';
+import ruAuth from './ru/auth.json';
 import ruCommon from './ru/common.json';
 import ruTodo from './ru/todo.json';
 
@@ -10,10 +12,12 @@ const resources = {
     en: {
         common: enCommon,
         todo: enTodo,
+        auth: enAuth,
     },
     ru: {
         common: ruCommon,
         todo: ruTodo,
+        auth: ruAuth,
     },
 };
 

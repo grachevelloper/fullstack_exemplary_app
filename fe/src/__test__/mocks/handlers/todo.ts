@@ -5,7 +5,7 @@ import {Todo, TodoPriority, TodoState} from '@/todos/types';
 import {createMockTodo} from '../factories/todoFactory';
 
 export const todoHandlers = [
-    http.get('*/api/listTodos', () => {
+    http.get('*/api/todos', () => {
         const mockTodos = [
             createMockTodo({
                 id: '1',

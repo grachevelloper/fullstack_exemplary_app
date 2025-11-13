@@ -1,7 +1,8 @@
 import 'i18next';
 
-import common from '../locales/en/common.json';
-import todo from '../locales/en/todo.json';
+import auth from '../locales/ru/auth.json';
+import common from '../locales/ru/common.json';
+import todo from '../locales/ru/todo.json';
 
 declare module 'i18next' {
     interface CustomTypeOptions {
@@ -9,6 +10,7 @@ declare module 'i18next' {
         resources: {
             common: typeof common;
             todo: typeof todo;
+            auth: typeof auth;
         };
     }
 }
