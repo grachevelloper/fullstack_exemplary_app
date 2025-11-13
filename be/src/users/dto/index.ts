@@ -16,6 +16,12 @@ export class UpdateUserDto {
         message: "Пароль должен содержать заглавные, строчные буквы и цифры",
     })
     password: string;
+
+    @ApiProperty({example: "kolya-master"})
+    @IsString()
+    @MinLength(3)
+    @MaxLength(32)
+    username: string;
 }
 
 export class CreateUserDto extends UpdateUserDto {

@@ -7,8 +7,8 @@ import * as dotenv from "dotenv";
 import {AppController} from "./app.controller";
 import {AppService} from "./app.service";
 import {AuthModule} from "./auth/auth.module";
+import dataSourceOptions from "./data-source";
 import {AuthGuard} from "./guards/auth.guard";
-import {Todo} from "./todos/todos.entity";
 import {TodosModule} from "./todos/todos.module";
 import {UsersModule} from "./users/users.module";
 
@@ -21,17 +21,10 @@ dotenv.config();
         }),
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
-            useFactory: (configService: ConfigService) => ({
-                type: "postgres",
-                host: configService.get("DB_HOST"),
-                port: configService.get("DB_PORT"),
-                username: configService.get("DB_USER"),
-                password: configService.get("DB_PASSWORD"),
-                database: configService.get("DB_NAME"),
-                entities: [Todo],
+            useFactory: () => ({
+                ...dataSourceOptions,
                 synchronize: false,
                 autoLoadEntities: true,
-                migrations: ["dist/migrations/**/*.js"],
                 migrationsRun: process.env.NODE_ENV !== "production",
                 migrationsTableName: "migrations",
             }),

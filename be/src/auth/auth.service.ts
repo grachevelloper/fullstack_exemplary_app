@@ -1,61 +1,36 @@
-import {Injectable, UnauthorizedException} from "@nestjs/common";
-import {JwtService} from "@nestjs/jwt";
+import {
+    ConflictException,
+    Injectable,
+    UnauthorizedException,
+} from "@nestjs/common";
 
+import {User} from "../users/users.entity";
 import {UsersService} from "../users/users.service";
-import {REFRESH_SECRET} from "./constants";
-import {RefreshTokensService} from "./refresh-token/refresh-token.service";
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private usersService: UsersService,
-        private jwtService: JwtService,
-        private refreshTokensService: RefreshTokensService,
-    ) {}
+    constructor(private usersService: UsersService) {}
 
-    async signIn(email: string, pass: string): Promise<any> {
+    async signUp(
+        username: string,
+        email: string,
+        password: string,
+    ): Promise<User> {
+        const existingUser = await this.usersService.findByEmail(email);
+        if (existingUser) {
+            throw new ConflictException("User with this email already exists");
+        }
+
+        const user = await this.usersService.create(email, password, username);
+
+        return user;
+    }
+
+    async signIn(email: string, pass: string): Promise<User> {
         const user = await this.usersService.findByEmail(email);
         if (user?.password !== pass) {
             throw new UnauthorizedException();
         }
-        const payload = {sub: user.id, email: user.email};
-
-        const refresh_token = this.refreshTokensService.createToken(user.id);
-
-        return {
-            access_token: await this.jwtService.signAsync(payload),
-            refresh_token,
-        };
-    }
-
-    async refreshTokens(refreshToken: string) {
-        const payload: {sub: string; tokenId: string} = this.jwtService.verify(
-            refreshToken,
-            {
-                secret: REFRESH_SECRET,
-            },
-        );
-
-        const isValid = await this.refreshTokensService.validateToken(
-            payload.tokenId,
-            payload.sub,
-        );
-
-        if (!isValid) {
-            throw new UnauthorizedException();
-        }
-
-        await this.refreshTokensService.revokeToken(
-            payload.tokenId,
-            payload.sub,
-        );
-
-        const newPayload = {sub: payload.sub};
-        const [access_token, refresh_token] = await Promise.all([
-            this.jwtService.signAsync(newPayload),
-            this.refreshTokensService.createToken(payload.sub),
-        ]);
-
-        return {access_token, refresh_token};
+        return user;
     }
 }

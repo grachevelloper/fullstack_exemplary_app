@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import {randomUUID} from "crypto";
 import {MoreThan, Repository} from "typeorm";
 
-import {TOKEN_TTL_IN_MS} from "../constants";
+import {REFRESH_TOKEN_TTL_IN_MS} from "../constants";
 import {hashToken} from "../utils";
 import {RefreshToken} from "./refresh-token.entity";
 
@@ -18,7 +18,7 @@ export class RefreshTokensService {
     async createToken(userId: string): Promise<string> {
         const token = randomUUID();
         const tokenHash = hashToken(token);
-        const expiresAt = new Date(Date.now() + TOKEN_TTL_IN_MS);
+        const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_IN_MS);
 
         await this.refreshTokenRepo.save({
             userId,
@@ -50,5 +50,15 @@ export class RefreshTokensService {
             {userId, tokenHash},
             {revoked: true},
         );
+    }
+
+    async findByHash(tokenHash: string): Promise<RefreshToken | null> {
+        return this.refreshTokenRepo.findOne({
+            where: {
+                tokenHash,
+                revoked: false,
+                expiresAt: MoreThan(new Date()),
+            },
+        });
     }
 }

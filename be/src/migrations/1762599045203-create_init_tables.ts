@@ -13,10 +13,11 @@ export class CreateInitTables1762599045203 implements MigrationInterface {
         await queryRunner.query(`
             CREATE TABLE IF NOT EXISTS users (
                 id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+                username character varying NOT NULL, 
                 email character varying NOT NULL,
                 password character varying NOT NULL,
-                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-                "updatedAt" TIMESTAMP NOT NULL DEFAULT now()
+                created_at TIMESTAMP NOT NULL DEFAULT now(),
+                updated_at TIMESTAMP NOT NULL DEFAULT now()
             )
         `);
 
@@ -25,31 +26,31 @@ export class CreateInitTables1762599045203 implements MigrationInterface {
                 id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
                 title character varying NOT NULL,
                 content character varying NOT NULL,
-                "authorId" UUID NOT NULL,
+                author_id UUID NOT NULL,
                 priority todo_priority_enum NOT NULL DEFAULT 'medium',
                 state todo_state_enum NOT NULL DEFAULT 'planning',
-                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                "createdAt" TIMESTAMP NOT NULL DEFAULT now()
+                updated_at TIMESTAMP NOT NULL DEFAULT now(),
+                created_at TIMESTAMP NOT NULL DEFAULT now()
             )
         `);
 
         await queryRunner.query(`
             ALTER TABLE todos 
-            ADD CONSTRAINT FK_todos_author_id 
-            FOREIGN KEY ("authorId") REFERENCES users(id) ON DELETE CASCADE
+            ADD CONSTRAINT fk_todos_author_id 
+            FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
         `);
 
         await queryRunner.query(`
-            CREATE INDEX IDX_todos_authorId ON todos ("authorId")
+            CREATE INDEX idx_todos_author_id ON todos (author_id)
         `);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`DROP INDEX IDX_todos_authorId`);
+        await queryRunner.query(`DROP INDEX idx_todos_author_id`);
 
         await queryRunner.query(`
             ALTER TABLE todos
-            DROP CONSTRAINT FK_todos_author_id
+            DROP CONSTRAINT fk_todos_author_id
         `);
 
         await queryRunner.query(`DROP TABLE todos`);

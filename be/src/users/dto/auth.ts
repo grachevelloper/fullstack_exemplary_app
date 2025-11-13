@@ -1,3 +1,5 @@
 import {CreateUserDto} from ".";
 
-export class SignInDto extends CreateUserDto {}
+export class SignUpDto extends CreateUserDto {}
+
+export class SignInDto extends SignUpDto {}

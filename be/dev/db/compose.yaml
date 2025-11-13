@@ -2,6 +2,14 @@ version: "3.8"
 services:
     postgres:
         image: postgres:15
+        deploy:
+            resources:
+                limits:
+                    memory: 2G
+                    cpus: "2.0"
+                reservations:
+                    memory: 1G
+                    cpus: "1.0"
         container_name: dev-postgres
         environment:
             POSTGRES_DB: postgres
