@@ -15,6 +15,7 @@ export interface FormField extends ComponentBaseProps {
     label: string;
     type?: 'text' | 'email' | 'password' | 'number';
     autoComplete?: string;
+    dataMarker?: string;
     placeholder?: string;
     rules?: Rule[];
     dependencies?: string[];

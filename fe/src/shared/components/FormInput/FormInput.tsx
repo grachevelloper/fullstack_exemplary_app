@@ -17,6 +17,7 @@ export function FormInput({field}: FormInputProps) {
         rules,
         type,
         autoComplete,
+        dataMarker,
         style,
         placeholder,
         className,
@@ -28,6 +29,7 @@ export function FormInput({field}: FormInputProps) {
         placeholder,
         variant: 'underlined',
         className: rootClassName,
+        'data-marker': dataMarker,
         style: {
             minWidth: 200,
         },

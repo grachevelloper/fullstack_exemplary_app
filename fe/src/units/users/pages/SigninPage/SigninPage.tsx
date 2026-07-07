@@ -125,6 +125,7 @@ export const SigninPage = () => {
                             text={t('auth.signin.submit')}
                             key={'accept-signin'}
                             htmlType='submit'
+                            data-marker='auth-submit'
                             loading={isPending}
                             disabled={isPending}
                         />,

@@ -110,6 +110,7 @@ export const NewTodoPage = () => {
                         >
                             <Input
                                 size='large'
+                                data-marker='todo-title-input'
                                 placeholder={t(
                                     'new-todo-form.your-title.placeholder'
                                 )}
@@ -123,6 +124,7 @@ export const NewTodoPage = () => {
                         >
                             <Select
                                 size='large'
+                                data-marker='todo-priority-select'
                                 options={Object.values(TodoPriority).map(
                                     (priority) => ({
                                         value: priority,
@@ -138,6 +140,7 @@ export const NewTodoPage = () => {
                         <Form.Item name='state' label={t('todo.table.col.state')}>
                             <Select
                                 size='large'
+                                data-marker='todo-state-select'
                                 options={Object.values(TodoState).map((state) => ({
                                     value: state,
                                     label: t(
@@ -159,6 +162,7 @@ export const NewTodoPage = () => {
                             ]}
                         >
                             <TextArea
+                                data-marker='todo-content-input'
                                 placeholder={t(
                                     'new-todo-form.your-content.placeholder'
                                 )}
@@ -179,6 +183,7 @@ export const NewTodoPage = () => {
                         type='primary'
                         htmlType='submit'
                         icon={<CheckCircleOutlined />}
+                        data-marker='todo-create-button'
                         loading={isPending}
                     >
                         {t('new-todo-page.create')}

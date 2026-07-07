@@ -124,6 +124,7 @@ export const useSignUpFields = (
                     onClick={() => {
                         void handleSubmit();
                     }}
+                    data-marker='auth-submit'
                     loading={isLoading}
                     text={t('auth.signup.end-apply')}
                     disabled={!isConfirmPasswordValid}

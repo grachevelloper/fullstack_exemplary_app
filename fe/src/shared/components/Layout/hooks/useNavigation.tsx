@@ -7,6 +7,10 @@ import {useLocation, useNavigate} from 'react-router-dom';
 
 import {Role} from '@/typings/common';
 
+const markerLabel = (marker: string, label: string) => (
+    <span data-marker={marker}>{label}</span>
+);
+
 export const useNavigation = (userRole?: Role) => {
     const {t} = useTranslation('common');
     const navigate = useNavigate();
@@ -16,19 +20,22 @@ export const useNavigation = (userRole?: Role) => {
         const baseItems: MenuItemType[] = [
             {
                 icon: <HomeOutlined />,
-                label: t('layout.top.main'),
+                label: markerLabel('nav-home-link', t('layout.top.main')),
                 key: 'nav-0',
                 onClick: () => void navigate('/'),
             },
             {
                 icon: <UserOutlined />,
-                label: t('layout.top.resume'),
+                label: markerLabel('nav-resume-link', t('layout.top.resume')),
                 key: 'nav-1',
                 onClick: () => void navigate('/resume'),
             },
             {
                 icon: <RiDraftLine />,
-                label: t('layout.top.articles'),
+                label: markerLabel(
+                    'nav-articles-link',
+                    t('layout.top.articles')
+                ),
                 key: 'nav-2',
                 onClick: () => void navigate('/articles'),
             },
@@ -37,7 +44,7 @@ export const useNavigation = (userRole?: Role) => {
         const writerItems: MenuItemType[] = [
             {
                 icon: <RiArticleLine />,
-                label: t('layout.top.drafts'),
+                label: markerLabel('nav-drafts-link', t('layout.top.drafts')),
                 key: 'nav-4',
                 onClick: () => void navigate('/articles/drafts'),
             },

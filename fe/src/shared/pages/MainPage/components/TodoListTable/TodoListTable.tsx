@@ -60,6 +60,7 @@ export const TodoListTable = ({todos}: TodoListTableProps) => {
                             className={b('item', {completed: isCompleted})}
                             key={todo.id}
                             type='button'
+                            data-marker='todo-card'
                             onClick={() => handleRowClick(todo.id)}
                         >
                             <span

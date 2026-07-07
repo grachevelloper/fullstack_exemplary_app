@@ -84,7 +84,7 @@ export const Checklist = ({todoId}: ChecklistProps) => {
         }
     };
 
-    const handleDeleteItem = async (index: number) => {
+    const handleDeleteItem = (index: number) => {
         Modal.confirm({
             title: 'Удалить пункт?',
             content: 'Вы уверены, что хотите удалить этот пункт из чек-листа?',
@@ -148,14 +148,20 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                 <Input
                     placeholder='Введите название пункта...'
                     value={newItemText}
+                    data-marker='checklist-add-input'
                     onChange={(e) => setNewItemText(e.target.value)}
-                    onPressEnter={handleAddItem}
+                    onPressEnter={() => {
+                        void handleAddItem();
+                    }}
                     disabled={isPending}
                 />
                 <Button
                     type='primary'
                     icon={<PlusOutlined />}
-                    onClick={handleAddItem}
+                    onClick={() => {
+                        void handleAddItem();
+                    }}
+                    data-marker='checklist-add-button'
                     block
                     disabled={!newItemText.trim() || isPending}
                     loading={isPending}
@@ -169,7 +175,12 @@ export const Checklist = ({todoId}: ChecklistProps) => {
     // Если чеклист загружается
     if (isPending) {
         return (
-            <Card title='Чек-лист' size='small' className={b()}>
+            <Card
+                title='Чек-лист'
+                size='small'
+                className={b()}
+                data-marker='checklist-card'
+            >
                 <Empty description='Загрузка...' />
             </Card>
         );
@@ -182,12 +193,15 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                 title='Чек-лист'
                 size='small'
                 className={b()}
+                data-marker='checklist-card'
                 extra={
                     <Button
                         type='primary'
                         icon={<FileAddOutlined />}
                         size='small'
-                        onClick={handleCreateChecklist}
+                        onClick={() => {
+                            void handleCreateChecklist();
+                        }}
                         loading={isPending}
                     >
                         Создать чек-лист
@@ -207,7 +221,9 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                     <Button
                         type='primary'
                         icon={<FileAddOutlined />}
-                        onClick={handleCreateChecklist}
+                        onClick={() => {
+                            void handleCreateChecklist();
+                        }}
                         loading={isPending}
                     >
                         Создать чек-лист
@@ -237,6 +253,7 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                 }
                 size='small'
                 className={b()}
+                data-marker='checklist-card'
                 extra={
                     <Popover
                         title='Добавить новый пункт'
@@ -292,13 +309,17 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                         size='small'
                         value={editingText}
                         onChange={(e) => setEditingText(e.target.value)}
-                        onPressEnter={handleSaveEdit}
+                        onPressEnter={() => {
+                            void handleSaveEdit();
+                        }}
                         disabled={isPending}
                     />
                     <Button
                         size='small'
                         type='link'
-                        onClick={handleSaveEdit}
+                        onClick={() => {
+                            void handleSaveEdit();
+                        }}
                         loading={isPending}
                     >
                         ✓
@@ -315,7 +336,7 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                 </Space>
             ) : (
                 <Space>
-                    {stepText}
+                    <span data-marker='checklist-item'>{stepText}</span>
                     {editing && (
                         <Space size='small' style={{marginLeft: 8}}>
                             <Button
@@ -331,7 +352,9 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                                 danger
                                 size='small'
                                 icon={<DeleteOutlined />}
-                                onClick={() => handleDeleteItem(index)}
+                                onClick={() => {
+                                    handleDeleteItem(index);
+                                }}
                                 disabled={isPending}
                             />
                         </Space>
@@ -373,6 +396,7 @@ export const Checklist = ({todoId}: ChecklistProps) => {
             }
             size='small'
             className={b()}
+            data-marker='checklist-card'
             extra={
                 editing && (
                     <Button
@@ -396,7 +420,9 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                     height: '100%',
                     minHeight: '300px',
                 }}
-                onChange={handleStepChange}
+                onChange={(current) => {
+                    void handleStepChange(current);
+                }}
                 responsive
             />
         </Card>

@@ -1,4 +1,4 @@
-import {Flex, Layout, Menu, theme} from 'antd';
+import {Flex, Layout, Menu, theme, Typography} from 'antd';
 import block from 'bem-cn-lite';
 import {Fragment, useState} from 'react';
 
@@ -66,6 +66,15 @@ export const Sider = () => {
                         rootClassName={b('menu')}
                         style={{fontSize: fontSizeLG}}
                     />
+
+                    {user && (
+                        <Typography.Text
+                            className={b('user-name')}
+                            data-marker='nav-user-name'
+                        >
+                            {user.username}
+                        </Typography.Text>
+                    )}
 
                     <Menu
                         theme='light'

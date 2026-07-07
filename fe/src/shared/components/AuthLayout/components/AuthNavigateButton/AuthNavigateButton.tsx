@@ -64,6 +64,8 @@ export const AuthNavigateButton = () => {
     }, [colorPrimary, location, t]);
 
     const {link, text, title, icon} = getLinkData();
+    const marker =
+        link === '/auth/signup' ? 'auth-signup-link' : 'auth-signin-link';
 
     useEffect(() => {
         if (!link || isNotificationShown || isPrevVisited) {
@@ -81,6 +83,7 @@ export const AuthNavigateButton = () => {
             description: (
                 <Typography.Link
                     className={b('link')}
+                    data-marker={marker}
                     onClick={() => {
                         navigate(link);
                         api.destroy();
@@ -132,6 +135,7 @@ export const AuthNavigateButton = () => {
                     trigger='hover'
                     content={
                         <Typography.Link
+                            data-marker={marker}
                             onClick={() => {
                                 void navigate(link);
                             }}
@@ -146,6 +150,7 @@ export const AuthNavigateButton = () => {
                 >
                     <FloatButton
                         icon={icon}
+                        data-marker={marker}
                         aria-label={text}
                         style={{
                             transition: 'opacity 0.3s ease-in-out',
