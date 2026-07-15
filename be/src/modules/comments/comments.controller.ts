@@ -48,9 +48,12 @@ export class CommentsController {
     @HttpCode(HttpStatus.OK)
     @Get(":id")
     async getByid(
+        @CurrentUser() user: AuthenticatedUser,
         @Param("id", ParseUUIDPipe) id: string,
     ): Promise<CommentResponseDto> {
-        return CommentsMapper.toResponse(await this.commentsService.findOne(id));
+        return CommentsMapper.toResponse(
+            await this.commentsService.findOneForActor(id, user),
+        );
     }
 
     @HttpCode(HttpStatus.OK)

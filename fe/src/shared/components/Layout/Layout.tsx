@@ -7,16 +7,13 @@ import {useTranslation} from 'react-i18next';
 import {MdOutlineMenuOpen} from 'react-icons/md';
 import {Outlet, useLocation} from 'react-router-dom';
 
-import {useAuth} from '../../context';
 import {useSidebar} from '../../context/Sidebar';
 import {useCookie} from '../../hooks/useCookie';
 import {useLayout} from '../../hooks/useLayout';
 import {useNetworkStatus} from '../../hooks/useNetworkStatus';
 
-import {isMe} from './api';
 import {Animation} from './components/Animation';
 import {Sider} from './components/Sider';
-
 import './Layout.scss';
 import {COOKIE_ACCEPT_KEY} from './constants';
 
@@ -46,7 +43,6 @@ const Footer = lazy(() =>
 
 export const Layout = () => {
     const {t} = useTranslation('common');
-    const {setUserData} = useAuth();
     const location = useLocation();
     const {isDesktop} = useLayout();
     const {isOffline} = useNetworkStatus();
@@ -56,18 +52,6 @@ export const Layout = () => {
     const {
         token: {colorPrimary, colorTextLightSolid},
     } = theme.useToken();
-
-    useEffect(() => {
-        const getUser = async () => {
-            try {
-                const user = await isMe();
-                setUserData(user);
-            } catch {
-                setUserData(undefined);
-            }
-        };
-        getUser();
-    }, [setUserData]);
 
     useEffect(() => {
         if (!isDesktop) {

@@ -1,5 +1,7 @@
+import type {ReactElement} from 'react';
 import {BrowserRouter, Route, RouteProps, Routes} from 'react-router-dom';
 
+import {Role} from '@/typings/common';
 import {usersRoutes} from '@/users/pages';
 
 import {articlesRoutes} from '@/articles/pages';
@@ -7,6 +9,7 @@ import {todosRoutes} from '@/todos/pages';
 
 import {AuthLayout} from '../components/AuthLayout';
 import {Layout} from '../components/Layout';
+import {ProtectedRoute} from '../components/ProtectedRoute';
 import {sharedPagesRoutes} from '../pages';
 import {MainPage} from '../pages/MainPage';
 import {ResumePage} from '../pages/ResumePage';
@@ -19,6 +22,25 @@ const routes: RouteProps[] = [
 
 const authRoutes: RouteProps[] = [...usersRoutes.slice(0, 2)];
 
+const protectedRoutes: Record<string, Role[] | undefined> = {
+    'articles/draft/:id': [Role.ADMIN, Role.WRITER],
+    'articles/drafts': [Role.ADMIN, Role.WRITER],
+    'todos/new': [Role.ADMIN],
+    user: undefined,
+};
+
+const renderRouteElement = (route: RouteProps) => {
+    if (!route.path || !(route.path in protectedRoutes)) {
+        return route.element;
+    }
+
+    return (
+        <ProtectedRoute allowedRoles={protectedRoutes[route.path]}>
+            {route.element as ReactElement}
+        </ProtectedRoute>
+    );
+};
+
 export const Router = () => {
     return (
         <BrowserRouter>
@@ -29,7 +51,7 @@ export const Router = () => {
                     {routes.map((route: RouteProps) => (
                         <Route
                             key={route.path}
-                            element={route.element}
+                            element={renderRouteElement(route)}
                             path={route.path}
                         />
                     ))}

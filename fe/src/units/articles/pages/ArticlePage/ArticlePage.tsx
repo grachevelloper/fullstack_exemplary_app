@@ -6,6 +6,7 @@ import {useParams} from 'react-router-dom';
 import {CommentsWrapper} from '@/shared/components/CommentsWrapper';
 import {Like, useToggleLikeMutation} from '@/shared/entities/Like';
 import {useLayout} from '@/shared/hooks';
+import {NotFoundPage} from '@/shared/pages/NotFoundPage';
 import {formatDate} from '@/shared/utils';
 
 import {ArticleTag} from '../../components/ArticleTag';
@@ -37,6 +38,10 @@ export const ArticlePage = () => {
     const {mutate: toggleLike, isPending: isLikePending} =
         useToggleLikeMutation();
 
+    if (error) {
+        return <NotFoundPage />;
+    }
+
     const handleLikeClick = () => {
         if (!data) {
             return;
@@ -55,7 +60,6 @@ export const ArticlePage = () => {
                 level={1}
                 style={{marginBottom: 0}}
                 className={b('title')}
-                ellipsis
             >
                 {data?.title}
             </Title>
@@ -152,7 +156,7 @@ export const ArticlePage = () => {
                             fontSize,
                         }}
                     >
-                        {data?.content}
+                        {isPending ? t('article.draft.saving') : data?.content}
                     </Typography.Text>
                 </Col>
             </Row>

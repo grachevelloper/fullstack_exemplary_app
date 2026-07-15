@@ -1,5 +1,5 @@
 import {Button, notification, theme, Typography} from 'antd';
-import {useEffect} from 'react';
+import {useCallback, useEffect} from 'react';
 import {useTranslation} from 'react-i18next';
 import {LuCookie} from 'react-icons/lu';
 
@@ -16,13 +16,13 @@ export const CookieMessage = () => {
     const {setValue} = useCookie(COOKIE_ACCEPT_KEY);
     const notificationKey = 'cookie-notification';
 
-    const handleAccept = () => {
+    const handleAccept = useCallback(() => {
         setValue('true');
         api.destroy(notificationKey);
-    };
+    }, [api, setValue]);
 
     useEffect(() => {
-        setTimeout(() => {
+        const timeoutId = window.setTimeout(() => {
             api.open({
                 key: notificationKey,
                 message: (
@@ -49,7 +49,7 @@ export const CookieMessage = () => {
                     </div>
                 ),
                 duration: 0,
-                placement: 'bottomLeft',
+                placement: 'topRight',
                 btn: (
                     <Button
                         type='primary'
@@ -76,9 +76,10 @@ export const CookieMessage = () => {
             });
         }, ANIMATION__DURATION_IN_MS);
         return () => {
+            window.clearTimeout(timeoutId);
             api.destroy(notificationKey);
         };
-    }, [api, token]);
+    }, [api, handleAccept, t, token]);
 
     return contextHolder;
 };

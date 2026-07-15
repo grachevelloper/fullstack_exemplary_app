@@ -21,11 +21,12 @@ export const useTodosQuery = () => {
     return {data: data.items};
 };
 
-export const useTodoQuery = (todoId: string) => {
+export const useTodoQuery = (todoId?: string) => {
     const {data, isPending, isError, isPlaceholderData} = useQuery(
         {
             queryKey: ['todo', todoId],
-            queryFn: () => api.getTodoById(todoId),
+            queryFn: () => api.getTodoById(todoId!),
+            enabled: Boolean(todoId),
             placeholderData: keepPreviousData,
         },
         queryClient

@@ -1,5 +1,6 @@
 import {Card, Col, Flex, Row, theme, Typography} from 'antd';
 import block from 'bem-cn-lite';
+import {useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
 import {useAuth} from '@/shared/context';
@@ -8,7 +9,7 @@ import {Role} from '@/typings/common';
 import {ArticlesList} from '../../components/ArticlesList';
 import {CreateNewArticleButton} from '../../components/CreateNewArticleButton';
 import {SearchPanel} from '../../components/SearchPanel';
-import {useGetAllArticles} from '../../store';
+import {useGetAllArticles, useGetAuthorDrafts} from '../../store';
 
 import './ArticlesListPage.scss';
 
@@ -22,10 +23,31 @@ export const ArticlesListPage = () => {
         token: {colorBgContainer, colorBorderSecondary, colorPrimaryBg},
     } = theme.useToken();
     const {user} = useAuth();
+    const [search, setSearch] = useState('');
     const role = user?.role || Role.USER;
-    const {data: articlesPage, isPending, error} = useGetAllArticles();
 
     const canWriteArticle = role === Role.WRITER || role === Role.ADMIN;
+    const normalizedSearch = search.trim();
+    const {data: articlesPage, isPending, error} =
+        useGetAllArticles(normalizedSearch || undefined);
+    const {
+        data: drafts = [],
+        isPending: isDraftsPending,
+        error: draftsError,
+    } = useGetAuthorDrafts(canWriteArticle);
+
+    const articles = useMemo(() => {
+        const published = articlesPage?.items ?? [];
+        const filteredDrafts = normalizedSearch
+            ? drafts.filter((draft) =>
+                  draft.title
+                      .toLowerCase()
+                      .includes(normalizedSearch.toLowerCase())
+              )
+            : drafts;
+
+        return [...filteredDrafts, ...published];
+    }, [articlesPage?.items, drafts, normalizedSearch]);
 
     const renderNewArticleButton = () => {
         return canWriteArticle && <CreateNewArticleButton />;
@@ -82,7 +104,10 @@ export const ArticlesListPage = () => {
                             {t('articles.search.description')}
                         </Text>
                     </Flex>
-                    <SearchPanel />
+                    <SearchPanel
+                        value={search}
+                        onSearchChange={setSearch}
+                    />
                 </Flex>
             </Card>
 
@@ -97,9 +122,9 @@ export const ArticlesListPage = () => {
                     <Title level={2}>{t('articles.recent')}</Title>
                 </Flex>
                 <ArticlesList
-                    isPending={isPending}
-                    data={articlesPage?.items}
-                    error={error}
+                    isPending={isPending || (canWriteArticle && isDraftsPending)}
+                    data={articles}
+                    error={error || draftsError}
                 />
             </section>
         </main>

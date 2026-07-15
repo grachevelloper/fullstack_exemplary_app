@@ -10,10 +10,10 @@ import {EMPTY_ARTICLE_BASE} from '../utils/constants';
 
 import {articleKeys, fieldUpdateConfig} from './constants';
 
-export const useGetAllArticles = () => {
+export const useGetAllArticles = (search?: string) => {
     return useQuery<PaginatedResponse<Article>, Error>({
-        queryKey: articleKeys.lists(),
-        queryFn: () => api.getAll(),
+        queryKey: articleKeys.list({search}),
+        queryFn: () => api.getAll(search),
     });
 };
 
@@ -32,10 +32,11 @@ export const useGetArticleById = (id?: string) => {
     });
 };
 
-export const useGetAuthorDrafts = () => {
+export const useGetAuthorDrafts = (enabled = true) => {
     return useQuery<Article[], Error>({
         queryKey: articleKeys.drafts(),
         queryFn: () => api.getDrafts(),
+        enabled,
     });
 };
 
@@ -52,6 +53,7 @@ export const useCreateArticle = () => {
 
     const emptyArticle: Omit<Article, 'author' | 'image'> = {
         ...EMPTY_ARTICLE_BASE,
+        content: t('article.new.content'),
         title: t('article.new.title'),
     };
     return useMutation<Article, Error, void>({

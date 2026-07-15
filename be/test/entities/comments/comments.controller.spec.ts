@@ -112,6 +112,25 @@ describe("CommentsController", () => {
         });
     });
 
+    it("passes get-by-id actor to the service and maps liked state", async () => {
+        const service = {
+            findOneForActor: jest
+                .fn<CommentsService["findOneForActor"]>()
+                .mockResolvedValue({...comment, hasLiked: true}),
+        } as unknown as CommentsService;
+        const controller = new CommentsController(service);
+
+        const result = await controller.getByid(actor, comment.id);
+
+        expect(service.findOneForActor).toHaveBeenCalledWith(
+            comment.id,
+            actor,
+        );
+        expect(result).toEqual(
+            expect.objectContaining({id: comment.id, hasLiked: true}),
+        );
+    });
+
 
     it("declares no-content status for deletion", () => {
         expect(

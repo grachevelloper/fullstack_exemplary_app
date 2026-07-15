@@ -1,3 +1,4 @@
+import {LinkOutlined} from '@ant-design/icons';
 import {
     BoldItalicUnderlineToggles,
     CreateLink,
@@ -13,7 +14,7 @@ import {
     UndoRedo,
 } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
-import {Flex} from 'antd';
+import {Button, Flex} from 'antd';
 import block from 'bem-cn-lite';
 import {ForwardedRef, memo} from 'react';
 
@@ -73,6 +74,13 @@ const ToolbarComponent = memo(() => {
             <StrikeThroughSupSubToggles />
             <HighlightToggle />
             <ListsToggle />
+            <Button
+                type='text'
+                size='small'
+                aria-label='Link'
+                title='Link'
+                icon={<LinkOutlined />}
+            />
             <CreateLink />
             <InsertImage />
             <InsertCodeBlock />

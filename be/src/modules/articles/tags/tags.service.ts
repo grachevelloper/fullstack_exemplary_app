@@ -47,7 +47,15 @@ export class TagsService {
 
     async delete(id: string): Promise<void> {
         const tag = await this.findOne(id);
-        await this.tagRepository.remove(tag);
+        await this.tagRepository.manager.transaction(async (manager) => {
+            await manager
+                .createQueryBuilder()
+                .delete()
+                .from("article_tags")
+                .where('"tagId" = :id', {id})
+                .execute();
+            await manager.remove(Tag, tag);
+        });
     }
 
     async findByName(name: string): Promise<Tag | null> {

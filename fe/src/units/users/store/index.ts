@@ -1,6 +1,7 @@
 import {useMutation} from '@tanstack/react-query';
 
 import {queryClient} from '@/shared/configs/api';
+import {useAuth} from '@/shared/context';
 
 import api from '../api';
 import {DtoChangePassword, DtoSignInUser, DtoSignUpUser, DtoUpdateUser} from '../api/types';
@@ -13,9 +14,15 @@ export const useSignupMutation = () => {
 };
 
 export const useLogoutMutation = () => {
+    const {setUserData} = useAuth();
+
     return useMutation({
         mutationKey: ['logout'],
         mutationFn: () => api.logout(),
+        onSuccess: () => {
+            setUserData(undefined);
+            queryClient.clear();
+        },
     });
 };
 

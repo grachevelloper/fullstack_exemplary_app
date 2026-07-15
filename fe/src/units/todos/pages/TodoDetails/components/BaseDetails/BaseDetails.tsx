@@ -29,6 +29,8 @@ export const BaseDetails = ({initialData}: BaseDetailsProps) => {
         useToggleLikeMutation();
     const {updateTitle, updatePriority, updateState, updateContent, isPending} =
         useTodoMutations();
+    const priority = initialData.priority ?? 'Medium' as TodoPriority;
+    const state = initialData.state ?? 'Planning' as TodoState;
 
     const handleEnd = <T extends UpdateField>(
         newValueType: T,
@@ -69,14 +71,14 @@ export const BaseDetails = ({initialData}: BaseDetailsProps) => {
                     <TodoTitle onEnd={handleEnd} content={initialData.title} />
                     <Space size={[12, 12]} wrap className={b('meta')}>
                         <Priority
-                            priority={initialData.priority}
+                            priority={priority}
                             onUpdate={(priority: TodoPriority) =>
                                 handleEnd('priority', priority)
                             }
                             isLoading={isPending}
                         />
                         <State
-                            state={initialData.state}
+                            state={state}
                             onUpdate={(state: TodoState) =>
                                 handleEnd('state', state)
                             }

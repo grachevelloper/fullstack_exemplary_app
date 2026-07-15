@@ -102,7 +102,9 @@ export const TagsWrapper = ({tags, editable}: TagsWrapperProps) => {
         return (
             <Form
                 form={form}
-                onFinish={handleOk}
+                onFinish={() => {
+                    void handleOk();
+                }}
                 layout='vertical'
                 className={b('create-tag-popover')}
                 autoComplete='off'
@@ -125,7 +127,9 @@ export const TagsWrapper = ({tags, editable}: TagsWrapperProps) => {
                 />
                 <ButtonAccept
                     loading={isCreateTagPending}
-                    onClick={handleOk}
+                    onClick={() => {
+                        void handleOk();
+                    }}
                     disabled={!submittable || isCreateTagPending}
                     className={b('create-button')}
                     text={t('create')}
@@ -175,7 +179,11 @@ export const TagsWrapper = ({tags, editable}: TagsWrapperProps) => {
                         <ArticleTag
                             tag={tag}
                             key={tag.id}
-                            deletable={{onDelete: handleDelete}}
+                            deletable={{
+                                onDelete: (id) => {
+                                    handleDelete(id);
+                                },
+                            }}
                         />
                     ))}
                     {shouldShowExpand && !expanded && (

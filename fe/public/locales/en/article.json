@@ -43,6 +43,10 @@
     "article.placeholder": "Start with a thought...",
     "article.draft.publish": "Publish",
     "article.draft.saving": "Saving...",
+    "article.error.title": "Failed to load articles",
+    "article.error.description": "Please try again later.",
+    "article.new.title": "My new article",
+    "article.new.content": "Draft content",
 
     "article.status.draft": "Draft",
     "article.status.published": "Published",

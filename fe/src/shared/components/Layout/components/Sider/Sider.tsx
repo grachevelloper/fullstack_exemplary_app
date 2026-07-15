@@ -1,6 +1,8 @@
-import {Flex, Layout, Menu, theme, Typography} from 'antd';
+import {MenuFoldOutlined} from '@ant-design/icons';
+import {Button, Flex, Layout, Menu, theme, Typography} from 'antd';
 import block from 'bem-cn-lite';
 import {Fragment, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 
 import {useAuth} from '@/shared/context';
 import {useSidebar} from '@/shared/context/Sidebar';
@@ -17,7 +19,8 @@ const {Sider: AntSider} = Layout;
 
 export const Sider = () => {
     const {user} = useAuth();
-    const {isTablet, isMobile} = useLayout();
+    const {t} = useTranslation('common');
+    const {isDesktop, isTablet, isMobile} = useLayout();
     const {isCollapsed, toggleCollapsed} = useSidebar();
     const {
         token: {fontSizeLG},
@@ -58,6 +61,15 @@ export const Sider = () => {
                     justify='space-between'
                     className={b('container')}
                 >
+                    {isDesktop && (
+                        <Button
+                            type='text'
+                            className={b('collapse-control')}
+                            aria-label={t('layout.navigation.open')}
+                            icon={<MenuFoldOutlined />}
+                            onClick={toggleCollapsed}
+                        />
+                    )}
                     <Menu
                         theme='light'
                         mode='vertical'

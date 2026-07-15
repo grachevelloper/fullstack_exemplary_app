@@ -196,6 +196,14 @@ export const DraftArticlePage = () => {
         [debouncedUpdateImage]
     );
 
+    const handleImageBlur = useCallback(
+        (newImage: string) => {
+            if (!draftId) return;
+            void mutateImage(draftId, newImage);
+        },
+        [draftId, mutateImage]
+    );
+
     const handleReadTimeChange = useCallback(
         (newReadTime: number | null) => {
             const normalizedReadTime = newReadTime ?? 1;
@@ -289,6 +297,7 @@ export const DraftArticlePage = () => {
                     <Input
                         value={image}
                         onChange={(e) => handleImageChange(e.target.value)}
+                        onBlur={(e) => handleImageBlur(e.target.value)}
                         placeholder={t('articles.form.image.placeholder')}
                         addonBefore={t('articles.form.image.label')}
                         disabled={updateImage.isPending}
