@@ -42,7 +42,6 @@ services:
     container_name: fullstack-frontend
     environment:
       FE_PORT: 5173
-      REACT_APP_ENABLE_MOCKS: 'false'
     ports:
       - '5173:5173'
     depends_on:

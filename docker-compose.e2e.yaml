@@ -38,7 +38,6 @@ services:
     build: ./fe
     environment:
       FE_PORT: 5173
-      REACT_APP_ENABLE_MOCKS: 'false'
     depends_on:
       - backend
 

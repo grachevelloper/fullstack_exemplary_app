@@ -26,7 +26,6 @@ The frontend is a React 19 single-page application built directly with Webpack 5
 
 Runtime flow:
 
-1. `src/main.tsx` initializes i18n, optionally starts MSW when `REACT_APP_ENABLE_MOCKS=true`, and renders `App`.
 2. `src/entries/App.tsx` composes theme, Query Client, auth, sidebar, and todo-form providers.
 3. `src/shared/configs/routes.tsx` creates the browser router and layout boundaries from route arrays exported by feature units.
 4. Pages compose feature and shared components.
@@ -218,7 +217,6 @@ After the change:
 
 ## MSW and tests
 
-- MSW starts only when `REACT_APP_ENABLE_MOCKS=true` and currently registers todo handlers.
 - Add handlers to `src/__test__/mocks/handlers` and include them in the handler index. Keep fixture creation in factories when reusable.
 - Mock the real URL, method, params, and response body. Exercise error and latency states when relevant.
 - Do not let mocks drift from backend contracts; compare against backend controllers and DTOs.
