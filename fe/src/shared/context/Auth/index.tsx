@@ -7,6 +7,13 @@ import {UserContextType, UserVoid} from './types';
 
 const AuthContext = createContext<UserContextType>(UserVoid);
 
+const AUTH_REFRESH_RETRY_DELAY = 300;
+
+const wait = (delay: number) =>
+    new Promise((resolve) => {
+        window.setTimeout(resolve, delay);
+    });
+
 export const AuthProvider: React.FC<{children: React.ReactNode}> = ({
     children,
 }) => {
@@ -15,9 +22,15 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({
 
     const refreshUser = useCallback(async () => {
         try {
-            const currentUser = await query.get<User>('/auth/me', {
-                skipAuthRedirect: true,
-            });
+            let currentUser: User;
+
+            try {
+                currentUser = await query.get<User>('/auth/me');
+            } catch (error) {
+                await wait(AUTH_REFRESH_RETRY_DELAY);
+                currentUser = await query.get<User>('/auth/me');
+            }
+
             setUserData(currentUser);
             return currentUser;
         } catch {

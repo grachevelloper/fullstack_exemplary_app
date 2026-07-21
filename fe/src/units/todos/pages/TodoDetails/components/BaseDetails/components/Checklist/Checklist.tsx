@@ -16,6 +16,7 @@ import {
     Typography,
 } from 'antd';
 import block from 'bem-cn-lite';
+import type {ReactElement} from 'react';
 import {useState} from 'react';
 
 import {
@@ -172,6 +173,22 @@ export const Checklist = ({todoId}: ChecklistProps) => {
         </div>
     );
 
+    const renderAddPopover = (
+        trigger: ReactElement,
+        placement: 'bottom' | 'bottomRight' = 'bottomRight'
+    ) => (
+        <Popover
+            title='Добавить новый пункт'
+            content={popoverContent}
+            trigger='click'
+            open={popoverVisible}
+            onOpenChange={setPopoverVisible}
+            placement={placement}
+        >
+            {trigger}
+        </Popover>
+    );
+
     // Если чеклист загружается
     if (isPending) {
         return (
@@ -254,15 +271,7 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                 size='small'
                 className={b()}
                 data-marker='checklist-card'
-                extra={
-                    <Popover
-                        title='Добавить новый пункт'
-                        content={popoverContent}
-                        trigger='click'
-                        open={popoverVisible}
-                        onOpenChange={setPopoverVisible}
-                        placement='bottomRight'
-                    >
+                extra={renderAddPopover(
                         <Button
                             type='dashed'
                             icon={<PlusOutlined />}
@@ -270,32 +279,14 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                             disabled={isPending}
                         >
                             Добавить пункт
-                        </Button>
-                    </Popover>
-                }
+                        </Button>,
+                        'bottomRight'
+                    )}
             >
                 <Empty
                     description='Чек-лист пустой'
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
-                >
-                    <Popover
-                        title='Добавить новый пункт'
-                        content={popoverContent}
-                        trigger='click'
-                        open={popoverVisible}
-                        onOpenChange={setPopoverVisible}
-                        placement='bottom'
-                    >
-                        <Button
-                            type='primary'
-                            icon={<PlusOutlined />}
-                            onClick={() => setPopoverVisible(true)}
-                            loading={isPending}
-                        >
-                            Добавить первый пункт
-                        </Button>
-                    </Popover>
-                </Empty>
+                />
             </Card>
         );
     }
@@ -309,6 +300,7 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                         size='small'
                         value={editingText}
                         onChange={(e) => setEditingText(e.target.value)}
+                        onClick={(event) => event.stopPropagation()}
                         onPressEnter={() => {
                             void handleSaveEdit();
                         }}
@@ -317,7 +309,8 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                     <Button
                         size='small'
                         type='link'
-                        onClick={() => {
+                        onClick={(event) => {
+                            event.stopPropagation();
                             void handleSaveEdit();
                         }}
                         loading={isPending}
@@ -328,7 +321,10 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                         size='small'
                         type='link'
                         danger
-                        onClick={handleCancelEdit}
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            handleCancelEdit();
+                        }}
                         disabled={isPending}
                     >
                         ✕
@@ -342,7 +338,10 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                             <Button
                                 type='link'
                                 size='small'
-                                onClick={() => handleStartEdit(index)}
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleStartEdit(index);
+                                }}
                                 disabled={isPending}
                             >
                                 Изменить
@@ -352,7 +351,8 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                                 danger
                                 size='small'
                                 icon={<DeleteOutlined />}
-                                onClick={() => {
+                                onClick={(event) => {
+                                    event.stopPropagation();
                                     handleDeleteItem(index);
                                 }}
                                 disabled={isPending}
@@ -374,40 +374,32 @@ export const Checklist = ({todoId}: ChecklistProps) => {
             title={
                 <Space className={b('title')}>
                     Чек-лист
-                    <Popover
-                        title='Добавить новый пункт'
-                        content={popoverContent}
-                        trigger='click'
-                        open={popoverVisible}
-                        onOpenChange={setPopoverVisible}
-                        placement='bottomRight'
+                    <Button
+                        type={editing ? 'primary' : 'text'}
+                        icon={<EditOutlined />}
+                        size='small'
+                        onClick={() => setEditing(!editing)}
+                        disabled={isPending}
                     >
-                        <Button
-                            type={editing ? 'primary' : 'text'}
-                            icon={<EditOutlined />}
-                            size='small'
-                            onClick={() => setEditing(!editing)}
-                            disabled={isPending}
-                        >
-                            {editing ? 'Завершить' : 'Редактировать'}
-                        </Button>
-                    </Popover>
+                        {editing ? 'Завершить' : 'Редактировать'}
+                    </Button>
                 </Space>
             }
             size='small'
             className={b()}
             data-marker='checklist-card'
             extra={
-                editing && (
+                editing &&
+                renderAddPopover(
                     <Button
                         type='dashed'
                         icon={<PlusOutlined />}
                         size='small'
-                        onClick={() => setPopoverVisible(true)}
                         disabled={isPending}
                     >
                         Добавить
-                    </Button>
+                    </Button>,
+                    'bottomRight'
                 )
             }
         >
@@ -420,9 +412,13 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                     height: '100%',
                     minHeight: '300px',
                 }}
-                onChange={(current) => {
-                    void handleStepChange(current);
-                }}
+                onChange={
+                    editing || editingIndex !== null
+                        ? undefined
+                        : (current) => {
+                              void handleStepChange(current);
+                          }
+                }
                 responsive
             />
         </Card>

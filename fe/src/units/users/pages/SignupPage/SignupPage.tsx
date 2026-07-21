@@ -5,6 +5,7 @@ import {useTranslation} from 'react-i18next';
 
 import {useAuth} from '@/shared/context';
 import {type CardProps, type FormField} from '@/typings/components';
+import {type User} from '@/users/types';
 import {useSignupMutation} from '@/users/store';
 
 import {SignStep} from './components/SignStep';
@@ -31,6 +32,7 @@ const initialSignUpData: SignUpFormData = {
 export const SignupPage = () => {
     const {t} = useTranslation('auth');
     const [signStep, setSignStep] = useState(0);
+    const [registeredUser, setRegisteredUser] = useState<User | null>(null);
     const [form] = Form.useForm<SignUpFormData>();
     const {setUserData} = useAuth();
 
@@ -49,13 +51,18 @@ export const SignupPage = () => {
             username: userData.username,
         });
         form.resetFields();
-        setUserData(user);
-    }, [form, mutateAsync, setUserData]);
+        setRegisteredUser(user);
+    }, [form, mutateAsync]);
 
     const signUpFields = useSignUpFields(
         form,
         {
             isLoading: isPending,
+            onFinish: () => {
+                if (registeredUser) {
+                    setUserData(registeredUser);
+                }
+            },
             onSubmit: handleSubmit,
         },
         signStep,

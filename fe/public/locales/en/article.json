@@ -5,6 +5,7 @@
     "articles.page.subtitle": "Tips, guides and news from the world of development",
     "articles.search.title": "Find a material",
     "articles.search.description": "Search by title, topic, or keyword.",
+    "articles.search.placeholder": "Search articles...",
     "articles.create": "Write article",
     "articles.recent": "Recent articles",
 

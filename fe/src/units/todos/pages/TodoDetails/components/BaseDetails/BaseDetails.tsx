@@ -4,6 +4,7 @@ import block from 'bem-cn-lite';
 import {useTranslation} from 'react-i18next';
 
 import {CommentsWrapper} from '@/shared/components/CommentsWrapper';
+import {useAuth} from '@/shared/context';
 import {Like, useToggleLikeMutation} from '@/shared/entities/Like';
 
 import {Priority} from '@/todos/components/Priority';
@@ -25,6 +26,7 @@ interface BaseDetailsProps {
 
 export const BaseDetails = ({initialData}: BaseDetailsProps) => {
     const {t} = useTranslation('todo');
+    const {user} = useAuth();
     const {mutate: toggleLike, isPending: isLikePending} =
         useToggleLikeMutation();
     const {updateTitle, updatePriority, updateState, updateContent, isPending} =
@@ -115,23 +117,27 @@ export const BaseDetails = ({initialData}: BaseDetailsProps) => {
                         />
                     </Card>
 
-                    <Card
-                        className={b('panel')}
-                        title={
-                            <Typography.Text strong>
-                                {t('todo.details.comments')}
-                            </Typography.Text>
-                        }
-                    >
-                        <CommentsWrapper
-                            entityId={initialData.id}
-                            entityType='todo'
-                        />
-                    </Card>
+                    {user && (
+                        <Card
+                            className={b('panel')}
+                            title={
+                                <Typography.Text strong>
+                                    {t('todo.details.comments')}
+                                </Typography.Text>
+                            }
+                        >
+                            <CommentsWrapper
+                                entityId={initialData.id}
+                                entityType='todo'
+                            />
+                        </Card>
+                    )}
                 </Col>
-                <Col xs={24} lg={8} className={b('aside')}>
-                    <Checklist todoId={initialData.id} />
-                </Col>
+                {user && (
+                    <Col xs={24} lg={8} className={b('aside')}>
+                        <Checklist todoId={initialData.id} />
+                    </Col>
+                )}
             </Row>
         </div>
     );

@@ -1,14 +1,14 @@
 import {Layout, Spin, theme} from 'antd';
 import {Content} from 'antd/es/layout/layout';
 import block from 'bem-cn-lite';
-import {lazy, Suspense, useEffect, useState} from 'react';
+import {lazy, Suspense} from 'react';
 import {Navigate, Outlet} from 'react-router-dom';
 
+import {useAuth} from '@/shared/context';
 import {useNetworkStatus} from '@/shared/hooks';
 
 import authBackground from '@/public/assets/auth.jpeg';
 
-import {checkAuth} from './api';
 import {AuthNavigateButton} from './components/AuthNavigateButton';
 
 import './AuthLayout.scss';
@@ -28,21 +28,10 @@ export const AuthLayout = () => {
     const {
         token: {colorBgMask},
     } = theme.useToken();
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(
-        null
-    );
+    const {isAuthLoading, user} = useAuth();
     const {isOffline} = useNetworkStatus();
 
-    useEffect(() => {
-        const verifyAuth = async () => {
-            const authStatus = await checkAuth();
-            setIsAuthenticated(authStatus);
-        };
-
-        verifyAuth();
-    }, []);
-
-    if (isAuthenticated === null) {
+    if (isAuthLoading) {
         return (
             <div className={b('loader')}>
                 <Spin size='large' />
@@ -50,7 +39,7 @@ export const AuthLayout = () => {
         );
     }
 
-    if (isAuthenticated) {
+    if (user) {
         return <Navigate to='/' replace />;
     }
 

@@ -16,7 +16,7 @@ export const SearchPanel = ({onSearchChange, value}: SearchPanelProps) => {
         <Flex className={b()} justify='start' align='start' vertical gap={8}>
             <Input.Search
                 variant='filled'
-                placeholder={t('article.articles.search.placeholder')}
+                placeholder={t('articles.search.placeholder')}
                 size='large'
                 value={value}
                 onChange={(event) => onSearchChange?.(event.target.value)}

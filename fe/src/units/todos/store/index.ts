@@ -28,6 +28,7 @@ export const useTodoQuery = (todoId?: string) => {
             queryFn: () => api.getTodoById(todoId!),
             enabled: Boolean(todoId),
             placeholderData: keepPreviousData,
+            retry: false,
         },
         queryClient
     );
