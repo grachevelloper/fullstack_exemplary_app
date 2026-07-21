@@ -29,7 +29,7 @@ services:
       GRACHEVELOPERS_PASSWORD: ${GRACHEVELOPERS_PASSWORD:-e2e-local-gracheveloper-password}
       S3_ACCESS_KEY: ${S3_ACCESS_KEY:-e2e-local-access-key}
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-e2e-local-secret-key}
-      S3_PUBLIC_DOMAIN: ${S3_PUBLIC_DOMAIN:-http://localhost:9000}
+      S3_PUBLIC_DOMAIN: ${S3_PUBLIC_DOMAIN:-}
     depends_on:
       db:
         condition: service_healthy

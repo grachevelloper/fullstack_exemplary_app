@@ -61,9 +61,9 @@ interface FindArticlesByAuthorQuery {
     drafts?: boolean;
 }
 
-const DEFAULT_ARTICLE_IMAGE = `${
-    process.env.S3_PUBLIC_DOMAIN ?? ""
-}/draft-placeholder/image.png`;
+const DEFAULT_ARTICLE_IMAGE = process.env.S3_PUBLIC_DOMAIN
+    ? `${process.env.S3_PUBLIC_DOMAIN}/draft-placeholder/image.png`
+    : "/assets/image-placeholder.png";
 
 const SORT_COLUMNS: Record<SortBy, string> = {
     createdAt: "article.createdAt",
