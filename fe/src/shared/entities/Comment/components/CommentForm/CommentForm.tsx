@@ -52,6 +52,7 @@ export const CommentForm = ({
             <Input.TextArea
                 placeholder={t('comments.placeholder')}
                 value={content}
+                data-marker='comment-input'
                 onChange={(e) => setContent(e.target.value)}
                 autoSize={{minRows: 3}}
                 style={{width: '100%'}}
@@ -75,6 +76,7 @@ export const CommentForm = ({
                         onComplete(content, Boolean(prevContent) === false)
                     }
                     disabled={!content.trim()}
+                    data-marker='comment-submit-button'
                     loading={isCompletePending}
                     size='middle'
                 />

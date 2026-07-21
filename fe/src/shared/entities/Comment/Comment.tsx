@@ -163,7 +163,7 @@ export const Comment = ({comment, className, isNew = false}: CommentProps) => {
                                 {t('updated-at', {date: formatDate(updatedAt)})}
                             </Typography.Text>
                         )}
-                        {!canMutate ? (
+                        {user ? (
                             <Button
                                 className={b('reply')}
                                 type='link'

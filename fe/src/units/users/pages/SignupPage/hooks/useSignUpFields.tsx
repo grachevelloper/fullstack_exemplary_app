@@ -16,7 +16,7 @@ export const useSignUpFields = (
     signStep: number,
     onStepChange: (step: number) => void
 ): Array<FormField | CardProps> => {
-    const {isLoading, onSubmit} = submitData;
+    const {isLoading, onFinish, onSubmit} = submitData;
     const {t} = useTranslation('auth');
     const navigate = useNavigate();
     const isConfirmPasswordValid = useFieldValidation<string>(
@@ -42,9 +42,10 @@ export const useSignUpFields = (
     }, [onStepChange, onSubmit, signStep]);
 
     const handleEndAuth = useCallback(() => {
+        onFinish?.();
         onStepChange(0);
         navigate('/');
-    }, [navigate, onStepChange]);
+    }, [navigate, onFinish, onStepChange]);
 
     const signInSteps = useSignInFields(form, 2, {
         onNext: handleNextStep,
@@ -124,6 +125,7 @@ export const useSignUpFields = (
                     onClick={() => {
                         void handleSubmit();
                     }}
+                    data-marker='auth-submit'
                     loading={isLoading}
                     text={t('auth.signup.end-apply')}
                     disabled={!isConfirmPasswordValid}

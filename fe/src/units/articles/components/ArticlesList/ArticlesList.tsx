@@ -1,5 +1,5 @@
 import {UseQueryResult} from '@tanstack/react-query';
-import {Col, Flex, Row, Typography} from 'antd';
+import {Alert, Col, Flex, Row, Typography} from 'antd';
 import block from 'bem-cn-lite';
 import {useTranslation} from 'react-i18next';
 import {useNavigate} from 'react-router-dom';
@@ -33,7 +33,14 @@ export const ArticlesList = ({
     };
 
     if (error) {
-        return <Row></Row>;
+        return (
+            <Alert
+                type='error'
+                showIcon
+                message={t('article.error.title')}
+                description={t('article.error.description')}
+            />
+        );
     }
 
     if (isPending) {

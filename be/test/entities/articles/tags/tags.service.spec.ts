@@ -20,6 +20,9 @@ describe("TagsService", () => {
                         create: jest.fn(),
                         find: jest.fn(),
                         findOne: jest.fn(),
+                        manager: {
+                            transaction: jest.fn(),
+                        },
                         remove: jest.fn(),
                         save: jest.fn(),
                     },
@@ -84,5 +87,39 @@ describe("TagsService", () => {
         expect(repository.create).toHaveBeenCalledTimes(1);
         expect(repository.create).toHaveBeenCalledWith({name: "typeorm"});
         expect(result).toEqual([existing, created]);
+    });
+
+    it("removes article-tag links before deleting a tag", async () => {
+        const tag = Object.assign(new Tag(), {
+            id: "dc86f84f-f3e6-4d9c-96ca-83f2a8c48fd7",
+            name: "nestjs",
+        });
+        const execute = jest.fn(async () => ({}));
+        const remove = jest.fn(async (..._args: unknown[]) => tag);
+        const manager = {
+            createQueryBuilder: jest.fn(() => ({
+                delete: jest.fn().mockReturnThis(),
+                execute,
+                from: jest.fn().mockReturnThis(),
+                where: jest.fn().mockReturnThis(),
+            })),
+            remove,
+        };
+        repository.findOne.mockResolvedValue(tag);
+        (repository.manager.transaction as jest.Mock).mockImplementation(
+            async (...args: unknown[]) => {
+                const callback = args.find(
+                    (arg) => typeof arg === "function",
+                ) as (transactionManager: unknown) => Promise<unknown>;
+
+                return callback(manager);
+            },
+        );
+
+        await service.delete(tag.id);
+
+        expect(manager.createQueryBuilder).toHaveBeenCalled();
+        expect(execute).toHaveBeenCalled();
+        expect(manager.remove).toHaveBeenCalledWith(Tag, tag);
     });
 });

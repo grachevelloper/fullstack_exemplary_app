@@ -22,6 +22,11 @@
         padding-bottom: 24px;
     }
 
+    &__collapse-control {
+        align-self: flex-end;
+        margin: 8px 8px 0;
+    }
+
     &__menu {
         width: 100%;
     }

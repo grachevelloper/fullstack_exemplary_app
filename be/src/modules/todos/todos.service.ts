@@ -11,12 +11,10 @@ import {Repository} from "typeorm";
 
 import {PaginatedResponseDto} from "@/shared/dto/paginated-response.dto";
 import {TodoState} from "@/types/todo";
-import {UsersService} from "@/users/users.service";
 
 import {AggregateDeletionService} from "../../processes/aggregate-deletion/aggregate-deletion.service";
 import {CommentsService} from "../comments/comments.service";
 import {LikesService} from "../likes/likes.service";
-import {PUBLIC_TODO_OWNER_EMAIL} from "./constants";
 import {
     CreateTodoDto,
     QueryTodosDto,
@@ -61,7 +59,6 @@ export class TodosService {
         @Inject(forwardRef(() => CommentsService))
         private commentsService: CommentsService,
         private aggregateDeletionService: AggregateDeletionService,
-        private usersService: UsersService,
         private likesService: LikesService,
     ) {}
 
@@ -95,36 +92,22 @@ export class TodosService {
     }
 
     async findOne({id, actor}: FindTodoCommand): Promise<TodoResponseDto> {
-        if (!actor) {
-            return TodosMapper.toResponse(await this.findPublicOwnerEntity(id));
-        }
-
         const todo = await this.findEntityForActor({id, actor});
-        const hasLiked = await this.likesService.hasLiked({
-            entityId: id,
-            entityType: "todo",
-            userId: actor.id,
-        });
+
+        const hasLiked = actor
+            ? await this.likesService.hasLiked({
+                  entityId: id,
+                  entityType: "todo",
+                  userId: actor.id,
+              })
+            : false;
 
         return TodosMapper.toResponse(todo, hasLiked);
     }
 
     async findAll(query: QueryTodosDto = {}): Promise<ResponseGetTodos> {
-        const owner = await this.usersService.findByEmail(
-            PUBLIC_TODO_OWNER_EMAIL,
-        );
-        if (!owner) {
-            return new PaginatedResponseDto<TodoResponseDto>(
-                [],
-                query.page ?? 1,
-                query.limit ?? 10,
-                0,
-            );
-        }
-
         const {page = 1, limit = 10} = query;
         const [todos, total] = await this.todosRepository.findAndCount({
-            where: {authorId: owner.id},
             order: {createdAt: "DESC", id: "DESC"},
             skip: (page - 1) * limit,
             take: limit,
@@ -169,24 +152,6 @@ export class TodosService {
         if (actor) {
             this.assertCanAccess(todo, actor);
         }
-        return todo;
-    }
-
-    private async findPublicOwnerEntity(id: string): Promise<Todo> {
-        const owner = await this.usersService.findByEmail(
-            PUBLIC_TODO_OWNER_EMAIL,
-        );
-        if (!owner) {
-            throw new NotFoundException("Todo not found");
-        }
-
-        const todo = await this.todosRepository.findOne({
-            where: {id, authorId: owner.id},
-        });
-        if (!todo) {
-            throw new NotFoundException("Todo not found");
-        }
-
         return todo;
     }
 

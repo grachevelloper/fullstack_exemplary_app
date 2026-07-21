@@ -91,11 +91,16 @@ export class UsersService {
         newPassword: string,
         actor: AuthenticatedUser,
     ): Promise<void> {
-        if (id !== actor.id) {
-            throw new ForbiddenException("You can only change your own password");
+        const isSelf = id === actor.id;
+        const isAdmin = actor.role === Role.ADMIN;
+
+        if (!isSelf && !isAdmin) {
+            throw new ForbiddenException("Access to this user is forbidden");
         }
+
         const user = await this.findByIdWithPassword(id);
-        if (!(await bcrypt.compare(currentPassword, user.password))) {
+
+        if (isSelf && !(await bcrypt.compare(currentPassword, user.password))) {
             throw new UnauthorizedException("Invalid current password");
         }
 

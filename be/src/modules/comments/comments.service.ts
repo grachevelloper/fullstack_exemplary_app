@@ -132,6 +132,22 @@ export class CommentsService {
         return comment;
     }
 
+    async findOneForActor(
+        id: string,
+        actor: AuthenticatedUser,
+    ): Promise<CommentWithLikedState> {
+        const comment = await this.findOne(id);
+
+        return {
+            ...comment,
+            hasLiked: await this.likesService.hasLiked({
+                entityId: comment.id,
+                entityType: "comment",
+                userId: actor.id,
+            }),
+        };
+    }
+
     async findByEntity({
         actor,
         entityType,

@@ -29,7 +29,7 @@ export interface ArticleApi {
     getById: (id: string) => Promise<Article>;
     getDrafts: () => Promise<Article[]>;
     getByAuthorId: (authorId: string) => Promise<Article[]>;
-    getAll: () => Promise<PaginatedResponse<Article>>;
+    getAll: (search?: string) => Promise<PaginatedResponse<Article>>;
     publish: (id: string) => Promise<Article>;
 }
 

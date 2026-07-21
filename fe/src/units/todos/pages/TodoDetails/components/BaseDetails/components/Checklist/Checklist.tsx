@@ -16,6 +16,7 @@ import {
     Typography,
 } from 'antd';
 import block from 'bem-cn-lite';
+import type {ReactElement} from 'react';
 import {useState} from 'react';
 
 import {
@@ -84,7 +85,7 @@ export const Checklist = ({todoId}: ChecklistProps) => {
         }
     };
 
-    const handleDeleteItem = async (index: number) => {
+    const handleDeleteItem = (index: number) => {
         Modal.confirm({
             title: 'Удалить пункт?',
             content: 'Вы уверены, что хотите удалить этот пункт из чек-листа?',
@@ -148,14 +149,20 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                 <Input
                     placeholder='Введите название пункта...'
                     value={newItemText}
+                    data-marker='checklist-add-input'
                     onChange={(e) => setNewItemText(e.target.value)}
-                    onPressEnter={handleAddItem}
+                    onPressEnter={() => {
+                        void handleAddItem();
+                    }}
                     disabled={isPending}
                 />
                 <Button
                     type='primary'
                     icon={<PlusOutlined />}
-                    onClick={handleAddItem}
+                    onClick={() => {
+                        void handleAddItem();
+                    }}
+                    data-marker='checklist-add-button'
                     block
                     disabled={!newItemText.trim() || isPending}
                     loading={isPending}
@@ -166,10 +173,31 @@ export const Checklist = ({todoId}: ChecklistProps) => {
         </div>
     );
 
+    const renderAddPopover = (
+        trigger: ReactElement,
+        placement: 'bottom' | 'bottomRight' = 'bottomRight'
+    ) => (
+        <Popover
+            title='Добавить новый пункт'
+            content={popoverContent}
+            trigger='click'
+            open={popoverVisible}
+            onOpenChange={setPopoverVisible}
+            placement={placement}
+        >
+            {trigger}
+        </Popover>
+    );
+
     // Если чеклист загружается
     if (isPending) {
         return (
-            <Card title='Чек-лист' size='small' className={b()}>
+            <Card
+                title='Чек-лист'
+                size='small'
+                className={b()}
+                data-marker='checklist-card'
+            >
                 <Empty description='Загрузка...' />
             </Card>
         );
@@ -182,12 +210,15 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                 title='Чек-лист'
                 size='small'
                 className={b()}
+                data-marker='checklist-card'
                 extra={
                     <Button
                         type='primary'
                         icon={<FileAddOutlined />}
                         size='small'
-                        onClick={handleCreateChecklist}
+                        onClick={() => {
+                            void handleCreateChecklist();
+                        }}
                         loading={isPending}
                     >
                         Создать чек-лист
@@ -207,7 +238,9 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                     <Button
                         type='primary'
                         icon={<FileAddOutlined />}
-                        onClick={handleCreateChecklist}
+                        onClick={() => {
+                            void handleCreateChecklist();
+                        }}
                         loading={isPending}
                     >
                         Создать чек-лист
@@ -237,15 +270,8 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                 }
                 size='small'
                 className={b()}
-                extra={
-                    <Popover
-                        title='Добавить новый пункт'
-                        content={popoverContent}
-                        trigger='click'
-                        open={popoverVisible}
-                        onOpenChange={setPopoverVisible}
-                        placement='bottomRight'
-                    >
+                data-marker='checklist-card'
+                extra={renderAddPopover(
                         <Button
                             type='dashed'
                             icon={<PlusOutlined />}
@@ -253,32 +279,14 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                             disabled={isPending}
                         >
                             Добавить пункт
-                        </Button>
-                    </Popover>
-                }
+                        </Button>,
+                        'bottomRight'
+                    )}
             >
                 <Empty
                     description='Чек-лист пустой'
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
-                >
-                    <Popover
-                        title='Добавить новый пункт'
-                        content={popoverContent}
-                        trigger='click'
-                        open={popoverVisible}
-                        onOpenChange={setPopoverVisible}
-                        placement='bottom'
-                    >
-                        <Button
-                            type='primary'
-                            icon={<PlusOutlined />}
-                            onClick={() => setPopoverVisible(true)}
-                            loading={isPending}
-                        >
-                            Добавить первый пункт
-                        </Button>
-                    </Popover>
-                </Empty>
+                />
             </Card>
         );
     }
@@ -292,13 +300,19 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                         size='small'
                         value={editingText}
                         onChange={(e) => setEditingText(e.target.value)}
-                        onPressEnter={handleSaveEdit}
+                        onClick={(event) => event.stopPropagation()}
+                        onPressEnter={() => {
+                            void handleSaveEdit();
+                        }}
                         disabled={isPending}
                     />
                     <Button
                         size='small'
                         type='link'
-                        onClick={handleSaveEdit}
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            void handleSaveEdit();
+                        }}
                         loading={isPending}
                     >
                         ✓
@@ -307,7 +321,10 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                         size='small'
                         type='link'
                         danger
-                        onClick={handleCancelEdit}
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            handleCancelEdit();
+                        }}
                         disabled={isPending}
                     >
                         ✕
@@ -315,13 +332,16 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                 </Space>
             ) : (
                 <Space>
-                    {stepText}
+                    <span data-marker='checklist-item'>{stepText}</span>
                     {editing && (
                         <Space size='small' style={{marginLeft: 8}}>
                             <Button
                                 type='link'
                                 size='small'
-                                onClick={() => handleStartEdit(index)}
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleStartEdit(index);
+                                }}
                                 disabled={isPending}
                             >
                                 Изменить
@@ -331,7 +351,10 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                                 danger
                                 size='small'
                                 icon={<DeleteOutlined />}
-                                onClick={() => handleDeleteItem(index)}
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleDeleteItem(index);
+                                }}
                                 disabled={isPending}
                             />
                         </Space>
@@ -351,39 +374,32 @@ export const Checklist = ({todoId}: ChecklistProps) => {
             title={
                 <Space className={b('title')}>
                     Чек-лист
-                    <Popover
-                        title='Добавить новый пункт'
-                        content={popoverContent}
-                        trigger='click'
-                        open={popoverVisible}
-                        onOpenChange={setPopoverVisible}
-                        placement='bottomRight'
+                    <Button
+                        type={editing ? 'primary' : 'text'}
+                        icon={<EditOutlined />}
+                        size='small'
+                        onClick={() => setEditing(!editing)}
+                        disabled={isPending}
                     >
-                        <Button
-                            type={editing ? 'primary' : 'text'}
-                            icon={<EditOutlined />}
-                            size='small'
-                            onClick={() => setEditing(!editing)}
-                            disabled={isPending}
-                        >
-                            {editing ? 'Завершить' : 'Редактировать'}
-                        </Button>
-                    </Popover>
+                        {editing ? 'Завершить' : 'Редактировать'}
+                    </Button>
                 </Space>
             }
             size='small'
             className={b()}
+            data-marker='checklist-card'
             extra={
-                editing && (
+                editing &&
+                renderAddPopover(
                     <Button
                         type='dashed'
                         icon={<PlusOutlined />}
                         size='small'
-                        onClick={() => setPopoverVisible(true)}
                         disabled={isPending}
                     >
                         Добавить
-                    </Button>
+                    </Button>,
+                    'bottomRight'
                 )
             }
         >
@@ -396,7 +412,13 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                     height: '100%',
                     minHeight: '300px',
                 }}
-                onChange={handleStepChange}
+                onChange={
+                    editing || editingIndex !== null
+                        ? undefined
+                        : (current) => {
+                              void handleStepChange(current);
+                          }
+                }
                 responsive
             />
         </Card>

@@ -59,20 +59,21 @@ export const SigninPage = () => {
     const [form] = Form.useForm<SignInForm>();
     const navigate = useNavigate();
     const {isPending, error, mutateAsync} = useSigninMutatuon();
-    const {setUserData} = useAuth();
+    const {refreshUser, setUserData} = useAuth();
     const handleSubmit = useCallback(async () => {
         try {
             const userData = await form.validateFields(['email', 'password']);
             const user = await mutateAsync(userData);
             form.resetFields();
-            setUserData(user);
+            const refreshedUser = await refreshUser();
+            setUserData(refreshedUser ?? user);
             navigate('/');
         } catch (submitError) {
             if (!axios.isAxiosError(submitError)) {
                 return;
             }
         }
-    }, [form, mutateAsync, navigate, setUserData]);
+    }, [form, mutateAsync, navigate, refreshUser, setUserData]);
     const signInFields = useSignInFields(form);
 
     const renderSignInFields = useCallback(() => {
@@ -125,6 +126,7 @@ export const SigninPage = () => {
                             text={t('auth.signin.submit')}
                             key={'accept-signin'}
                             htmlType='submit'
+                            data-marker='auth-submit'
                             loading={isPending}
                             disabled={isPending}
                         />,

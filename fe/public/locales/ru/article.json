@@ -19,6 +19,7 @@
     "article.placeholder": "Всё с чего-то начинается...😉",
 
     "article.new.title": "Моя новая статья",
+    "article.new.content": "Черновик статьи",
     "article.new.description.error": "Сообщите, пожалуйста, мне об ошибке",
     "article.new.title.error": "Что-то пошло не так",
     "articles.recent": "Недавние статьи",
@@ -55,6 +56,8 @@
     "article.draft.pushlish": "Опубликовать",
     "article.draft.publish": "Опубликовать",
     "article.draft.saving": "Сохраняю...",
+    "article.error.title": "Не удалось загрузить статьи",
+    "article.error.description": "Попробуйте ещё раз позже.",
 
     "articles.draft.message.saved": "Черновик сохранён",
 

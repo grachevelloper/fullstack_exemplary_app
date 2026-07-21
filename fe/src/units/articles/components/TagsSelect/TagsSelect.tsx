@@ -1,4 +1,4 @@
-import {message, Select, theme} from 'antd';
+import {message, Select} from 'antd';
 import block from 'bem-cn-lite';
 import {Fragment, useCallback, useMemo} from 'react';
 import {useTranslation} from 'react-i18next';
@@ -16,10 +16,6 @@ interface TagsSelectProps {
 }
 
 export const TagsSelect = ({onChange, value}: TagsSelectProps) => {
-    const {
-        token: {},
-    } = theme.useToken();
-
     const {t} = useTranslation('article');
     const {data: tags, error, isPending} = useGetTags();
     const [messageApi, messageContextHolder] = message.useMessage();
@@ -65,6 +61,7 @@ export const TagsSelect = ({onChange, value}: TagsSelectProps) => {
                 showSearch
                 size='middle'
                 className={b()}
+                data-marker='draft-tags-select'
                 options={mappedTags}
                 onChange={handleChange}
                 value={selectedValues}

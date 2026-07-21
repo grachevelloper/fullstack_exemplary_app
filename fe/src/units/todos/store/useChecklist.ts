@@ -154,6 +154,11 @@ export const useChecklistMutations = (todoId: string) => {
                 );
             }
         },
+        onSuccess: (data) => {
+            if (data) {
+                queryClient.setQueryData(['checklist', todoId], data);
+            }
+        },
         onSettled: () => {
             queryClient.invalidateQueries({
                 queryKey: ['checklist', todoId],

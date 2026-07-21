@@ -1,4 +1,4 @@
-import {Col, Flex, Row, theme, Typography} from 'antd';
+import {Col, Flex, Row, Typography} from 'antd';
 import block from 'bem-cn-lite';
 import {useTranslation} from 'react-i18next';
 
@@ -13,9 +13,6 @@ const b = block('drafts-list-page');
 const {Title} = Typography;
 
 export const DraftsListPage = () => {
-    const {
-        token: {},
-    } = theme.useToken();
     const {t} = useTranslation('article');
 
     const {data: articles, error, isPending} = useGetAuthorDrafts();

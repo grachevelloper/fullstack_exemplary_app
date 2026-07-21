@@ -91,8 +91,9 @@ const api: ArticleApi = {
         return response;
     },
 
-    getAll: async () => {
+    getAll: async (search?: string) => {
         const response = await query.get('articles', {
+            params: search ? {search} : undefined,
             skipAuthRedirect: true,
         });
         return response;

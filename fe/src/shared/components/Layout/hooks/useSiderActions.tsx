@@ -92,7 +92,7 @@ export const useSiderActions = ({onLogoutClick}: UseSiderActionsProps) => {
 
         const logoutAction: MenuItemType = {
             icon: <IoIosLogOut />,
-            label: t('logout'),
+            label: <span data-marker='nav-logout-button'>{t('logout')}</span>,
             key: 'action-logout',
             onClick: onLogoutClick,
             className: 'logout-option',

@@ -29,6 +29,7 @@ interface InitializedMDXEditorProps extends MDXEditorProps {
     editable?: boolean;
     entityType: EntityAttachmentType;
     entityId: string;
+    dataMarker?: string;
 }
 
 export function MdEditor({
@@ -36,28 +37,31 @@ export function MdEditor({
     ref,
     editable,
     entityType,
+    dataMarker,
     onChange,
     entityId,
     ...props
 }: InitializedMDXEditorProps) {
     return (
-        <MDXEditor
-            className={b()}
-            contentEditableClassName={b('markdown')}
-            ref={ref}
-            plugins={
-                editable
-                    ? writePlugins({
-                          entityId,
-                          entityType,
-                          toolbar: () => <ToolbarComponent />,
-                      })
-                    : readPlugins
-            }
-            markdown={markdown || ''}
-            onChange={onChange}
-            {...props}
-        />
+        <div data-marker={dataMarker}>
+            <MDXEditor
+                className={b()}
+                contentEditableClassName={b('markdown')}
+                ref={ref}
+                plugins={
+                    editable
+                        ? writePlugins({
+                              entityId,
+                              entityType,
+                              toolbar: () => <ToolbarComponent />,
+                          })
+                        : readPlugins
+                }
+                markdown={markdown || ''}
+                onChange={onChange}
+                {...props}
+            />
+        </div>
     );
 }
 

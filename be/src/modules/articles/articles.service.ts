@@ -61,9 +61,9 @@ interface FindArticlesByAuthorQuery {
     drafts?: boolean;
 }
 
-const DEFAULT_ARTICLE_IMAGE = `${
-    process.env.S3_PUBLIC_DOMAIN ?? ""
-}/draft-placeholder/image.png`;
+const DEFAULT_ARTICLE_IMAGE = process.env.S3_PUBLIC_DOMAIN
+    ? `${process.env.S3_PUBLIC_DOMAIN}/draft-placeholder/image.png`
+    : "/assets/image-placeholder.png";
 
 const SORT_COLUMNS: Record<SortBy, string> = {
     createdAt: "article.createdAt",
@@ -85,6 +85,8 @@ export class ArticlesService {
         actor,
         data,
     }: CreateArticleCommand): Promise<ResponseArticle> {
+        this.assertCanWriteArticles(actor);
+
         const author = await this.usersService.findById(actor.id);
         const tags = await this.resolveTags(data.tags);
         const article = this.articlesRepository.create({
@@ -292,6 +294,14 @@ export class ArticlesService {
         }
 
         throw new ForbiddenException("You do not have access to this article");
+    }
+
+    private assertCanWriteArticles(actor: AuthenticatedUser): void {
+        if (actor.role === Role.WRITER || actor.role === Role.ADMIN) {
+            return;
+        }
+
+        throw new ForbiddenException("Writer access required");
     }
 
     private assertCanReadDrafts(

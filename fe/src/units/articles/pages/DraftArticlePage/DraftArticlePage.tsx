@@ -196,6 +196,14 @@ export const DraftArticlePage = () => {
         [debouncedUpdateImage]
     );
 
+    const handleImageBlur = useCallback(
+        (newImage: string) => {
+            if (!draftId) return;
+            void mutateImage(draftId, newImage);
+        },
+        [draftId, mutateImage]
+    );
+
     const handleReadTimeChange = useCallback(
         (newReadTime: number | null) => {
             const normalizedReadTime = newReadTime ?? 1;
@@ -248,6 +256,7 @@ export const DraftArticlePage = () => {
                         onChange={(e) => handleTitleChange(e.target.value)}
                         placeholder={t('articles.form.title.placeholder')}
                         variant='borderless'
+                        data-marker='draft-title-input'
                         disabled={updateTitle.isPending}
                         className={b('title-input')}
                     />
@@ -262,14 +271,20 @@ export const DraftArticlePage = () => {
                             </Typography.Text>
                         )}
                         {isSaving && (
-                            <Typography.Text type='secondary'>
+                            <Typography.Text
+                                type='secondary'
+                                data-marker='draft-save-button'
+                            >
                                 {t('article.draft.saving')}
                             </Typography.Text>
                         )}
                         <Button
                             type='primary'
                             loading={isPublishingPending}
-                            onClick={handlePublish}
+                            onClick={() => {
+                                void handlePublish();
+                            }}
+                            data-marker='draft-publish-button'
                         >
                             {t('article.draft.publish')}
                         </Button>
@@ -282,9 +297,11 @@ export const DraftArticlePage = () => {
                     <Input
                         value={image}
                         onChange={(e) => handleImageChange(e.target.value)}
+                        onBlur={(e) => handleImageBlur(e.target.value)}
                         placeholder={t('articles.form.image.placeholder')}
                         addonBefore={t('articles.form.image.label')}
                         disabled={updateImage.isPending}
+                        data-marker='draft-image-input'
                     />
                 </Col>
                 <Col xs={24} lg={8}>
@@ -295,6 +312,7 @@ export const DraftArticlePage = () => {
                         addonBefore={t('articles.form.readTime.label')}
                         addonAfter={t('articles.form.readTime.after')}
                         disabled={updateReadTime.isPending}
+                        data-marker='draft-read-time-input'
                         className={b('read-time-input')}
                     />
                 </Col>
@@ -322,13 +340,17 @@ export const DraftArticlePage = () => {
                 <Col flex='auto'>
                     <Space wrap size={[8, 8]}>
                         <TagsSelect
-                            onChange={handleTagsChange}
+                            onChange={(newTags) => {
+                                void handleTagsChange(newTags);
+                            }}
                             value={tags}
                         />
                         <TagsWrapper
                             tags={tags}
                             editable={{
-                                onChange: handleTagsChange,
+                                onChange: (newTags) => {
+                                    void handleTagsChange(newTags);
+                                },
                             }}
                             isPending={updateTags.isPending}
                         />
@@ -343,6 +365,7 @@ export const DraftArticlePage = () => {
                         placeholder={t('article.placeholder')}
                         markdown={content || ''}
                         onChange={handleContentChange}
+                        dataMarker='draft-content-editor'
                         editable
                         entityId={draftId || ''}
                         entityType='article'
@@ -354,7 +377,9 @@ export const DraftArticlePage = () => {
                     <ButtonAccept
                         text={t('article.draft.publish')}
                         loading={isPublishingPending}
-                        onClick={handlePublish}
+                        onClick={() => {
+                            void handlePublish();
+                        }}
                         className={b('button-publish')}
                     />
                 </Col>

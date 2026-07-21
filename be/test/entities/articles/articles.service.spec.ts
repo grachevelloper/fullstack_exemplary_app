@@ -28,6 +28,10 @@ describe("ArticlesService", () => {
         id: "82c130b1-1c47-4a0c-8a1c-e79cc39282ad",
         role: Role.USER,
     } as AuthenticatedUser;
+    const writer = {
+        id: owner.id,
+        role: Role.WRITER,
+    } as AuthenticatedUser;
     const stranger = {
         id: "ddb9a455-441a-4e87-844a-e25629b9fe32",
         role: Role.USER,
@@ -113,7 +117,7 @@ describe("ArticlesService", () => {
         repository.createQueryBuilder.mockReturnValue(queryBuilder as never);
     });
 
-    it("creates a draft article owned by the authenticated user and normalizes tags", async () => {
+    it("creates a draft article for writers and normalizes tags", async () => {
         const tags = [Object.assign(new Tag(), {id: "tag-1", name: "nestjs"})];
         usersService.findById.mockResolvedValue(author as never);
         tagsService.findOrCreateByNames.mockResolvedValue(tags);
@@ -121,7 +125,7 @@ describe("ArticlesService", () => {
         repository.save.mockResolvedValue({...article, tags});
 
         const result = await service.create({
-            actor: owner,
+            actor: writer,
             data: {
                 title: "Article",
                 content: "Content",
@@ -142,6 +146,21 @@ describe("ArticlesService", () => {
         );
         expect(result.isDraft).toBe(true);
         expect(result.tags).toEqual([{id: "tag-1", name: "nestjs"}]);
+    });
+
+    it("forbids regular users from creating article drafts", async () => {
+        await expect(
+            service.create({
+                actor: owner,
+                data: {
+                    title: "Article",
+                    content: "Content",
+                },
+            }),
+        ).rejects.toBeInstanceOf(ForbiddenException);
+
+        expect(usersService.findById).not.toHaveBeenCalled();
+        expect(repository.create).not.toHaveBeenCalled();
     });
 
     it("forbids a regular user from updating another user's article", async () => {

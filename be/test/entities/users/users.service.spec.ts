@@ -131,16 +131,36 @@ describe("UsersService authorization", () => {
         ).resolves.toBe(true);
     });
 
-    it("prevents changing another user's password even for an administrator", async () => {
+    it("allows an administrator to change another user's password without checking the old password", async () => {
         const {service, repository} = await setup();
+
+        await service.changePassword(
+            owner.id,
+            "not-the-current-password",
+            "StrongPassword123",
+            admin,
+        );
+
+        const passwordUpdate = repository.update.mock.calls[0][1] as {
+            password: string;
+        };
+        await expect(
+            bcrypt.compare("StrongPassword123", passwordUpdate.password),
+        ).resolves.toBe(true);
+    });
+
+    it("prevents a regular user from changing another user's password", async () => {
+        const {service, repository} = await setup();
+
         await expect(
             service.changePassword(
                 owner.id,
                 "current-password",
                 "StrongPassword123",
-                admin,
+                stranger,
             ),
         ).rejects.toBeInstanceOf(ForbiddenException);
+
         expect(repository.update).not.toHaveBeenCalled();
     });
 

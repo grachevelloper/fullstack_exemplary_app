@@ -19,7 +19,7 @@ export class Todo extends BaseEntity {
     @Column({
         type: "enum",
         enumName: "todo_priority",
-        enum: ["Hight", "Medium", "Low", "Super"],
+        enum: ["High", "Medium", "Low", "Super"],
         default: "Medium",
     })
     priority?: TodoPriority;

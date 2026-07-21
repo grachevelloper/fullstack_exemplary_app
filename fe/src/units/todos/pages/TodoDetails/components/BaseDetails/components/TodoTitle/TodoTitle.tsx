@@ -1,6 +1,5 @@
 import {Typography} from 'antd';
 import block from 'bem-cn-lite';
-import {useState} from 'react';
 
 import {TODO_TITLE_MAX_LENGTH} from '@/shared/utils/constants';
 
@@ -11,7 +10,6 @@ import './TodoTitile.scss';
 const b = block('todo-title');
 
 export const TodoTitle = ({content, onEnd}: BaseDetail<string>) => {
-    const [newTitle, setNewTitle] = useState<string>(content as string);
     return (
         <Typography.Title
             level={1}
@@ -21,8 +19,7 @@ export const TodoTitle = ({content, onEnd}: BaseDetail<string>) => {
                 triggerType: ['text'],
                 enterIcon: null,
                 autoSize: true,
-                onChange: setNewTitle,
-                onEnd: () => onEnd('title', newTitle),
+                onChange: (value) => onEnd('title', value),
             }}
             rootClassName={b('textarea')}
         >

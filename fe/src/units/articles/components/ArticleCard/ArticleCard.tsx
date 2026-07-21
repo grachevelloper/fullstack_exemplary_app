@@ -20,11 +20,12 @@ interface ArticleCardProps {
 export const ArticleCard: React.FC<ArticleCardProps> = ({article, onClick}) => {
     const {t} = useTranslation('article');
     const {
-        token: {padding, paddingSM, borderRadius},
+        token: {paddingSM, borderRadius},
     } = theme.useToken();
     return (
         <Card
             hoverable
+            data-marker='article-card'
             className={b({'is-loaded': true})}
             onClick={onClick}
             size='default'
@@ -54,7 +55,11 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({article, onClick}) => {
                     borderRadius,
                 }}
             >
-                <Title level={3} className={b('title')}>
+                <Title
+                    level={3}
+                    className={b('title')}
+                    data-marker='article-title'
+                >
                     {article.title}
                 </Title>
                 <Flex justify='start' align='center' gap={4} wrap>

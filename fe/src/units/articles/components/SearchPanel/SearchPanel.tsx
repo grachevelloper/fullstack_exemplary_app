@@ -5,14 +5,22 @@ import './SearchPanel.scss';
 
 const b = block('search-panel');
 
-export const SearchPanel = () => {
+interface SearchPanelProps {
+    onSearchChange?: (value: string) => void;
+    value?: string;
+}
+
+export const SearchPanel = ({onSearchChange, value}: SearchPanelProps) => {
     const {t} = useTranslation('article');
     return (
         <Flex className={b()} justify='start' align='start' vertical gap={8}>
             <Input.Search
                 variant='filled'
-                placeholder={t('article.articles.search.placeholder')}
+                placeholder={t('articles.search.placeholder')}
                 size='large'
+                value={value}
+                onChange={(event) => onSearchChange?.(event.target.value)}
+                onSearch={(nextValue) => onSearchChange?.(nextValue)}
             />
         </Flex>
     );

@@ -1,7 +1,7 @@
 import {
     Controller,
     Delete,
-    FileTypeValidator,
+    FileValidator,
     HttpCode,
     HttpStatus,
     MaxFileSizeValidator,
@@ -27,6 +27,17 @@ import {
 import {AttachmentsService} from "./attachments.service";
 
 const MAX_SIZE = 10 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+
+class ImageMimeTypeValidator extends FileValidator<Record<string, never>> {
+    isValid(file?: Express.Multer.File): boolean {
+        return Boolean(file && ALLOWED_IMAGE_TYPES.has(file.mimetype));
+    }
+
+    buildErrorMessage(): string {
+        return "Only JPEG, PNG, and WebP images are allowed";
+    }
+}
 
 @UseGuards(AuthGuard)
 @Controller("attachments")
@@ -40,9 +51,7 @@ export class AttachmentsController {
             new ParseFilePipe({
                 validators: [
                     new MaxFileSizeValidator({maxSize: MAX_SIZE}),
-                    new FileTypeValidator({
-                        fileType: /^image\/(jpeg|png|webp)$/,
-                    }),
+                    new ImageMimeTypeValidator({}),
                 ],
             }),
         )

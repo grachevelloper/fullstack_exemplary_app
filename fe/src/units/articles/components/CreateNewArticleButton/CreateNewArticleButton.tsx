@@ -1,4 +1,4 @@
-import {notification, theme} from 'antd';
+import {notification} from 'antd';
 import block from 'bem-cn-lite';
 import {Fragment, useCallback} from 'react';
 import {useTranslation} from 'react-i18next';
@@ -12,12 +12,9 @@ import './CreateNewArticleButton.scss';
 const b = block('create-new-article-button');
 
 export const CreateNewArticleButton = () => {
-    const [api, contextHolder] = notification.useNotification();
+    const [, contextHolder] = notification.useNotification();
     const {t} = useTranslation('article');
-    const {
-        token: {},
-    } = theme.useToken();
-    const {data: newArticle, isPending, mutateAsync} = useCreateArticle();
+    const {mutateAsync} = useCreateArticle();
 
     const navigate = useNavigate();
 
@@ -33,7 +30,7 @@ export const CreateNewArticleButton = () => {
                     placement: 'bottomRight',
                 });
             });
-    }, [navigate]);
+    }, [mutateAsync, navigate, t]);
 
     return (
         <Fragment>

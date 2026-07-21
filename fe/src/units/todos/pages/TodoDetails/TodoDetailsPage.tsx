@@ -1,4 +1,4 @@
-import {Flex} from 'antd';
+import {Alert, Flex} from 'antd';
 import block from 'bem-cn-lite';
 import {useParams} from 'react-router-dom';
 
@@ -12,14 +12,21 @@ const b = block('todo-details-page');
 
 export const TodoDetailsPage = () => {
     const {id} = useParams();
-    const {todo, isError, isPending, isPlaceholderData} = useTodoQuery(id!);
+    const {todo, isError, isPending, isPlaceholderData} = useTodoQuery(id);
 
     if (isPending || isPlaceholderData) {
-        return <div>Is Pending occurred</div>;
+        return null;
     }
 
     if (isError && !todo) {
-        return <div>Some error occurred</div>;
+        return (
+            <Alert
+                type='error'
+                showIcon
+                message='Failed to load todo'
+                description='Please try again later.'
+            />
+        );
     }
 
     return (

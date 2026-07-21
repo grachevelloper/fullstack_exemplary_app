@@ -23,6 +23,7 @@ export const useSignInFields = (
         {
             name: 'email',
             autoComplete: actions ? 'email' : 'off',
+            dataMarker: 'auth-email-input',
             label: t('auth.email.label'),
             type: 'email',
             placeholder: t('auth.email.placeholder'),
@@ -50,6 +51,7 @@ export const useSignInFields = (
         {
             name: 'password',
             autoComplete: 'new-password',
+            dataMarker: 'auth-password-input',
             label: t('auth.password.label'),
             type: 'password',
             placeholder: t('auth.password.placeholder'),

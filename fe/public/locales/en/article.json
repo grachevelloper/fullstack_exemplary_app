@@ -5,6 +5,7 @@
     "articles.page.subtitle": "Tips, guides and news from the world of development",
     "articles.search.title": "Find a material",
     "articles.search.description": "Search by title, topic, or keyword.",
+    "articles.search.placeholder": "Search articles...",
     "articles.create": "Write article",
     "articles.recent": "Recent articles",
 
@@ -43,6 +44,10 @@
     "article.placeholder": "Start with a thought...",
     "article.draft.publish": "Publish",
     "article.draft.saving": "Saving...",
+    "article.error.title": "Failed to load articles",
+    "article.error.description": "Please try again later.",
+    "article.new.title": "My new article",
+    "article.new.content": "Draft content",
 
     "article.status.draft": "Draft",
     "article.status.published": "Published",

@@ -6,7 +6,6 @@ import {CommentsService} from "src/modules/comments/comments.service";
 import {LikesService} from "src/modules/likes/likes.service";
 import {Todo} from "src/modules/todos/todos.entity";
 import {TodosService} from "src/modules/todos/todos.service";
-import {UsersService} from "src/modules/users/users.service";
 import {AggregateDeletionService} from "src/processes/aggregate-deletion/aggregate-deletion.service";
 import {AuthenticatedUser, Role} from "src/types";
 import {EntityManager, Repository} from "typeorm";
@@ -19,7 +18,6 @@ describe("TodosService", () => {
     let repository: jest.Mocked<Repository<Todo>>;
     let commentsService: jest.Mocked<CommentsService>;
     let aggregateDeletionService: jest.Mocked<AggregateDeletionService>;
-    let usersService: jest.Mocked<UsersService>;
     let likesService: jest.Mocked<LikesService>;
     const entityManager = {
         delete: jest.fn<EntityManager["delete"]>(),
@@ -91,12 +89,6 @@ describe("TodosService", () => {
                         hasLiked: jest.fn(),
                     },
                 },
-                {
-                    provide: UsersService,
-                    useValue: {
-                        findByEmail: jest.fn(),
-                    },
-                },
             ],
         }).compile();
 
@@ -105,11 +97,6 @@ describe("TodosService", () => {
         commentsService = module.get(CommentsService);
         aggregateDeletionService = module.get(AggregateDeletionService);
         likesService = module.get(LikesService);
-        usersService = module.get(UsersService);
-        usersService.findByEmail.mockResolvedValue({
-            id: "user-123",
-            email: "gracheveloper@gmail.com",
-        } as never);
         entityManager.delete.mockReset();
         entityManager.find.mockReset();
     });
@@ -157,11 +144,8 @@ describe("TodosService", () => {
 
             await service.findOne({id: "1"});
 
-            expect(usersService.findByEmail).toHaveBeenCalledWith(
-                "gracheveloper@gmail.com",
-            );
             expect(repository.findOne).toHaveBeenCalledWith({
-                where: {id: "1", authorId: "user-123"},
+                where: {id: "1"},
             });
         });
 
@@ -217,11 +201,7 @@ describe("TodosService", () => {
                 limit: 1,
             });
 
-            expect(usersService.findByEmail).toHaveBeenCalledWith(
-                "gracheveloper@gmail.com",
-            );
             expect(repository.findAndCount).toHaveBeenCalledWith({
-                where: {authorId: "user-123"},
                 order: {createdAt: "DESC", id: "DESC"},
                 skip: 1,
                 take: 1,

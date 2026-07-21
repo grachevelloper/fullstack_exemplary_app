@@ -16,11 +16,36 @@ import {
 
 const {YANDEX_CLIENT_ID} = process.env;
 
+class FetchApiError extends Error {
+    isAxiosError = true;
+    response: {
+        data: unknown;
+        status: number;
+    };
+
+    constructor(status: number, data: unknown) {
+        super(`Request failed with status code ${status}`);
+        this.response = {data, status};
+    }
+}
+
 const Api: UserApi = {
     signIn: async (data: DtoSignInUser) => {
-        return query.post<SignResponse>(`/auth/signin`, data, {
-            skipAuthRedirect: true,
+        const response = await fetch('/api/auth/signin', {
+            method: 'POST',
+            credentials: 'include',
+            keepalive: true,
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data),
         });
+
+        const responseData = await response.json();
+
+        if (!response.ok) {
+            throw new FetchApiError(response.status, responseData);
+        }
+
+        return responseData as SignResponse;
     },
 
     signUp: async (data: DtoSignUpUser) => {

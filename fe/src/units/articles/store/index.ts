@@ -6,14 +6,14 @@ import {PaginatedResponse} from '@/typings/common';
 
 import api from '../api';
 import {Article, UpdatableArticle} from '../types';
-import {EMPTY_ARTICLE_BASE} from '../utils/constants';
 
 import {articleKeys, fieldUpdateConfig} from './constants';
 
-export const useGetAllArticles = () => {
+export const useGetAllArticles = (search?: string) => {
     return useQuery<PaginatedResponse<Article>, Error>({
-        queryKey: articleKeys.lists(),
-        queryFn: () => api.getAll(),
+        queryKey: articleKeys.list({search}),
+        queryFn: () => api.getAll(search),
+        retry: false,
     });
 };
 
@@ -32,10 +32,11 @@ export const useGetArticleById = (id?: string) => {
     });
 };
 
-export const useGetAuthorDrafts = () => {
+export const useGetAuthorDrafts = (enabled = true) => {
     return useQuery<Article[], Error>({
         queryKey: articleKeys.drafts(),
         queryFn: () => api.getDrafts(),
+        enabled,
     });
 };
 
@@ -50,9 +51,9 @@ const useGetArticlesByAuthor = (authorId: string | undefined) => {
 export const useCreateArticle = () => {
     const {t} = useTranslation('article');
 
-    const emptyArticle: Omit<Article, 'author' | 'image'> = {
-        ...EMPTY_ARTICLE_BASE,
+    const emptyArticle = {
         title: t('article.new.title'),
+        content: t('article.new.content'),
     };
     return useMutation<Article, Error, void>({
         mutationFn: () => api.create(emptyArticle),

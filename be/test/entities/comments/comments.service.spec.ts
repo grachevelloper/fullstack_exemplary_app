@@ -288,6 +288,24 @@ describe("CommentsService", () => {
         });
     });
 
+    it("adds liked state for a single comment response", async () => {
+        repository.findOne.mockResolvedValue(parent);
+        likesService.hasLiked.mockResolvedValue(true);
+
+        const result = await service.findOneForActor(parent.id, owner);
+
+        expect(repository.findOne).toHaveBeenCalledWith({
+            where: {id: parent.id},
+            relations: ["author"],
+        });
+        expect(likesService.hasLiked).toHaveBeenCalledWith({
+            entityId: parent.id,
+            entityType: "comment",
+            userId: owner.id,
+        });
+        expect(result).toEqual(expect.objectContaining({hasLiked: true}));
+    });
+
     it("throws not found when the comment is missing", async () => {
         repository.findOne.mockResolvedValue(null);
 
