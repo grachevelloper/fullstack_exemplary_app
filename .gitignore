@@ -67,6 +67,8 @@ fe/tsconfig.tsbuildinfo
 nginx.conf
 */nginx.conf
 **/nginx.conf
+!nginx/
+!nginx/nginx.conf
 
 **.agents
 **docs

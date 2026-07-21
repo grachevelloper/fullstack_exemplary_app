@@ -18,7 +18,6 @@ jobs:
         with:
           repository: grachevelloper/about_me_e2e
           path: about_me_e2e
-          ref: main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
