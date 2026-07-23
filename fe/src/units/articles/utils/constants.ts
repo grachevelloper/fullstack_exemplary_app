@@ -7,3 +7,6 @@ export const EMPTY_ARTICLE_BASE: Omit<Article, 'author' | 'image' | 'title'> = {
     isDraft: true,
     likesCount: 0,
 };
+
+// Keeps a new draft visually empty while satisfying older API validators.
+export const INITIAL_DRAFT_CONTENT = ' ';

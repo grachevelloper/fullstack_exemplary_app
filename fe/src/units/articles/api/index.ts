@@ -14,7 +14,7 @@ import {
 } from './types';
 
 const api: ArticleApi = {
-    create: async (createData: DtoCreateArticle): Promise<Article> => {
+    create: async (createData: DtoCreateArticle = {}): Promise<Article> => {
         const response = await query.post<Article>('articles', createData);
         return response;
     },

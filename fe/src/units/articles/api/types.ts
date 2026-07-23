@@ -2,7 +2,9 @@ import {PaginatedResponse} from '@/typings/common';
 
 import {Article, Tag} from '../types';
 
-export type DtoCreateArticle = Pick<Article, 'title' | 'content'>;
+export type DtoCreateArticle = Partial<
+    Pick<Article, 'title' | 'content' | 'readTime' | 'tags'>
+>;
 
 export type DtoUpdateArticle = {id: string} & Partial<
     Pick<Article, 'title' | 'content' | 'image' | 'readTime' | 'tags'>
@@ -16,7 +18,7 @@ export type DtoUpdateArticleTags = Pick<Article, 'id' | 'tags'>;
 export type DtoCreateTag = Omit<Tag, 'id'>;
 
 export interface ArticleApi {
-    create: (createData: DtoCreateArticle) => Promise<Article>;
+    create: (createData?: DtoCreateArticle) => Promise<Article>;
     update: (updateData: DtoUpdateArticle) => Promise<Article>;
 
     updateTitle: (data: DtoUpdateArticleTitle) => Promise<Article>;

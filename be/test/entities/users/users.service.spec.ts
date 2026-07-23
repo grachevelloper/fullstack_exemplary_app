@@ -112,6 +112,28 @@ describe("UsersService authorization", () => {
         );
     });
 
+    it("prevents a regular user from updating nowadays fields", async () => {
+        const {service, repository} = await setup();
+
+        await expect(
+            service.update(owner.id, {nowReading: "A book"}, owner),
+        ).rejects.toBeInstanceOf(ForbiddenException);
+        expect(repository.save).not.toHaveBeenCalled();
+    });
+
+    it("allows an administrator to update nowadays fields", async () => {
+        const {service, repository} = await setup();
+
+        await service.update(owner.id, {nowReading: "A book"}, admin);
+
+        expect(repository.save).toHaveBeenCalledWith(
+            expect.objectContaining({
+                id: owner.id,
+                nowReading: "A book",
+            }),
+        );
+    });
+
     it("hashes a new password for the current user", async () => {
         const {service, repository} = await setup();
 

@@ -64,6 +64,7 @@ interface FindArticlesByAuthorQuery {
 const DEFAULT_ARTICLE_IMAGE = process.env.S3_PUBLIC_DOMAIN
     ? `${process.env.S3_PUBLIC_DOMAIN}/draft-placeholder/image.png`
     : "/assets/image-placeholder.png";
+const DEFAULT_DRAFT_TITLE = "Untitled article";
 
 const SORT_COLUMNS: Record<SortBy, string> = {
     createdAt: "article.createdAt",
@@ -91,12 +92,12 @@ export class ArticlesService {
         const tags = await this.resolveTags(data.tags);
         const article = this.articlesRepository.create({
             author,
-            content: data.content,
+            content: data.content ?? "",
             image: DEFAULT_ARTICLE_IMAGE,
             isDraft: true,
             readTime: data.readTime,
             tags,
-            title: data.title,
+            title: data.title ?? DEFAULT_DRAFT_TITLE,
         });
 
         return ArticlesMapper.toResponse(

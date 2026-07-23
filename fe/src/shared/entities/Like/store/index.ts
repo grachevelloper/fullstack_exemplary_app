@@ -1,6 +1,5 @@
-import {useMutation} from '@tanstack/react-query';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
 
-import {queryClient} from '@/shared/configs/api';
 import {PaginatedResponse} from '@/typings/common';
 
 import api from '../api';
@@ -56,9 +55,14 @@ const getOptimisticEntity = <T extends Partial<LikedEntityCache>>(
     };
 };
 
-const updateCommentsCache = (entityId: string, hasLiked: boolean) => {
+const updateListsCache = (
+    queryClient: ReturnType<typeof useQueryClient>,
+    entityId: string,
+    entityType: EntityLikeType,
+    hasLiked: boolean
+) => {
     queryClient.setQueriesData<PaginatedResponse<LikedEntityCache>>(
-        {queryKey: ['comments']},
+        {queryKey: listsKeyByEntityType(entityType)},
         (previous) => {
             if (!previous) {
                 return previous;
@@ -77,6 +81,8 @@ const updateCommentsCache = (entityId: string, hasLiked: boolean) => {
 };
 
 export const useToggleLikeMutation = () => {
+    const queryClient = useQueryClient();
+
     return useMutation({
         mutationFn: ({entityId, entityType, hasLiked}: ToggleLikeData) =>
             hasLiked
@@ -95,17 +101,25 @@ export const useToggleLikeMutation = () => {
 
             const previousDetail =
                 queryClient.getQueryData<LikedEntityCache>(detailKey);
+            const previousLists = queryClient.getQueriesData<
+                PaginatedResponse<LikedEntityCache>
+            >({
+                queryKey: listsKeyByEntityType(variables.entityType),
+            });
 
             queryClient.setQueryData(
                 detailKey,
                 getOptimisticEntity(previousDetail, variables.hasLiked)
             );
 
-            if (variables.entityType === 'comment') {
-                updateCommentsCache(variables.entityId, variables.hasLiked);
-            }
+            updateListsCache(
+                queryClient,
+                variables.entityId,
+                variables.entityType,
+                variables.hasLiked
+            );
 
-            return {previousDetail};
+            return {previousDetail, previousLists};
         },
         onError: (_error, variables, context) => {
             if (context?.previousDetail) {
@@ -117,6 +131,11 @@ export const useToggleLikeMutation = () => {
                     context.previousDetail
                 );
             }
+
+            context?.previousLists.forEach(([queryKey, data]) => {
+                queryClient.setQueryData(queryKey, data);
+            });
+
             queryClient.invalidateQueries({
                 queryKey: listsKeyByEntityType(variables.entityType),
             });

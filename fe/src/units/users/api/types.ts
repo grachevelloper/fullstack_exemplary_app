@@ -15,11 +15,11 @@ export interface DtoSignInUser {
 
 export interface DtoUpdateUser extends Pick<User, 'id'> {
     username?: string;
-    avatar?: string;
-    nowBeingIn?: string;
-    nowListening?: string;
-    nowReading?: string;
-    nowWatch?: string;
+    avatar?: string | null;
+    nowBeingIn?: string | null;
+    nowListening?: string | null;
+    nowReading?: string | null;
+    nowWatch?: string | null;
 }
 
 export interface DtoChangePassword {

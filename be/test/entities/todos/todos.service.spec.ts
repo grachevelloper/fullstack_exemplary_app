@@ -11,7 +11,7 @@ import {AuthenticatedUser, Role} from "src/types";
 import {EntityManager, Repository} from "typeorm";
 
 import {CreateTodoDto, UpdateTodoDto} from "@/todos/todo.dto";
-import {TodoState} from "@/types/todo";
+import {TodoPriority, TodoState} from "@/types/todo";
 
 describe("TodosService", () => {
     let service: TodosService;
@@ -308,6 +308,32 @@ describe("TodosService", () => {
             expect(repository.save).toHaveBeenCalledWith({
                 ...mockTodo,
                 ...updateData,
+            });
+        });
+
+        it("should not overwrite existing fields with undefined values", async () => {
+            const todoWithPriority = {
+                ...mockTodo,
+                priority: TodoPriority.HIGH,
+                state: TodoState.PLANNING,
+            };
+            const updateData = {
+                state: TodoState.IN_WORK,
+                title: undefined,
+                priority: undefined,
+            } as UpdateTodoDto;
+
+            repository.findOne.mockResolvedValue(todoWithPriority);
+            repository.save.mockResolvedValue({
+                ...todoWithPriority,
+                state: TodoState.IN_WORK,
+            });
+
+            await service.update({id: "1", data: updateData, actor: owner});
+
+            expect(repository.save).toHaveBeenCalledWith({
+                ...todoWithPriority,
+                state: TodoState.IN_WORK,
             });
         });
     });

@@ -4,45 +4,42 @@
 
     &__title {
         width: 100%;
+        gap: 12px;
     }
 
     &__created-at {
-        font-size: 10px;
+        color: var(--ant-color-text-secondary);
+        font-size: 12px;
+        white-space: nowrap;
     }
 
     &__content {
         min-width: 300px;
         width: 100%;
+        margin-top: 4px;
         resize: none !important;
         overflow-y: none !important;
     }
 
     &__actions {
+        flex-wrap: wrap;
+        gap: 4px;
         width: 100%;
-        margin-top: 4px;
+        margin-top: 8px;
     }
 
     &__divider {
         margin: 10px 0 4px 0;
     }
 
-    &__reply {
-        text-align: center;
-        padding-inline: 4px;
-    }
+    &__action {
+        height: 28px;
+        padding-inline: 8px;
+        color: var(--ant-color-text-secondary);
+        font-weight: 600;
 
-    &__icon {
-        cursor: pointer;
-        svg {
-            path:nth-child(1) {
-                fill: var(--ant-color-bg-container-disabled) !important;
-            }
-            path:nth-child(2) {
-                fill: var(--ant-color-primary) !important;
-            }
-        }
-
-        &_error {
+        &_danger:hover,
+        &_danger:focus-visible {
             color: var(--ant-color-error);
         }
     }

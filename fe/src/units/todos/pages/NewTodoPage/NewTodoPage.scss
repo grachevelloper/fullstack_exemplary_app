@@ -1,34 +1,92 @@
 .new-todo-page {
     width: 100%;
-    max-width: 980px;
+    max-width: 1040px;
     margin: 0 auto;
+    padding: 0 32px 48px;
 
     &__back {
-        margin-bottom: 8px;
+        margin-bottom: 12px;
+        padding-inline: 0;
     }
 
     &__header {
-        margin-bottom: 24px;
+        margin-bottom: 28px;
     }
 
     &__title {
         margin-bottom: 4px !important;
+        overflow-wrap: anywhere;
     }
 
     &__subtitle {
         display: block;
         max-width: 640px;
+        line-height: 1.55;
     }
 
     &__form {
-        padding: 24px;
+        width: 100%;
+        padding: 28px;
         border: 1px solid var(--ant-color-border);
         border-radius: 8px;
         background: var(--ant-color-bg-container);
+
+        .ant-form-item {
+            margin-bottom: 8px;
+        }
+
+        .ant-input,
+        .ant-input-affix-wrapper,
+        .ant-select {
+            width: 100%;
+        }
     }
 
     &__actions {
         width: 100%;
         justify-content: flex-end;
+        margin-top: 12px;
+        row-gap: 12px;
+    }
+
+    @media (max-width: 767px) {
+        padding: 0 16px 40px;
+
+        &__back {
+            margin-bottom: 8px;
+        }
+
+        &__header {
+            margin-bottom: 20px;
+        }
+
+        &__title {
+            font-size: 30px !important;
+            line-height: 1.2 !important;
+        }
+
+        &__form {
+            padding: 18px;
+        }
+
+        &__actions {
+            justify-content: stretch;
+
+            .ant-space-item {
+                width: 100%;
+            }
+
+            .ant-btn {
+                width: 100%;
+            }
+        }
+    }
+
+    @media (max-width: 380px) {
+        padding-inline: 12px;
+
+        &__form {
+            padding: 14px;
+        }
     }
 }

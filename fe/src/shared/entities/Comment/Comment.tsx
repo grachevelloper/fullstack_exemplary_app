@@ -1,4 +1,4 @@
-import {CloseOutlined, EditTwoTone} from '@ant-design/icons';
+import {DeleteOutlined, EditOutlined} from '@ant-design/icons';
 import {Button, Divider, Flex, Spin, Typography} from 'antd';
 import block from 'bem-cn-lite';
 import {Fragment, useState} from 'react';
@@ -54,48 +54,55 @@ export const Comment = ({comment, className, isNew = false}: CommentProps) => {
         content
     );
 
-    const {mutate: mutateDelete, isPending: isPendindDelete} = deleteMutation;
+    const {
+        mutateAsync: mutateDelete,
+        isPending: isPendindDelete,
+    } = deleteMutation;
 
-    const {mutate: mutateUpdate, isPending: isPendindUpdate} = updateMutation;
+    const {
+        mutateAsync: mutateUpdate,
+        isPending: isPendindUpdate,
+    } = updateMutation;
 
-    const {mutate: mutateCreate, isPending: isPendingCreate} =
-        useCreateCommentMutation();
+    const {
+        mutateAsync: mutateCreate,
+        isPending: isPendingCreate,
+    } = useCreateCommentMutation();
     const {mutate: toggleLike, isPending: isLikePending} =
         useToggleLikeMutation();
 
-    const canMutate = user?.id === author?.id || user?.role === Role.ADMIN;
-    const canLike = Boolean(id);
+    const isEditable = user?.id === author?.id || user?.role === Role.ADMIN;
+    const canLike = Boolean(user && id);
     const isLiked = Boolean(hasLiked);
 
-    const handleCreate = (content: string, isResponse = false) => {
-        mutateCreate(
-            {
-                entityId,
-                entityType,
-                parentId: isResponse ? id! : parentId,
-                content: content.trim(),
-            },
-            {
-                onSuccess: () => {
-                    setLocalContent('');
-                    setFormResetKey((currentKey) => currentKey + 1);
-                    setReplyVisible(false);
-                },
-            }
-        );
+    const handleCreate = async (content: string, isResponse = false) => {
+        await mutateCreate({
+            entityId,
+            entityType,
+            parentId: isResponse ? id! : parentId,
+            content: content.trim(),
+        });
+        setLocalContent('');
+        setFormResetKey((currentKey) => currentKey + 1);
+        setReplyVisible(false);
     };
 
-    const handleUpdate = (content: string) => {
-        mutateUpdate({
+    const handleUpdate = async (content: string) => {
+        await mutateUpdate({
             id: id!,
             content,
         });
+        setIsEditing(false);
     };
 
-    const handleRemove = () => {
-        if (id) {
-            mutateDelete(id);
+    const handleRemove = async () => {
+        if (!id) {
+            return;
         }
+
+        await mutateDelete(id);
+        setReplyVisible(false);
+        setIsEditing(false);
     };
 
     const handleSetEditing = () => {
@@ -163,55 +170,56 @@ export const Comment = ({comment, className, isNew = false}: CommentProps) => {
                                 {t('updated-at', {date: formatDate(updatedAt)})}
                             </Typography.Text>
                         )}
-                        {user ? (
-                            <Button
-                                className={b('reply')}
-                                type='link'
-                                size='small'
-                                onClick={handleReply}
-                            >
-                                {t('comments.reply')}
-                            </Button>
-                        ) : null}
                     </Flex>
                 </Flex>
                 <Typography.Text className={b('content')}>
                     {content}
                 </Typography.Text>
-                <Flex className={b('actions')} justify='space-between'>
+                <Flex className={b('actions')} justify='start' align='center'>
                     <Like
                         isLiked={isLiked}
                         likesCount={likesCount}
                         onClick={handleLike}
                         disabled={!canLike || isLikePending}
                     />
-                    {canMutate && (
-                        <Flex gap={6}>
+                    {user ? (
+                        <Button
+                            className={b('action')}
+                            type='text'
+                            size='small'
+                            onClick={handleReply}
+                        >
+                            {t('comments.reply')}
+                        </Button>
+                    ) : null}
+                    {isEditable && (
+                        <Fragment>
                             <Button
-                                type='link'
+                                className={b('action')}
+                                type='text'
                                 size='small'
-                                icon={<EditTwoTone />}
+                                icon={<EditOutlined />}
                                 onClick={handleSetEditing}
                             >
                                 {t('comments.edit')}
                             </Button>
                             <Button
-                                danger
-                                type='link'
+                                className={b('action', {danger: true})}
+                                type='text'
                                 size='small'
                                 icon={
                                     isPendindDelete ? (
                                         <Spin size='small' />
                                     ) : (
-                                        <CloseOutlined />
+                                        <DeleteOutlined />
                                     )
                                 }
-                                onClick={handleRemove}
+                                onClick={() => void handleRemove()}
                                 disabled={isPendindDelete}
                             >
                                 {t('comments.delete')}
                             </Button>
-                        </Flex>
+                        </Fragment>
                     )}
                 </Flex>
                 <Divider rootClassName={b('divider')} />

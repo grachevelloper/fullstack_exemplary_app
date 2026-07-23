@@ -7,7 +7,7 @@ import {ButtonAccept, ButtonDeny} from '../../../../components/actions';
 
 interface ReplyFormProps {
     depth: number;
-    onComplete: (content: string, isResponse?: boolean) => void;
+    onComplete: (content: string, isResponse?: boolean) => Promise<void> | void;
     isCompletePending: boolean;
     content?: string;
     onCancel?: () => void;
@@ -23,6 +23,7 @@ export const CommentForm = ({
     const {t} = useTranslation('common');
     const [content, setContent] = useState(prevContent || '');
     const textAreaRef = useRef<TextAreaRef>(null);
+    const isEditMode = Boolean(prevContent);
 
     useEffect(() => {
         setContent(prevContent || '');
@@ -37,6 +38,20 @@ export const CommentForm = ({
             textArea?.setSelectionRange(length, length);
         }
     }, []);
+
+    const handleComplete = async () => {
+        const trimmedContent = content.trim();
+
+        if (!trimmedContent) {
+            return;
+        }
+
+        await onComplete(trimmedContent, !isEditMode);
+
+        if (!isEditMode) {
+            setContent('');
+        }
+    };
 
     return (
         <Flex
@@ -71,10 +86,8 @@ export const CommentForm = ({
                     />
                 )}
                 <ButtonAccept
-                    text={prevContent ? t('edit') : t('create')}
-                    onClick={() =>
-                        onComplete(content, Boolean(prevContent) === false)
-                    }
+                    text={isEditMode ? t('edit') : t('create')}
+                    onClick={() => void handleComplete()}
                     disabled={!content.trim()}
                     data-marker='comment-submit-button'
                     loading={isCompletePending}

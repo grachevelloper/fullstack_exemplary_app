@@ -7,6 +7,7 @@ import {useNavigate} from 'react-router-dom';
 import {ButtonAccept} from '@/shared/components/actions';
 
 import {useCreateArticle} from '../../store';
+import {INITIAL_DRAFT_CONTENT} from '../../utils/constants';
 import './CreateNewArticleButton.scss';
 
 const b = block('create-new-article-button');
@@ -19,7 +20,12 @@ export const CreateNewArticleButton = () => {
     const navigate = useNavigate();
 
     const handleNewArticle = useCallback(() => {
-        mutateAsync()
+        mutateAsync({
+            content: INITIAL_DRAFT_CONTENT,
+            title: t('article.new.title', {
+                defaultValue: 'Untitled article',
+            }),
+        })
             .then((data) => {
                 navigate(`/articles/draft/${data.id}`);
             })

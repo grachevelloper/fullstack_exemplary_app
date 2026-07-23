@@ -78,6 +78,11 @@ export class UsersService {
         if (updateData.role !== undefined && actor.role !== Role.ADMIN) {
             throw new ForbiddenException("Only an administrator can change roles");
         }
+        if (this.hasNowadaysUpdate(updateData) && actor.role !== Role.ADMIN) {
+            throw new ForbiddenException(
+                "Only an administrator can update nowadays fields",
+            );
+        }
         const user = await this.findById(id);
 
         Object.assign(user, updateData);
@@ -128,4 +133,12 @@ export class UsersService {
         }
     }
 
+    private hasNowadaysUpdate(updateData: UpdateUserDto): boolean {
+        return (
+            updateData.nowBeingIn !== undefined ||
+            updateData.nowListening !== undefined ||
+            updateData.nowReading !== undefined ||
+            updateData.nowWatch !== undefined
+        );
+    }
 }

@@ -11,6 +11,7 @@ import {AuthLayout} from '../components/AuthLayout';
 import {Layout} from '../components/Layout';
 import {ProtectedRoute} from '../components/ProtectedRoute';
 import {sharedPagesRoutes} from '../pages';
+import {AdminNowadaysPage} from '../pages/AdminNowadaysPage';
 import {MainPage} from '../pages/MainPage';
 import {ResumePage} from '../pages/ResumePage';
 
@@ -48,6 +49,10 @@ export const Router = () => {
                 <Route element={<Layout />} path='/'>
                     <Route index element={<MainPage />} />
                     <Route path='resume' element={<ResumePage />} />
+                    <Route
+                        path='admin/nowadays'
+                        element={<AdminNowadaysPage />}
+                    />
                     {routes.map((route: RouteProps) => (
                         <Route
                             key={route.path}

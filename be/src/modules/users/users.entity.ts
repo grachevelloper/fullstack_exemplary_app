@@ -23,17 +23,17 @@ export class User extends BaseEntity {
     role!: Role;
 
     @Column({nullable: true})
-    avatar?: string;
+    avatar?: string | null;
 
     @Column({nullable: true})
-    nowReading?: string;
+    nowReading?: string | null;
 
     @Column({nullable: true})
-    nowWatch?: string;
+    nowWatch?: string | null;
 
     @Column({nullable: true})
-    nowBeingIn?: string;
+    nowBeingIn?: string | null;
 
     @Column({nullable: true})
-    nowListening?: string;
+    nowListening?: string | null;
 }

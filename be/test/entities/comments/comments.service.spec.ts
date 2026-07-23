@@ -19,6 +19,7 @@ import {DeleteResult, EntityManager, Repository} from "typeorm";
 describe("CommentsService", () => {
     let service: CommentsService;
     let repository: jest.Mocked<Repository<Comment>>;
+    let likesRepository: jest.Mocked<Repository<Like>>;
     let usersService: jest.Mocked<UsersService>;
     let todosService: jest.Mocked<TodosService>;
     let articlesService: jest.Mocked<ArticlesService>;
@@ -90,6 +91,12 @@ describe("CommentsService", () => {
                     },
                 },
                 {
+                    provide: getRepositoryToken(Like),
+                    useValue: {
+                        find: jest.fn(),
+                    },
+                },
+                {
                     provide: UsersService,
                     useValue: {
                         findById: jest.fn(),
@@ -118,6 +125,7 @@ describe("CommentsService", () => {
 
         service = module.get(CommentsService);
         repository = module.get(getRepositoryToken(Comment));
+        likesRepository = module.get(getRepositoryToken(Like));
         usersService = module.get(UsersService);
         todosService = module.get(TodosService);
         articlesService = module.get(ArticlesService);
@@ -250,7 +258,7 @@ describe("CommentsService", () => {
 
     it("sorts entity comments by creation time and id", async () => {
         repository.findAndCount.mockResolvedValue([[parent], 1]);
-        likesService.hasLiked.mockResolvedValue(true);
+        likesRepository.find.mockResolvedValue([]);
 
         const result = await service.findByEntity({
             actor: owner,
@@ -274,13 +282,16 @@ describe("CommentsService", () => {
             skip: 10,
             take: 10,
         });
-        expect(likesService.hasLiked).toHaveBeenCalledWith({
-            entityId: parent.id,
-            entityType: "comment",
-            userId: owner.id,
+        expect(likesRepository.find).toHaveBeenCalledWith({
+            select: ["entityId"],
+            where: {
+                authorId: owner.id,
+                entityType: "comment",
+                entityId: expect.any(Object),
+            },
         });
         expect(result).toEqual({
-            items: [expect.objectContaining({id: parent.id, hasLiked: true})],
+            items: [expect.objectContaining({id: parent.id, hasLiked: false})],
             page: 2,
             limit: 10,
             total: 1,
@@ -304,6 +315,29 @@ describe("CommentsService", () => {
             userId: owner.id,
         });
         expect(result).toEqual(expect.objectContaining({hasLiked: true}));
+    });
+
+    it("marks comments liked by the current user", async () => {
+        repository.findAndCount.mockResolvedValue([[parent], 1]);
+        likesRepository.find.mockResolvedValue([
+            {entityId: parent.id} as Like,
+        ]);
+
+        const result = await service.findByEntity({
+            actor: owner,
+            entityType: "todo",
+            entityId: targetId,
+        });
+
+        expect(likesRepository.find).toHaveBeenCalledWith({
+            select: ["entityId"],
+            where: {
+                authorId: owner.id,
+                entityType: "comment",
+                entityId: expect.any(Object),
+            },
+        });
+        expect(result.items[0].hasLiked).toBe(true);
     });
 
     it("throws not found when the comment is missing", async () => {

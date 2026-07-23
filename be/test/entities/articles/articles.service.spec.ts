@@ -139,6 +139,7 @@ describe("ArticlesService", () => {
         expect(repository.create).toHaveBeenCalledWith(
             expect.objectContaining({
                 author,
+                content: "Content",
                 isDraft: true,
                 tags,
                 title: "Article",
@@ -161,6 +162,54 @@ describe("ArticlesService", () => {
 
         expect(usersService.findById).not.toHaveBeenCalled();
         expect(repository.create).not.toHaveBeenCalled();
+    });
+
+    it("creates a draft article with empty content when content is omitted", async () => {
+        usersService.findById.mockResolvedValue(author as never);
+        repository.create.mockReturnValue({...article, content: ""});
+        repository.save.mockResolvedValue({...article, content: ""});
+
+        await service.create({
+            actor: writer,
+            data: {
+                title: "Article",
+            },
+        });
+
+        expect(repository.create).toHaveBeenCalledWith(
+            expect.objectContaining({
+                content: "",
+                isDraft: true,
+                title: "Article",
+            }),
+        );
+    });
+
+    it("creates a draft article with a default title when title is omitted", async () => {
+        usersService.findById.mockResolvedValue(author as never);
+        repository.create.mockReturnValue({
+            ...article,
+            content: "",
+            title: "Untitled article",
+        });
+        repository.save.mockResolvedValue({
+            ...article,
+            content: "",
+            title: "Untitled article",
+        });
+
+        await service.create({
+            actor: writer,
+            data: {},
+        });
+
+        expect(repository.create).toHaveBeenCalledWith(
+            expect.objectContaining({
+                content: "",
+                isDraft: true,
+                title: "Untitled article",
+            }),
+        );
     });
 
     it("forbids a regular user from updating another user's article", async () => {

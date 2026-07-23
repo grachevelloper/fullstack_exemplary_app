@@ -1,7 +1,8 @@
 import {Flex, Statistic, StatisticProps} from 'antd';
 import block from 'bem-cn-lite';
-import {type CSSProperties, useEffect, useMemo, useState} from 'react';
+import {type CSSProperties, useMemo, useState} from 'react';
 import CountUp from 'react-countup';
+import {useLocation} from 'react-router-dom';
 
 import {CURRENT_TIME, formatTime} from '@/shared/utils';
 
@@ -53,6 +54,7 @@ const formatter: StatisticProps['formatter'] = () => (
 
 export const Animation = () => {
     const [isStopped, setStopped] = useState<boolean>(false);
+    const {pathname} = useLocation();
 
     const pathLength = 400;
     let strokeDashoffset = pathLength - ((pathLength * progress) / 100) * 0.65;
@@ -79,13 +81,10 @@ export const Animation = () => {
         setStopped(true);
     };
 
-    useEffect(() => {
-        const approvedRoutes = ['/', '/resume'];
-        if (!approvedRoutes.includes(window.location.pathname)) {
-            setStopped(true);
-            return;
-        }
-    }, []);
+    const approvedRoutes = ['/'];
+    if (!approvedRoutes.includes(pathname)) {
+        return null;
+    }
 
     return (
         !isStopped && (

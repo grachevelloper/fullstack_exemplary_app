@@ -25,8 +25,16 @@ const resources = {
     },
 };
 
-i18next.use(initReactI18next).init({
+const updateDocumentLanguage = (language: string) => {
+    document.documentElement.lang = language;
+};
+
+i18next.on('languageChanged', updateDocumentLanguage);
+
+void i18next.use(initReactI18next).init({
     resources,
     lng: 'ru',
     fallbackLng: 'en',
+}).then(() => {
+    updateDocumentLanguage(i18next.resolvedLanguage ?? i18next.language);
 });

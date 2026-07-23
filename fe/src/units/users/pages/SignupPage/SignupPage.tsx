@@ -1,4 +1,4 @@
-import {Alert, Flex, Form} from 'antd';
+import {Alert, Flex, Form, Steps, Typography} from 'antd';
 import block from 'bem-cn-lite';
 import {useCallback, useState} from 'react';
 import {useTranslation} from 'react-i18next';
@@ -70,6 +70,14 @@ export const SignupPage = () => {
     );
 
     const visibleStepData = signUpFields[signStep];
+    const stepItems = [
+        t('auth.step.intro'),
+        t('auth.step.name'),
+        t('auth.step.email'),
+        t('auth.step.password'),
+        t('auth.step.confirm'),
+        t('auth.step.finish'),
+    ].map((title) => ({title}));
 
     if (!visibleStepData) {
         return <div>Loading...</div>;
@@ -85,6 +93,18 @@ export const SignupPage = () => {
                 initialValues={initialSignUpData}
                 autoComplete='off'
             >
+                <div className={b('header')}>
+                    <Typography.Text className={b('eyebrow')}>
+                        {t('auth.signup.process')}
+                    </Typography.Text>
+                    <Steps
+                        className={b('steps')}
+                        current={signStep}
+                        items={stepItems}
+                        progressDot
+                        responsive={false}
+                    />
+                </div>
                 {isError && (
                     <Alert
                         className={b('error')}

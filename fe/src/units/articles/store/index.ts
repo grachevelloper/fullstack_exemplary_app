@@ -1,5 +1,4 @@
 import {useMutation, useQuery} from '@tanstack/react-query';
-import {useTranslation} from 'react-i18next';
 
 import {queryClient} from '@/shared/configs/api';
 import {PaginatedResponse} from '@/typings/common';
@@ -49,14 +48,8 @@ const useGetArticlesByAuthor = (authorId: string | undefined) => {
 };
 
 export const useCreateArticle = () => {
-    const {t} = useTranslation('article');
-
-    const emptyArticle = {
-        title: t('article.new.title'),
-        content: t('article.new.content'),
-    };
-    return useMutation<Article, Error, void>({
-        mutationFn: () => api.create(emptyArticle),
+    return useMutation<Article, Error, Parameters<typeof api.create>[0] | void>({
+        mutationFn: (data) => api.create(data ?? undefined),
         onSuccess: (data) => {
             queryClient.invalidateQueries({queryKey: articleKeys.lists()});
             queryClient.setQueryData(articleKeys.detail(data.id), data);

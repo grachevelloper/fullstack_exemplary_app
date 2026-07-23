@@ -51,6 +51,11 @@ interface UpdateTodoCommand {
     id: string;
 }
 
+const removeUndefinedFields = <T extends object>(data: T): Partial<T> =>
+    Object.fromEntries(
+        Object.entries(data).filter(([, value]) => value !== undefined),
+    ) as Partial<T>;
+
 @Injectable()
 export class TodosService {
     constructor(
@@ -84,7 +89,7 @@ export class TodosService {
         actor,
     }: UpdateTodoCommand): Promise<TodoResponseDto> {
         const todo = await this.findEntityForActor({id, actor});
-        const updatedTodo = {...todo, ...data};
+        const updatedTodo = {...todo, ...removeUndefinedFields(data)};
 
         return TodosMapper.toResponse(
             await this.todosRepository.save(updatedTodo),

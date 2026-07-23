@@ -10,6 +10,12 @@ import {NEW_TODO_KEY} from '@/shared/utils/constants';
 import {DtoCreateTodo} from '../../api/types';
 import {useCreateTodoMutation} from '../../store';
 import {TodoPriority, TodoState} from '../../types';
+import {
+    DEFAULT_TODO_PRIORITY,
+    DEFAULT_TODO_STATE,
+    priorityKeyByValue,
+    stateKeyByValue,
+} from '../../utils/todoMeta';
 
 import './NewTodoPage.scss';
 
@@ -20,22 +26,8 @@ const {TextArea} = Input;
 const defaultTodo: DtoCreateTodo = {
     title: '',
     content: '',
-    priority: TodoPriority.MEDIUM,
-    state: TodoState.PLANNING,
-};
-
-const priorityKeyByValue: Record<TodoPriority, string> = {
-    [TodoPriority.LOW]: 'low',
-    [TodoPriority.MEDIUM]: 'medium',
-    [TodoPriority.HIGH]: 'high',
-    [TodoPriority.SUPER]: 'super',
-};
-
-const stateKeyByValue: Record<TodoState, string> = {
-    [TodoState.IN_WORK]: 'in_work',
-    [TodoState.PLANNING]: 'planning',
-    [TodoState.FINISHED]: 'finished',
-    [TodoState.CANCELED]: 'canceled',
+    priority: DEFAULT_TODO_PRIORITY,
+    state: DEFAULT_TODO_STATE,
 };
 
 export const NewTodoPage = () => {

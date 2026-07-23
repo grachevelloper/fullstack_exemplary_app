@@ -9,17 +9,21 @@ import {
 } from '@ant-design/icons';
 import {Button, Card, Flex, Image, Tag, theme, Tooltip, Typography} from 'antd';
 import block from 'bem-cn-lite';
-import {useMemo, useState} from 'react';
-import {useTranslation} from 'react-i18next';
+import {useCallback, useMemo, useState} from 'react';
+import {Trans, useTranslation} from 'react-i18next';
 
 import './ResumePage.scss';
 
 type ResumeItem = {
     company?: string;
     description?: string;
+    details?: string[];
     key: string;
     period: string;
+    translationKey?: string;
+    technologies?: string[];
     title: string;
+    unit?: string;
 };
 
 type SkillGroup = {
@@ -53,24 +57,44 @@ export const ResumePage = () => {
         },
     } = theme.useToken();
 
+    const getStringList = useCallback((key: string) => {
+        const value = t(key, {returnObjects: true});
+
+        return Array.isArray(value)
+            ? value.filter((item): item is string => typeof item === 'string')
+            : [];
+    }, [t]);
+
     const experience = useMemo<ResumeItem[]>(
         () => [
             {
                 key: 'avito',
                 title: t('resume.experience.avito.title'),
                 company: t('resume.experience.avito.company'),
+                unit: t('resume.experience.avito.unit'),
                 period: t('about.timeline.avi.date'),
-                description: t('about.timeline.avi.content'),
+                translationKey: 'resume.experience.avito',
+                description: t('resume.experience.avito.description'),
+                details: getStringList('resume.experience.avito.details'),
+                technologies: getStringList(
+                    'resume.experience.avito.technologies'
+                ),
             },
             {
                 key: 'yandex',
                 title: t('resume.experience.yandex.title'),
                 company: t('resume.experience.yandex.company'),
+                unit: t('resume.experience.yandex.unit'),
                 period: t('about.timeline.ya.date'),
-                description: t('about.timeline.ya.content'),
+                translationKey: 'resume.experience.yandex',
+                description: t('resume.experience.yandex.description'),
+                details: getStringList('resume.experience.yandex.details'),
+                technologies: getStringList(
+                    'resume.experience.yandex.technologies'
+                ),
             },
         ],
-        [t]
+        [getStringList, t]
     );
 
     const education = useMemo<ResumeItem[]>(
@@ -255,6 +279,16 @@ export const ResumePage = () => {
         }));
     };
 
+    const emphasisComponents = {
+        strong: (
+            <Typography.Text
+                strong
+                className={b('highlight')}
+                style={{color: colorPrimary}}
+            />
+        ),
+    };
+
     return (
         <main className={b()}>
             <section
@@ -335,6 +369,15 @@ export const ResumePage = () => {
                                                     {item.company}
                                                 </Typography.Text>
                                             )}
+                                            {item.unit && (
+                                                <Typography.Text
+                                                    style={{
+                                                        color: colorTextSecondary,
+                                                    }}
+                                                >
+                                                    {item.unit}
+                                                </Typography.Text>
+                                            )}
                                             <Typography.Text
                                                 className={b('period')}
                                                 style={{
@@ -369,12 +412,74 @@ export const ResumePage = () => {
                                             expanded: isExpanded,
                                         })}
                                     >
-                                        <Typography.Paragraph
-                                            className={b('description')}
-                                            style={{color: colorTextSecondary}}
-                                        >
-                                            {item.description}
-                                        </Typography.Paragraph>
+                                        <div className={b('description-body')}>
+                                            <Typography.Paragraph
+                                                className={b('description')}
+                                                style={{
+                                                    color: colorTextSecondary,
+                                                }}
+                                            >
+                                                {item.translationKey ? (
+                                                    <Trans
+                                                        i18nKey={`${item.translationKey}.description`}
+                                                        components={
+                                                            emphasisComponents
+                                                        }
+                                                        t={t}
+                                                    />
+                                                ) : (
+                                                    item.description
+                                                )}
+                                            </Typography.Paragraph>
+                                            {item.details?.length ? (
+                                                <ul className={b('details')}>
+                                                    {item.details.map(
+                                                        (detail, index) => (
+                                                            <li key={detail}>
+                                                                <Typography.Text
+                                                                    style={{
+                                                                        color: colorTextSecondary,
+                                                                    }}
+                                                                >
+                                                                    {item.translationKey ? (
+                                                                        <Trans
+                                                                            i18nKey={`${item.translationKey}.details.${index}`}
+                                                                            components={
+                                                                                emphasisComponents
+                                                                            }
+                                                                            t={
+                                                                                t
+                                                                            }
+                                                                        />
+                                                                    ) : (
+                                                                        detail
+                                                                    )}
+                                                                </Typography.Text>
+                                                            </li>
+                                                        )
+                                                    )}
+                                                </ul>
+                                            ) : null}
+                                            {item.technologies?.length ? (
+                                                <Typography.Paragraph
+                                                    className={b(
+                                                        'technologies'
+                                                    )}
+                                                    style={{
+                                                        color: colorTextSecondary,
+                                                    }}
+                                                >
+                                                    <Typography.Text strong>
+                                                        {t(
+                                                            'resume.experience.technologies'
+                                                        )}
+                                                    </Typography.Text>{' '}
+                                                    {item.technologies.join(
+                                                        ', '
+                                                    )}
+                                                </Typography.Paragraph>
+                                            ) : null}
+                                        </div>
                                     </div>
                                 </div>
                             </article>

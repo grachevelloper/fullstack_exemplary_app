@@ -3,6 +3,8 @@ import block from 'bem-cn-lite';
 import Lottie from 'lottie-react';
 import {useTranslation} from 'react-i18next';
 
+import {useAuth} from '@/shared/context';
+
 import booksAnimation from '@/public/lottie/books.json';
 import movieAnimation from '@/public/lottie/movie.json';
 import musicAnimation from '@/public/lottie/music.json';
@@ -19,26 +21,32 @@ type NowadaysData = {
 
 export const Nowadays = () => {
     const {t} = useTranslation('todo');
+    const {user} = useAuth();
     const {
         token: {colorBgSpotlight, borderRadius},
     } = theme.useToken();
     const data: NowadaysData[] = [
         {
+            title: t('todo.nowadays.place.title'),
+            content: user?.nowBeingIn ?? '',
+        },
+        {
             title: t('todo.nowadays.book.title'),
-            content: 'Лев Толстой - Воскресенье',
+            content: user?.nowReading ?? '',
             lottie: booksAnimation,
         },
         {
             title: t('todo.nowadays.series.title'),
-            content: '5 сезон Очень странные дела',
+            content: user?.nowWatch ?? '',
             lottie: movieAnimation,
         },
         {
             title: t('todo.nowadays.music.title'),
-            content: 'Иногда - Моя мишель',
+            content: user?.nowListening ?? '',
             lottie: musicAnimation,
         },
-    ];
+    ].filter((one) => one.content);
+
     return (
         <Carousel
             className={b()}

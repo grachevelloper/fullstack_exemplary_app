@@ -77,7 +77,7 @@ export class CommentsController {
         return {
             ...commentsPage,
             items: commentsPage.items.map((comment) =>
-                CommentsMapper.toResponse(comment),
+                CommentsMapper.toResponse(comment, comment.hasLiked),
             ),
         };
     }

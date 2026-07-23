@@ -11,6 +11,7 @@ import {Priority} from '@/todos/components/Priority';
 import {State} from '@/todos/components/State';
 import {useTodoMutations} from '@/todos/store';
 import {type Todo, type TodoPriority, type TodoState} from '@/todos/types';
+import {getNextTodoPriority} from '@/todos/utils/todoMeta';
 
 import {Checklist} from './components/Checklist';
 import {TodoTitle} from './components/TodoTitle';
@@ -75,7 +76,10 @@ export const BaseDetails = ({initialData}: BaseDetailsProps) => {
                         <Priority
                             priority={priority}
                             onUpdate={(priority: TodoPriority) =>
-                                handleEnd('priority', priority)
+                                handleEnd(
+                                    'priority',
+                                    getNextTodoPriority(priority)
+                                )
                             }
                             isLoading={isPending}
                         />

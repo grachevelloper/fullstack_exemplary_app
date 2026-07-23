@@ -29,11 +29,12 @@ export class TagDto {
 export class CreateArticleDto {
     @IsString()
     @IsNotEmpty()
-    title!: string;
+    @IsOptional()
+    title?: string;
 
     @IsString()
-    @IsNotEmpty()
-    content!: string;
+    @IsOptional()
+    content?: string;
 
     @IsArray()
     @ValidateNested({each: true})

@@ -16,9 +16,9 @@ export const StateCell = ({state, todoId}: TodoStateCellProps) => {
 
     const stateRef = useRef<HTMLButtonElement>(null);
 
-    const handleUpdateState = useCallback((newState: TodoState) => {
+    const handleUpdateState = useCallback((nextState: TodoState) => {
         isEdited.current = true;
-        updateState(todoId, newState);
+        updateState(todoId, nextState);
     }, [todoId, updateState]);
 
     return (

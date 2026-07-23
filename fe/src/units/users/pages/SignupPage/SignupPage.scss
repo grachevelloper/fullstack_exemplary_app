@@ -1,16 +1,52 @@
 .sign-up-page {
     width: 100%;
     min-height: 100dvh;
-    padding: 24px;
+    padding: 32px 24px;
     box-sizing: border-box;
 
     &__form {
-        width: min(100%, 554px);
+        width: min(100%, 640px);
         min-height: calc(100dvh - 48px);
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
+        gap: 20px;
         position: relative;
+    }
+
+    &__header {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        padding: 16px 18px;
+        border: 1px solid var(--ant-color-border-secondary);
+        border-radius: var(--ant-border-radius);
+        background: color-mix(in srgb, var(--ant-color-bg-elevated) 88%, transparent);
+        box-shadow: 0 12px 32px rgba(17, 24, 39, 0.06);
+        box-sizing: border-box;
+    }
+
+    &__eyebrow {
+        color: var(--ant-color-text-tertiary);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0;
+        text-transform: uppercase;
+    }
+
+    &__steps {
+        width: 100%;
+
+        .ant-steps-item-title {
+            font-size: 12px;
+            line-height: 1.3;
+        }
+
+        .ant-steps-item-tail {
+            top: 10px;
+        }
     }
 
     &__step {
@@ -22,7 +58,7 @@
     &__error {
         position: absolute;
         z-index: 1;
-        top: 16px;
+        top: 0;
         width: 100%;
     }
 
@@ -31,6 +67,17 @@
 
         &__form {
             min-height: calc(100dvh - 32px);
+            gap: 14px;
+        }
+
+        &__header {
+            padding: 12px;
+        }
+
+        &__steps {
+            .ant-steps-item-title {
+                display: none;
+            }
         }
     }
 }
