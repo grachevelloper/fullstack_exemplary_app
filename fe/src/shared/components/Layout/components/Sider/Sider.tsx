@@ -61,24 +61,25 @@ export const Sider = () => {
                     justify='space-between'
                     className={b('container')}
                 >
-                    {isDesktop && (
-                        <Button
-                            type='text'
-                            className={b('collapse-control')}
-                            aria-label={t('layout.navigation.open')}
-                            icon={<MenuFoldOutlined />}
-                            onClick={toggleCollapsed}
+                    <Flex justify='flex-start' align='flex-start'>
+                        <Menu
+                            theme='light'
+                            mode='vertical'
+                            items={getNavigationItems()}
+                            defaultSelectedKeys={getDefaultSelectedKey()}
+                            rootClassName={b('menu')}
+                            style={{fontSize: fontSizeLG}}
                         />
-                    )}
-                    <Menu
-                        theme='light'
-                        mode='vertical'
-                        items={getNavigationItems()}
-                        defaultSelectedKeys={getDefaultSelectedKey()}
-                        rootClassName={b('menu')}
-                        style={{fontSize: fontSizeLG}}
-                    />
-
+                        {isDesktop && (
+                            <Button
+                                type='text'
+                                className={b('collapse-control')}
+                                aria-label={t('layout.navigation.open')}
+                                icon={<MenuFoldOutlined />}
+                                onClick={toggleCollapsed}
+                            />
+                        )}
+                    </Flex>
                     {user && (
                         <Typography.Text
                             className={b('user-name')}
