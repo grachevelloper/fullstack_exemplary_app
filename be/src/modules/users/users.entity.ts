@@ -22,18 +22,18 @@ export class User extends BaseEntity {
     })
     role!: Role;
 
-    @Column({nullable: true})
+    @Column({type: "varchar", nullable: true})
     avatar?: string | null;
 
-    @Column({nullable: true})
+    @Column({type: "varchar", nullable: true})
     nowReading?: string | null;
 
-    @Column({nullable: true})
+    @Column({type: "varchar", nullable: true})
     nowWatch?: string | null;
 
-    @Column({nullable: true})
+    @Column({type: "varchar", nullable: true})
     nowBeingIn?: string | null;
 
-    @Column({nullable: true})
+    @Column({type: "varchar", nullable: true})
     nowListening?: string | null;
 }

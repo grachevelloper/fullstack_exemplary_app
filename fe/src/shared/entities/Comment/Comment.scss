@@ -1,24 +1,42 @@
 .comment {
     width: 100%;
-    padding: 10px;
+    min-width: 0;
+    padding: 10px 0;
+    padding-left: min(calc(var(--comment-depth, 0) * 20px), 64px);
 
     &__title {
         width: 100%;
+        min-width: 0;
         gap: 12px;
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    &__author {
+        min-width: 0;
+        flex: 1 1 220px;
+    }
+
+    &__updated-at {
+        min-width: 0;
+        justify-content: flex-end;
+        flex: 0 1 auto;
     }
 
     &__created-at {
         color: var(--ant-color-text-secondary);
         font-size: 12px;
-        white-space: nowrap;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
     }
 
     &__content {
-        min-width: 300px;
+        min-width: 0;
         width: 100%;
         margin-top: 4px;
         resize: none !important;
-        overflow-y: none !important;
+        overflow-wrap: anywhere;
+        line-height: 1.5;
     }
 
     &__actions {
@@ -41,6 +59,34 @@
         &_danger:hover,
         &_danger:focus-visible {
             color: var(--ant-color-error);
+        }
+    }
+
+    @media (max-width: 575px) {
+        padding: 10px 0;
+        padding-left: min(calc(var(--comment-depth, 0) * 10px), 20px);
+
+        &__title {
+            gap: 6px;
+        }
+
+        &__author,
+        &__updated-at {
+            flex: 1 1 100%;
+            justify-content: flex-start;
+        }
+
+        &__created-at {
+            white-space: normal;
+        }
+
+        &__actions {
+            align-items: flex-start;
+            gap: 2px 6px;
+        }
+
+        &__action {
+            padding-inline: 4px;
         }
     }
 }

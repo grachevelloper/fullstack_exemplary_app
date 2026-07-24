@@ -14,8 +14,8 @@ interface UserProps {
 export const User = ({data}: UserProps) => {
     const {avatar, username} = data;
     return (
-        <Flex justify='start' align='center' gap={6}>
-            <Avatar />
+        <Flex justify='start' align='center' gap={6} className={b()}>
+            <Avatar src={avatar} className={b('avatar')} />
             <Typography.Title level={5} rootClassName={b('author')}>
                 {username}
             </Typography.Title>

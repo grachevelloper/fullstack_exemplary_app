@@ -5,39 +5,73 @@
 
     .ant-card-head {
         min-width: 0;
+        padding: 0 16px;
+        border-bottom-color: rgb(0 0 0 / 6%);
     }
 
     .ant-card-head-wrapper {
         min-width: 0;
-        gap: 8px;
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
     }
 
     .ant-card-head-title {
-        min-width: 0;
+        min-width: min(100%, 260px);
+        padding: 14px 0 12px;
+        overflow: visible;
         white-space: normal;
     }
 
     .ant-card-extra {
-        min-width: 0;
+        flex: 0 0 auto;
+        min-width: max-content;
         margin-inline-start: 0;
+        padding: 14px 0 12px;
+    }
+
+    .ant-card-body {
+        padding-top: 18px;
     }
 
     &__title {
-        display: inline-flex;
-        min-width: 0;
         width: 100%;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 5px;
+        min-width: 0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
         gap: 12px;
-        white-space: normal;
+        flex-wrap: wrap;
+    }
+
+    &__title-copy {
+        flex: 0 0 auto;
+        min-width: max-content;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    &__title-text {
+        font-size: 16px;
+        line-height: 1.25;
+        white-space: nowrap;
     }
 
     &__pending-text {
-        flex: 1 1 auto;
-        min-width: 72px;
         font-size: 12px;
-        text-align: right;
+        line-height: 1.25;
+        white-space: nowrap;
+    }
+
+    &__edit-button,
+    &__add-button {
+        flex: 0 0 auto;
+        border-radius: 6px;
+    }
+
+    &__add-button {
+        box-shadow: 0 6px 16px rgb(15 23 42 / 6%);
     }
 
     &__popover-content {
@@ -129,7 +163,9 @@
             opacity: 0.55;
             filter: grayscale(0.25);
             pointer-events: none;
-            transition: opacity 0.2s ease, filter 0.2s ease;
+            transition:
+                opacity 0.2s ease,
+                filter 0.2s ease;
         }
     }
 
@@ -137,25 +173,16 @@
         .ant-card-head-wrapper {
             align-items: flex-start;
             flex-direction: column;
+            gap: 0;
         }
 
         .ant-card-extra {
             width: 100%;
+            padding-top: 0;
         }
 
         .ant-card-extra .ant-btn {
             width: 100%;
-        }
-
-        &__title {
-            flex-wrap: wrap;
-            padding-inline: 0;
-        }
-
-        &__pending-text {
-            order: 3;
-            width: 100%;
-            text-align: left;
         }
 
         &__step-title {
@@ -185,10 +212,12 @@
         .ant-card-head-wrapper {
             align-items: flex-start;
             flex-direction: column;
+            gap: 0;
         }
 
         .ant-card-extra {
             width: 100%;
+            padding-top: 0;
         }
 
         .ant-card-extra .ant-btn {
@@ -196,8 +225,7 @@
         }
 
         &__title {
-            flex-wrap: wrap;
-            padding-inline: 0;
+            gap: 8px;
         }
 
         &__step-title {
@@ -206,11 +234,6 @@
 
         &__step-actions {
             opacity: 1;
-        }
-
-        &__pending-text {
-            width: 100%;
-            text-align: left;
         }
     }
 }

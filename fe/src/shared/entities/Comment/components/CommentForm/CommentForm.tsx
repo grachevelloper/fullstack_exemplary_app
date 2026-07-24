@@ -1,9 +1,14 @@
 import {Flex, Input} from 'antd';
 import {TextAreaRef} from 'antd/es/input/TextArea';
-import {useEffect, useRef, useState} from 'react';
+import block from 'bem-cn-lite';
+import {type CSSProperties, useEffect, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
 import {ButtonAccept, ButtonDeny} from '../../../../components/actions';
+
+import './CommentForm.scss';
+
+const b = block('comment-form');
 
 interface ReplyFormProps {
     depth: number;
@@ -58,26 +63,23 @@ export const CommentForm = ({
             justify='start'
             vertical
             align='start'
-            style={{
-                paddingLeft: `${20 * depth}px`,
-                width: '100%',
-                marginTop: 8,
-            }}
+            className={b()}
+            style={
+                {
+                    '--comment-depth': depth,
+                } as CSSProperties
+            }
         >
             <Input.TextArea
+                className={b('input')}
                 placeholder={t('comments.placeholder')}
                 value={content}
                 data-marker='comment-input'
                 onChange={(e) => setContent(e.target.value)}
                 autoSize={{minRows: 3}}
-                style={{width: '100%'}}
                 ref={textAreaRef}
             />
-            <Flex
-                justify='flex-end'
-                gap={4}
-                style={{width: '100%', marginTop: 8}}
-            >
+            <Flex justify='flex-end' gap={4} className={b('actions')}>
                 {onCancel && (
                     <ButtonDeny
                         text={t('cancel')}

@@ -5,7 +5,10 @@ import {useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
 import {TodoPriority} from '@/todos/types';
-import {normalizeTodoPriority, priorityKeyByValue} from '@/todos/utils/todoMeta';
+import {
+    normalizeTodoPriority,
+    priorityKeyByValue,
+} from '@/todos/utils/todoMeta';
 
 import './Priority.scss';
 
@@ -19,7 +22,7 @@ const priorities = [
 ];
 
 interface PriorityProps {
-    priority: Nullable<TodoPriority | string>;
+    priority: Nullable<TodoPriority>;
     editable?: {isEdited: boolean};
     onUpdate?: (priority: TodoPriority) => void;
     isLoading?: boolean;

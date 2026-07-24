@@ -129,7 +129,7 @@ export const useSiderActions = ({onLogoutClick}: UseSiderActionsProps) => {
             label: <span data-marker='nav-logout-button'>{t('logout')}</span>,
             key: 'action-logout',
             onClick: onLogoutClick,
-            className: 'logout-option',
+            className: 'sider__logout-option',
         };
 
         let actions = [...userActions];

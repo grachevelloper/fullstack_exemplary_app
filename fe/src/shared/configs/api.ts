@@ -16,13 +16,28 @@ export const apiAxios: AxiosInstance = axios.create({
     withCredentials: true,
 });
 
+let refreshRequest: Promise<void> | undefined;
+
+const refreshAuth = () => {
+    if (!refreshRequest) {
+        refreshRequest = apiAxios
+            .post('/auth/refresh', undefined, {skipAuthRedirect: true})
+            .then(() => undefined)
+            .finally(() => {
+                refreshRequest = undefined;
+            });
+    }
+
+    return refreshRequest;
+};
+
 apiAxios.interceptors.response.use(
     (response: AxiosResponse) => response.data,
     async (error: CustomAxiosError) => {
         const originalRequest = error.config;
         const status = error.response?.status;
 
-        if (originalRequest.url?.includes('/auth/refresh')) {
+        if (originalRequest?.url?.includes('/auth/refresh')) {
             if (status === 401) {
                 return Promise.reject(error);
             }
@@ -36,9 +51,7 @@ apiAxios.interceptors.response.use(
         ) {
             try {
                 originalRequest._retry = true;
-                await apiAxios.post('/auth/refresh', undefined, {
-                    skipAuthRedirect: originalRequest.skipAuthRedirect,
-                });
+                await refreshAuth();
                 return apiAxios(originalRequest);
             } catch {
                 return Promise.reject(error);

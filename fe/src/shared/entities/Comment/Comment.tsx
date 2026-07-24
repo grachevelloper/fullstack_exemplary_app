@@ -1,7 +1,7 @@
 import {DeleteOutlined, EditOutlined} from '@ant-design/icons';
 import {Button, Divider, Flex, Spin, Typography} from 'antd';
 import block from 'bem-cn-lite';
-import {Fragment, useState} from 'react';
+import {type CSSProperties, Fragment, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
 import {Like, useToggleLikeMutation} from '@/shared/entities/Like';
@@ -72,7 +72,6 @@ export const Comment = ({comment, className, isNew = false}: CommentProps) => {
         useToggleLikeMutation();
 
     const isEditable = user?.id === author?.id || user?.role === Role.ADMIN;
-    const canLike = Boolean(user && id);
     const isLiked = Boolean(hasLiked);
 
     const handleCreate = async (content: string, isResponse = false) => {
@@ -147,16 +146,23 @@ export const Comment = ({comment, className, isNew = false}: CommentProps) => {
                 vertical
                 align='start'
                 className={b(undefined, className)}
-                style={{
-                    paddingLeft: `${20 * depth}px`,
-                }}
+                style={
+                    {
+                        '--comment-depth': depth,
+                    } as CSSProperties
+                }
             >
                 <Flex
                     justify='space-between'
                     align='center'
                     className={b('title')}
                 >
-                    <Flex align='start' justify='start' gap={8}>
+                    <Flex
+                        align='start'
+                        justify='start'
+                        gap={8}
+                        className={b('author')}
+                    >
                         <User data={author} />
                         {createdAt && (
                             <Typography.Text rootClassName={b('created-at')}>
@@ -164,7 +170,7 @@ export const Comment = ({comment, className, isNew = false}: CommentProps) => {
                             </Typography.Text>
                         )}
                     </Flex>
-                    <Flex>
+                    <Flex className={b('updated-at')}>
                         {updatedAt && updatedAt !== createdAt && (
                             <Typography.Text rootClassName={b('created-at')}>
                                 {t('updated-at', {date: formatDate(updatedAt)})}
@@ -180,7 +186,7 @@ export const Comment = ({comment, className, isNew = false}: CommentProps) => {
                         isLiked={isLiked}
                         likesCount={likesCount}
                         onClick={handleLike}
-                        disabled={!canLike || isLikePending}
+                        disabled={!id || isLikePending}
                     />
                     {user ? (
                         <Button

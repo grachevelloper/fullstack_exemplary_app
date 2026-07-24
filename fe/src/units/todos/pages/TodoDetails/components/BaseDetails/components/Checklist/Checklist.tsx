@@ -167,6 +167,54 @@ export const Checklist = ({todoId}: ChecklistProps) => {
         </div>
     );
 
+    const renderChecklistTitle = () => (
+        <div className={b('title')}>
+            <div className={b('title-copy')}>
+                <Text strong className={b('title-text')}>
+                    {t('todo.checklist.title')}
+                </Text>
+                {isPending && (
+                    <Text type='secondary' className={b('pending-text')}>
+                        {t('todo.checklist.updating')}
+                    </Text>
+                )}
+            </div>
+            <Button
+                className={b('edit-button')}
+                type={editing ? 'primary' : 'text'}
+                icon={<EditOutlined />}
+                size='small'
+                onClick={() => setEditing(!editing)}
+                disabled={isPending}
+            >
+                {editing
+                    ? t('todo.checklist.edit.done')
+                    : t('todo.checklist.edit.start')}
+            </Button>
+        </div>
+    );
+
+    const renderAddItemButton = (label: string) => (
+        <Popover
+            title={t('todo.checklist.add.title')}
+            content={popoverContent}
+            trigger='click'
+            open={popoverVisible}
+            onOpenChange={setPopoverVisible}
+            placement='bottomRight'
+        >
+            <Button
+                className={b('add-button')}
+                type='dashed'
+                icon={<PlusOutlined />}
+                size='small'
+                disabled={isPending}
+            >
+                {label}
+            </Button>
+        </Popover>
+    );
+
     if (!checklistData) {
         return (
             <Card
@@ -207,49 +255,11 @@ export const Checklist = ({todoId}: ChecklistProps) => {
     if (steps.length === 0) {
         return (
             <Card
-                title={
-                    <Space className={b('title')}>
-                        {t('todo.checklist.title')}
-                        {isPending && (
-                            <Text type='secondary' className={b('pending-text')}>
-                                {t('todo.checklist.updating')}
-                            </Text>
-                        )}
-                        <Button
-                            type={editing ? 'primary' : 'text'}
-                            icon={<EditOutlined />}
-                            size='small'
-                            onClick={() => setEditing(!editing)}
-                            disabled={isPending}
-                        >
-                            {editing
-                                ? t('todo.checklist.edit.done')
-                                : t('todo.checklist.edit.start')}
-                        </Button>
-                    </Space>
-                }
+                title={renderChecklistTitle()}
                 size='small'
                 className={b({pending: isPending})}
                 data-marker='checklist-card'
-                extra={
-                    <Popover
-                        title={t('todo.checklist.add.title')}
-                        content={popoverContent}
-                        trigger='click'
-                        open={popoverVisible}
-                        onOpenChange={setPopoverVisible}
-                        placement='bottomRight'
-                    >
-                        <Button
-                            type='dashed'
-                            icon={<PlusOutlined />}
-                            size='small'
-                            disabled={isPending}
-                        >
-                            {t('todo.checklist.add.item')}
-                        </Button>
-                    </Popover>
-                }
+                extra={renderAddItemButton(t('todo.checklist.add.item'))}
             >
                 <Empty
                     description={t('todo.checklist.empty.no-items')}
@@ -343,50 +353,12 @@ export const Checklist = ({todoId}: ChecklistProps) => {
 
     return (
         <Card
-            title={
-                <Space className={b('title')}>
-                    {t('todo.checklist.title')}
-                    {isPending && (
-                        <Text type='secondary' className={b('pending-text')}>
-                            {t('todo.checklist.updating')}
-                        </Text>
-                    )}
-                    <Button
-                        type={editing ? 'primary' : 'text'}
-                        icon={<EditOutlined />}
-                        size='small'
-                        onClick={() => setEditing(!editing)}
-                        disabled={isPending}
-                    >
-                        {editing
-                            ? t('todo.checklist.edit.done')
-                            : t('todo.checklist.edit.start')}
-                    </Button>
-                </Space>
-            }
+            title={renderChecklistTitle()}
             size='small'
             className={b({pending: isPending})}
             data-marker='checklist-card'
             extra={
-                editing && (
-                    <Popover
-                        title={t('todo.checklist.add.title')}
-                        content={popoverContent}
-                        trigger='click'
-                        open={popoverVisible}
-                        onOpenChange={setPopoverVisible}
-                        placement='bottomRight'
-                    >
-                        <Button
-                            type='dashed'
-                            icon={<PlusOutlined />}
-                            size='small'
-                            disabled={isPending}
-                        >
-                            {t('todo.checklist.add.short')}
-                        </Button>
-                    </Popover>
-                )
+                editing && renderAddItemButton(t('todo.checklist.add.short'))
             }
         >
             <Steps

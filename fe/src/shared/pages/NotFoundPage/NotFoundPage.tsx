@@ -1,6 +1,6 @@
 import notFound from '@/public/lottie/not-found.json';
 
-import {StatusPage} from '../components/StatusPage';
+import {StatusPage} from '../../components/StatusPage';
 
 export const NotFoundPage = () => {
     return (

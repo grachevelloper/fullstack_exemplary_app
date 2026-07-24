@@ -14,7 +14,7 @@ import {normalizeTodoState, stateKeyByValue} from '@/todos/utils/todoMeta';
 const b = block('state');
 
 interface StateProps {
-    state: Nullable<TodoState | string>;
+    state: Nullable<TodoState>;
     editable?: false | {isEdited: boolean};
     onUpdate?: (state: TodoState) => void;
     isLoading?: boolean;
