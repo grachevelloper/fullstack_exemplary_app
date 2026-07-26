@@ -4,7 +4,7 @@ import {type CSSProperties, useMemo, useState} from 'react';
 import CountUp from 'react-countup';
 import {useLocation} from 'react-router-dom';
 
-import {CURRENT_TIME, formatTime} from '@/shared/utils';
+import {formatTime} from '@/shared/utils';
 
 import {START_OF_DAY, TOTAL_DAY_DURATION} from './utils';
 
@@ -12,7 +12,7 @@ import './Animation.scss';
 
 const b = block('animation');
 
-const millisecondsSinceStartOfDay = CURRENT_TIME - START_OF_DAY;
+const millisecondsSinceStartOfDay = Date.now() - START_OF_DAY;
 
 const minutesSinceStartOfDay = millisecondsSinceStartOfDay / (1000 * 60) - 1;
 

@@ -11,8 +11,11 @@ export class User extends BaseEntity {
     @Column({unique: true})
     email!: string;
 
-    @Column({select: false})
-    password!: string;
+    @Column({type: "varchar", select: false, nullable: true})
+    password!: string | null;
+
+    @Column({name: "yandex_id", type: "varchar", unique: true, nullable: true})
+    yandexId!: string | null;
 
     @Column({
         type: "enum",

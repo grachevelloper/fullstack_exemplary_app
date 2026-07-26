@@ -1,10 +1,12 @@
 import {describe, expect, it, jest} from "@jest/globals";
+import {ConflictException} from "@nestjs/common";
 import {Request, Response} from "express";
 import {User} from "src/modules/users/users.entity";
 import {UsersMapper} from "src/modules/users/users.mapper";
 import {AuthController} from "src/processes/auth/auth.controller";
 import {AuthService} from "src/processes/auth/auth.service";
 import {clearTokenConfig} from "src/processes/auth/utils";
+import {YandexOAuthService} from "src/processes/auth/yandex-oauth.service";
 import {Role} from "src/types";
 
 describe("AuthController", () => {
@@ -29,7 +31,10 @@ describe("AuthController", () => {
                 }),
         } as unknown as AuthService;
         const response = {cookie: jest.fn()} as unknown as Response;
-        const controller = new AuthController(authService);
+        const controller = new AuthController(
+            authService,
+            {} as YandexOAuthService,
+        );
 
         const result = await controller.signIn(
             {email: user.email, password: "StrongPassword123"},
@@ -60,7 +65,10 @@ describe("AuthController", () => {
             }),
         } as unknown as AuthService;
         const response = {cookie: jest.fn()} as unknown as Response;
-        const controller = new AuthController(authService);
+        const controller = new AuthController(
+            authService,
+            {} as YandexOAuthService,
+        );
 
         await controller.refresh(
             {cookies: {refreshToken: "old-refresh"}} as unknown as Request,
@@ -85,7 +93,10 @@ describe("AuthController", () => {
             logout: jest.fn<AuthService["logout"]>().mockResolvedValue(),
         } as unknown as AuthService;
         const response = {clearCookie: jest.fn()} as unknown as Response;
-        const controller = new AuthController(authService);
+        const controller = new AuthController(
+            authService,
+            {} as YandexOAuthService,
+        );
 
         await controller.logout(
             {cookies: {refreshToken: "refresh-token"}} as unknown as Request,
@@ -104,6 +115,77 @@ describe("AuthController", () => {
         expect(response.clearCookie).toHaveBeenCalledWith(
             "refreshToken",
             clearTokenConfig(),
+        );
+    });
+
+    it("rejects a Yandex callback with an invalid state", async () => {
+        const authService = {} as AuthService;
+        const yandexOAuthService = {
+            authenticate: jest.fn<YandexOAuthService["authenticate"]>(),
+        } as unknown as YandexOAuthService;
+        const response = {
+            clearCookie: jest.fn(),
+            redirect: jest.fn(),
+        } as unknown as Response;
+        const controller = new AuthController(
+            authService,
+            yandexOAuthService,
+        );
+
+        await controller.yandexCallback(
+            "code",
+            "unexpected-state",
+            undefined,
+            {
+                cookies: {
+                    yandexOauthState: "expected-state",
+                    yandexOauthSource: "signup",
+                },
+            } as unknown as Request,
+            response,
+        );
+
+        expect(yandexOAuthService.authenticate).not.toHaveBeenCalled();
+        expect(response.redirect).toHaveBeenCalledWith(
+            "/auth/signup?oauthError=invalid_state",
+        );
+    });
+
+    it("redirects an existing-email conflict back to password sign-in", async () => {
+        const authService = {} as AuthService;
+        const yandexOAuthService = {
+            authenticate: jest
+                .fn<YandexOAuthService["authenticate"]>()
+                .mockRejectedValue(
+                    new ConflictException(
+                        "User with this email already exists",
+                    ),
+                ),
+        } as unknown as YandexOAuthService;
+        const response = {
+            clearCookie: jest.fn(),
+            redirect: jest.fn(),
+        } as unknown as Response;
+        const controller = new AuthController(
+            authService,
+            yandexOAuthService,
+        );
+
+        await controller.yandexCallback(
+            "code",
+            "expected-state",
+            undefined,
+            {
+                cookies: {
+                    yandexOauthState: "expected-state",
+                    yandexOauthSource: "signin",
+                },
+            } as unknown as Request,
+            response,
+        );
+
+        expect(response.redirect).toHaveBeenCalledWith(
+            "/auth/signin?oauthError=email_conflict",
         );
     });
 });

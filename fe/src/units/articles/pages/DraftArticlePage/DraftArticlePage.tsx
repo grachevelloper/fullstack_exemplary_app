@@ -21,7 +21,7 @@ import {MdEditor} from '@/shared/components/MdEditor';
 import {useAuth} from '@/shared/context';
 import {useSidebar} from '@/shared/context/Sidebar';
 import {useDebouncedCallback} from '@/shared/hooks';
-import {FIVE_SECONDS_IN_MS} from '@/shared/utils';
+import {DEBOUNCE_ARTICLE_UPDATE_MS} from '@/shared/utils';
 
 import {TagsSelect} from '../../components/TagsSelect';
 import {TagsWrapper} from '../../components/TagsWrapper';
@@ -56,10 +56,8 @@ export const DraftArticlePage = () => {
     } = useUpdateArticle();
 
     // Для первого запроса
-    const {
-        data: serverArticle,
-        isLoading: isArticleLoading,
-    } = useGetArticleById(draftId);
+    const {data: serverArticle, isLoading: isArticleLoading} =
+        useGetArticleById(draftId);
 
     // Локальное состояние
     const [localArticle, setLocalArticle] = useState<Partial<Article> | null>(
@@ -86,15 +84,10 @@ export const DraftArticlePage = () => {
         mutateAsync: mutatePublishDraft,
     } = updateDraftStatus;
 
-    const {
-        error: errorUpdatingReadTime,
-        mutateAsync: mutateReadTime,
-    } = updateReadTime;
+    const {error: errorUpdatingReadTime, mutateAsync: mutateReadTime} =
+        updateReadTime;
 
-    const {
-        error: errorUpdatingImage,
-        mutateAsync: mutateImage,
-    } = updateImage;
+    const {error: errorUpdatingImage, mutateAsync: mutateImage} = updateImage;
 
     const updateErrors = {
         title: !!errorUpdatingTitle,
@@ -129,7 +122,7 @@ export const DraftArticlePage = () => {
 
             await mutateTitle(draftId, title);
         },
-        FIVE_SECONDS_IN_MS,
+        DEBOUNCE_ARTICLE_UPDATE_MS,
         [draftId, mutateTitle]
     );
 
@@ -139,7 +132,7 @@ export const DraftArticlePage = () => {
 
             await mutateContent(draftId, content);
         },
-        FIVE_SECONDS_IN_MS,
+        DEBOUNCE_ARTICLE_UPDATE_MS,
         [draftId, mutateContent]
     );
 
@@ -149,7 +142,7 @@ export const DraftArticlePage = () => {
 
             await mutateImage(draftId, newImage);
         },
-        FIVE_SECONDS_IN_MS,
+        DEBOUNCE_ARTICLE_UPDATE_MS,
         [draftId, mutateImage]
     );
 
@@ -159,7 +152,7 @@ export const DraftArticlePage = () => {
 
             await mutateReadTime(draftId, newReadTime);
         },
-        FIVE_SECONDS_IN_MS,
+        DEBOUNCE_ARTICLE_UPDATE_MS,
         [draftId, mutateReadTime]
     );
 
@@ -236,7 +229,7 @@ export const DraftArticlePage = () => {
         }
     }, [author?.id, navigate, user?.id]);
 
-    if (isArticleLoading && !localArticle) {
+    if (!localArticle) {
         return (
             <div className={b('loading')}>
                 <Spin size='large' />

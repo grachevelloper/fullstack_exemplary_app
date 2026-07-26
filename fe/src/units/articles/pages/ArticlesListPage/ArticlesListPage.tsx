@@ -28,8 +28,11 @@ export const ArticlesListPage = () => {
 
     const canWriteArticle = role === Role.WRITER || role === Role.ADMIN;
     const normalizedSearch = search.trim();
-    const {data: articlesPage, isPending, error} =
-        useGetAllArticles(normalizedSearch || undefined);
+    const {
+        data: articlesPage,
+        isPending,
+        error,
+    } = useGetAllArticles(normalizedSearch || undefined);
     const {
         data: drafts = [],
         isPending: isDraftsPending,
@@ -78,10 +81,6 @@ export const ArticlesListPage = () => {
                         {renderNewArticleButton()}
                     </Col>
                 </Row>
-                <div
-                    className={b('hero-accent')}
-                    style={{backgroundColor: colorPrimaryBg}}
-                />
             </Card>
 
             <Card
@@ -104,10 +103,7 @@ export const ArticlesListPage = () => {
                             {t('articles.search.description')}
                         </Text>
                     </Flex>
-                    <SearchPanel
-                        value={search}
-                        onSearchChange={setSearch}
-                    />
+                    <SearchPanel value={search} onSearchChange={setSearch} />
                 </Flex>
             </Card>
 
@@ -122,7 +118,9 @@ export const ArticlesListPage = () => {
                     <Title level={2}>{t('articles.recent')}</Title>
                 </Flex>
                 <ArticlesList
-                    isPending={isPending || (canWriteArticle && isDraftsPending)}
+                    isPending={
+                        isPending || (canWriteArticle && isDraftsPending)
+                    }
                     data={articles}
                     error={error || draftsError}
                 />

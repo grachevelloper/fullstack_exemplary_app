@@ -2,11 +2,14 @@ import {Alert, Flex, Form, Steps, Typography} from 'antd';
 import block from 'bem-cn-lite';
 import {useCallback, useState} from 'react';
 import {useTranslation} from 'react-i18next';
+import {useSearchParams} from 'react-router-dom';
 
 import {useAuth} from '@/shared/context';
 import {type CardProps, type FormField} from '@/typings/components';
-import {type User} from '@/users/types';
 import {useSignupMutation} from '@/users/store';
+import {type User} from '@/users/types';
+
+import {getYandexOAuthErrorKey} from '../../utils/yandexOAuth';
 
 import {SignStep} from './components/SignStep';
 import {useSignUpFields} from './hooks/useSignUpFields';
@@ -31,6 +34,7 @@ const initialSignUpData: SignUpFormData = {
 
 export const SignupPage = () => {
     const {t} = useTranslation('auth');
+    const [searchParams] = useSearchParams();
     const [signStep, setSignStep] = useState(0);
     const [registeredUser, setRegisteredUser] = useState<User | null>(null);
     const [form] = Form.useForm<SignUpFormData>();
@@ -70,6 +74,9 @@ export const SignupPage = () => {
     );
 
     const visibleStepData = signUpFields[signStep];
+    const oauthErrorKey = getYandexOAuthErrorKey(
+        searchParams.get('oauthError')
+    );
     const stepItems = [
         t('auth.step.intro'),
         t('auth.step.name'),
@@ -109,6 +116,14 @@ export const SignupPage = () => {
                     <Alert
                         className={b('error')}
                         message={t('auth.signup.error')}
+                        type='error'
+                        showIcon
+                    />
+                )}
+                {oauthErrorKey && (
+                    <Alert
+                        className={b('error')}
+                        message={t(oauthErrorKey)}
                         type='error'
                         showIcon
                     />

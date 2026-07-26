@@ -25,7 +25,6 @@
         grid-template-columns: minmax(0, 1fr) 132px;
         align-items: stretch;
         border: 1px solid;
-        box-shadow: 0 18px 48px rgb(15 23 42 / 10%);
         border-radius: 5%;
     }
 
@@ -116,10 +115,11 @@
         width: 100%;
         margin-left: 0;
         padding-top: 0;
+        height: 280px;
 
         &__block {
-            min-height: 310px;
             grid-template-columns: minmax(0, 1fr) minmax(160px, 32%);
+            height: 280px;
         }
 
         &__copy {

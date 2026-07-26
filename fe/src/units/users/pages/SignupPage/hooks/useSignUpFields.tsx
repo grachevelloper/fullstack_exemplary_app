@@ -8,6 +8,7 @@ import {useFieldValidation} from '@/shared/hooks';
 import {CardProps, FormField} from '@/typings/components';
 import {SubmitData} from '@/users/types';
 
+import {YandexAuthButton} from '../../../components/YandexAuthButton';
 import {useSignInFields} from '../../SigninPage/hooks/useSignInFields';
 
 export const useSignUpFields = (
@@ -58,26 +59,10 @@ export const useSignUpFields = (
             content: t('auth.init.content'),
             index: 0,
             actions: [
+                <YandexAuthButton key='yandex-signup' source='signup' />,
                 <ButtonAccept key='init-next' onClick={handleNextStep} />,
             ],
         },
-        // {
-        //     title: t('auth.signup.way.title'),
-        //     content: (
-        //         <Flex justify='center' vertical>
-        //             <Button onClick={handleNextStep}>
-        //                 {t('auth.signup.way.email')}
-        //             </Button>
-        //             <Divider size='middle' />
-        //             <Button>Yandex</Button>
-        //         </Flex>
-        //     ),
-        //     index: 1,
-        //     actions: [
-        //         <ButtonDeny key='way-prev' onClick={handlePrevStep} />,
-        //         <ButtonAccept key='way-next' onClick={handleNextStep} />,
-        //     ],
-        // },
         {
             title: t('auth.name.username.title'),
             name: 'username',

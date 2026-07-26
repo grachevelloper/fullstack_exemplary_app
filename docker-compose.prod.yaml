@@ -18,6 +18,8 @@ services:
     build:
       context: ./be
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       NODE_ENV: production
       BE_PORT: 3000
@@ -36,6 +38,9 @@ services:
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
       S3_PUBLIC_DOMAIN: ${S3_PUBLIC_DOMAIN}
       GRACHEVELOPERS_PASSWORD: ${GRACHEVELOPERS_PASSWORD}
+      YANDEX_CLIENT_ID: ${YANDEX_CLIENT_ID}
+      YANDEX_CLIENT_SECRET: ${YANDEX_CLIENT_SECRET}
+      YANDEX_REDIRECT_URI: ${YANDEX_REDIRECT_URI:-https://grachevnikolay.ru/auth/yandex/callback}
     depends_on:
       db:
         condition: service_healthy

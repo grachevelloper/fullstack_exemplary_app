@@ -27,20 +27,10 @@ export interface DtoChangePassword {
     newPassword: string;
 }
 
-export interface ResponseYandex0Auth {
-    login: string;
-    id: string;
-    default_email: string;
-    is_avatar_empty: boolean;
-    default_avatar_id: string;
-    display_name: string;
-}
-
 export interface UserApi {
     signIn: (signInData: DtoSignInUser) => Promise<SignResponse>;
     signUp: (signUpData: DtoSignUpUser) => Promise<User>;
     logout: () => Promise<void>;
-    yandexSignIn: () => Promise<ResponseYandex0Auth>;
     getMe: () => Promise<User>;
     updateMe: (updateData: Omit<DtoUpdateUser, 'id'>) => Promise<User>;
     changeMyPassword: (data: DtoChangePassword) => Promise<void>;

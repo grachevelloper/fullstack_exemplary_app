@@ -19,6 +19,8 @@ services:
   backend:
     build: ./be
     container_name: fullstack-backend
+    env_file:
+      - .env
     environment:
       DB_NAME: postgres
       DB_USER: postgres
@@ -29,13 +31,16 @@ services:
       NODE_ENV: development
       JWT_SECRET: ${JWT_SECRET:-local-development-jwt-secret}
       REFRESH_SECRET: ${REFRESH_SECRET:-local-development-refresh-secret}
-      S3_ENDPOINT: ${S3_ENDPOINT:-https://s3.cloud.ru}
-      S3_REGION: ${S3_REGION:-ru-central-1}
-      S3_BUCKET: ${S3_BUCKET:-local-development-bucket}
-      S3_TENANT_ID: ${S3_TENANT_ID:-local-development-tenant}
-      S3_KEY_ID: ${S3_KEY_ID:-local-development-access-key}
-      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-local-development-secret-key}
-      S3_PUBLIC_DOMAIN: ${S3_PUBLIC_DOMAIN:-http://localhost:9000}
+      S3_ENDPOINT: ${S3_ENDPOINT}
+      S3_REGION: ${S3_REGION}
+      S3_BUCKET: ${S3_BUCKET}
+      S3_TENANT_ID: ${S3_TENANT_ID}
+      S3_KEY_ID: ${S3_KEY_ID}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+      S3_PUBLIC_DOMAIN: ${S3_PUBLIC_DOMAIN}
+      YANDEX_CLIENT_ID: ${YANDEX_CLIENT_ID}
+      YANDEX_CLIENT_SECRET: ${YANDEX_CLIENT_SECRET}
+      YANDEX_REDIRECT_URI: ${YANDEX_REDIRECT_URI:-http://fe_fullstack-app.localhost/auth/callback/yandex}
     ports:
       - '3000:3000'
     depends_on:

@@ -46,7 +46,7 @@ export class AuthService {
         if (!user) {
             throw new UnauthorizedException("User not found");
         }
-        if (!(await bcrypt.compare(pass, user.password))) {
+        if (!user.password || !(await bcrypt.compare(pass, user.password))) {
             throw new UnauthorizedException("Incorrect password");
         }
         return user;

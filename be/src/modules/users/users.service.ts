@@ -38,6 +38,10 @@ export class UsersService {
             .getOne();
     }
 
+    async findByYandexId(yandexId: string): Promise<User | null> {
+        return this.usersRepository.findOneBy({yandexId});
+    }
+
     async findForActor(id: string, actor: AuthenticatedUser): Promise<User> {
         this.assertSelfOrAdmin(id, actor);
         return this.findById(id);
@@ -58,6 +62,29 @@ export class UsersService {
             password: hashedPassword,
             role,
         });
+        return this.usersRepository.save(user);
+    }
+
+    async createFromYandex(data: {
+        avatar: string | null;
+        email: string;
+        username: string;
+        yandexId: string;
+    }): Promise<User> {
+        const emailExists = await this.usersRepository
+            .createQueryBuilder("user")
+            .where("LOWER(user.email) = LOWER(:email)", {email: data.email})
+            .getOne();
+        if (emailExists) {
+            throw new ConflictException("User with this email already exists");
+        }
+
+        const user = this.usersRepository.create({
+            ...data,
+            password: null,
+            role: Role.USER,
+        });
+
         return this.usersRepository.save(user);
     }
 
@@ -105,7 +132,11 @@ export class UsersService {
 
         const user = await this.findByIdWithPassword(id);
 
-        if (isSelf && !(await bcrypt.compare(currentPassword, user.password))) {
+        if (
+            isSelf &&
+            (!user.password ||
+                !(await bcrypt.compare(currentPassword, user.password)))
+        ) {
             throw new UnauthorizedException("Invalid current password");
         }
 

@@ -1,0 +1,1 @@
+export {YandexAuthButton} from './YandexAuthButton';

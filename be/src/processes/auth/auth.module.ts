@@ -8,9 +8,10 @@ import {AuthService} from "./auth.service";
 import {JWT_SECRET} from "./constants";
 import {RefreshToken} from "./refresh-token/refresh-token.entity";
 import {RefreshTokensService} from "./refresh-token/refresh-token.service";
+import {YandexOAuthService} from "./yandex-oauth.service";
 
 @Module({
-    providers: [AuthService, RefreshTokensService],
+    providers: [AuthService, RefreshTokensService, YandexOAuthService],
     controllers: [AuthController],
     imports: [
         TypeOrmModule.forFeature([RefreshToken]),
