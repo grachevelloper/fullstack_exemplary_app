@@ -30,7 +30,6 @@ services:
       BE_PORT: 3000
       NODE_ENV: development
       JWT_SECRET: ${JWT_SECRET:-local-development-jwt-secret}
-      REFRESH_SECRET: ${REFRESH_SECRET:-local-development-refresh-secret}
       S3_ENDPOINT: ${S3_ENDPOINT}
       S3_REGION: ${S3_REGION}
       S3_BUCKET: ${S3_BUCKET}
@@ -40,7 +39,7 @@ services:
       S3_PUBLIC_DOMAIN: ${S3_PUBLIC_DOMAIN}
       YANDEX_CLIENT_ID: ${YANDEX_CLIENT_ID}
       YANDEX_CLIENT_SECRET: ${YANDEX_CLIENT_SECRET}
-      YANDEX_REDIRECT_URI: ${YANDEX_REDIRECT_URI:-http://fe_fullstack-app.localhost/auth/callback/yandex}
+      YANDEX_REDIRECT_URI: ${YANDEX_REDIRECT_URI:-http://fe_fullstack-app.localhost/api/auth/yandex/callback}
     ports:
       - '3000:3000'
     depends_on:
@@ -49,8 +48,6 @@ services:
   frontend:
     build: ./fe
     container_name: fullstack-frontend
-    environment:
-      FE_PORT: 5173
     ports:
       - '5173:5173'
     depends_on:

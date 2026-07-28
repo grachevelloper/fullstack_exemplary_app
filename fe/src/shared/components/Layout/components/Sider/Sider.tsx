@@ -90,7 +90,7 @@ export const Sider = () => {
                 </Flex>
                 <LogoutDialog
                     isOpen={isSignoutModalOpen}
-                    onCancel={() => setSignoutModalOpen(false)}
+                    onCancel={() => setSignoutModalOpen((prev) => !prev)}
                 />
             </AntSider>
         </Fragment>

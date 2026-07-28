@@ -3,14 +3,21 @@ import {PaginatedResponse} from '@/typings/common';
 import {Article, Tag} from '../types';
 
 export type DtoCreateArticle = Partial<
-    Pick<Article, 'title' | 'content' | 'readTime' | 'tags'>
+    Pick<Article, 'title' | 'description' | 'content' | 'readTime' | 'tags'>
 >;
 
 export type DtoUpdateArticle = {id: string} & Partial<
-    Pick<Article, 'title' | 'content' | 'image' | 'readTime' | 'tags'>
+    Pick<
+        Article,
+        'title' | 'description' | 'content' | 'image' | 'readTime' | 'tags'
+    >
 >;
 
 export type DtoUpdateArticleTitle = Pick<Article, 'id' | 'title'>;
+export type DtoUpdateArticleDescription = Pick<
+    Article,
+    'id' | 'description'
+>;
 export type DtoUpdateArticleContent = Pick<Article, 'id' | 'content'>;
 export type DtoUpdateArticleImage = Pick<Article, 'id' | 'image'>;
 export type DtoUpdateArticleReadTime = Pick<Article, 'id' | 'readTime'>;
@@ -22,6 +29,7 @@ export interface ArticleApi {
     update: (updateData: DtoUpdateArticle) => Promise<Article>;
 
     updateTitle: (data: DtoUpdateArticleTitle) => Promise<Article>;
+    updateDescription: (data: DtoUpdateArticleDescription) => Promise<Article>;
     updateContent: (data: DtoUpdateArticleContent) => Promise<Article>;
     updateImage: (data: DtoUpdateArticleImage) => Promise<Article>;
     updateReadTime: (data: DtoUpdateArticleReadTime) => Promise<Article>;

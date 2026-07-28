@@ -1,6 +1,4 @@
 .md-editor {
-    min-height: 320px;
-
     &__markdown {
         min-height: 320px;
         padding: 18px;
@@ -13,5 +11,12 @@
         padding: 8px;
         border-bottom: 1px solid var(--ant-color-border);
         background: var(--ant-color-bg-container);
+    }
+
+    &__image-toolbar {
+        align-items: center;
+        display: flex;
+        gap: 2px;
+        padding: 4px;
     }
 }

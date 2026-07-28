@@ -54,6 +54,12 @@ export const updateErrorHandler = (updateFields: UpdateDraftField[]) => {
                     'article.draft.error.title.description'
                 )}: ${errorMessage}`,
             },
+            description: {
+                message: t('article.draft.error.description.title'),
+                description: `${t(
+                    'article.draft.error.description.description'
+                )}: ${errorMessage}`,
+            },
             tags: {
                 message: t('article.draft.error.tags.title'),
                 description: `${t(

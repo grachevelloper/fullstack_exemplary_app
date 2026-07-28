@@ -67,10 +67,11 @@
     }
 
     &__collapse-control {
-        width: 40px;
-        height: 40px;
+        width: 46px;
+        height: 46px;
         border-radius: 8px;
         font-size: 18px;
+        margin-top: 3px;
     }
 
     &__menu {
@@ -88,7 +89,6 @@
             margin: 3px 0;
             padding-inline: 14px !important;
             border-radius: 8px;
-            line-height: 46px;
         }
 
         .ant-menu-item-icon,

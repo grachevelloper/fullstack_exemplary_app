@@ -65,6 +65,7 @@ const DEFAULT_ARTICLE_IMAGE = process.env.S3_PUBLIC_DOMAIN
     ? `${process.env.S3_PUBLIC_DOMAIN}/draft-placeholder/image.png`
     : "/assets/image-placeholder.png";
 const DEFAULT_DRAFT_TITLE = "Untitled article";
+const DEFAULT_DRAFT_DESCRIPTION = "";
 
 const SORT_COLUMNS: Record<SortBy, string> = {
     createdAt: "article.createdAt",
@@ -93,6 +94,7 @@ export class ArticlesService {
         const article = this.articlesRepository.create({
             author,
             content: data.content ?? "",
+            description: data.description ?? DEFAULT_DRAFT_DESCRIPTION,
             image: DEFAULT_ARTICLE_IMAGE,
             isDraft: true,
             readTime: data.readTime,
@@ -116,6 +118,7 @@ export class ArticlesService {
 
         Object.assign(article, {
             content: data.content ?? article.content,
+            description: data.description ?? article.description,
             image: data.image ?? article.image,
             readTime: data.readTime ?? article.readTime,
             tags: data.tags ? tags : article.tags,
@@ -135,6 +138,11 @@ export class ArticlesService {
         const article = await this.findOneForMutation(id, actor);
         if (!article.isDraft) {
             throw new BadRequestException("Article has already been published");
+        }
+        if (!article.description.trim()) {
+            throw new BadRequestException(
+                "Article description is required before publishing",
+            );
         }
 
         article.isDraft = false;

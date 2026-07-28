@@ -58,11 +58,11 @@ apiAxios.interceptors.response.use(
             }
         }
 
-        if (status === 403) {
+        if (status === 403 && !originalRequest?.skipErrorRedirect) {
             redirectTo('/no-permission');
         }
 
-        if (status === 404) {
+        if (status === 404 && !originalRequest?.skipErrorRedirect) {
             redirectTo('/not-found');
         }
 

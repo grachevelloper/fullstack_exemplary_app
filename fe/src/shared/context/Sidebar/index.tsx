@@ -1,4 +1,4 @@
-import {createContext, ReactNode, useContext, useState} from 'react';
+import {createContext, ReactNode, useContext, useEffect, useState} from 'react';
 
 import {useLayout} from '../../hooks';
 
@@ -8,11 +8,19 @@ const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
 
 export const SidebarProvider = ({children}: {children: ReactNode}) => {
     const {isDesktop} = useLayout();
+    const isResumePage = window.location.pathname === '/resume';
     const [isCollapsed, setCollapsed] = useState<boolean>(!isDesktop);
-
     const toggleCollapsed = () => {
         setCollapsed((prev) => !prev);
     };
+
+    useEffect(() => {
+        if (isResumePage) {
+            setTimeout(() => {
+                setCollapsed(true);
+            }, 0);
+        }
+    }, [isResumePage]);
 
     return (
         <SidebarContext.Provider

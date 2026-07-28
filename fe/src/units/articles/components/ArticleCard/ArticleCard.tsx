@@ -1,6 +1,7 @@
-import {CalendarOutlined} from '@ant-design/icons';
+import {CalendarOutlined, FileImageOutlined} from '@ant-design/icons';
 import {Card, Flex, Image, Tag, theme, Typography} from 'antd';
 import block from 'bem-cn-lite';
+import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
 import {Article} from '@/articles/types';
@@ -19,40 +20,67 @@ interface ArticleCardProps {
 
 export const ArticleCard: React.FC<ArticleCardProps> = ({article, onClick}) => {
     const {t} = useTranslation('article');
+    const [isCoverUnavailable, setIsCoverUnavailable] = useState(
+        !article.image
+    );
     const {
-        token: {paddingSM, borderRadius},
+        token: {
+            paddingSM,
+            borderRadius,
+            colorFillSecondary,
+            colorTextTertiary,
+        },
     } = theme.useToken();
+
+    const handleKeyDown = (event: React.KeyboardEvent) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onClick();
+        }
+    };
+
     return (
         <Card
             hoverable
             data-marker='article-card'
-            className={b({'is-loaded': true})}
+            className={b()}
             onClick={onClick}
+            onKeyDown={handleKeyDown}
+            role='link'
             size='default'
+            tabIndex={0}
             style={{
                 borderRadius,
             }}
             cover={
-                <Image
-                    alt={article.title}
-                    src={article.image}
-                    preview={false}
-                    style={{
-                        borderRadius,
-                    }}
-                    className={b('image')}
-                />
+                isCoverUnavailable ? (
+                    <div
+                        className={b('cover-placeholder')}
+                        style={{
+                            backgroundColor: colorFillSecondary,
+                            color: colorTextTertiary,
+                        }}
+                    >
+                        <FileImageOutlined aria-hidden />
+                    </div>
+                ) : (
+                    <Image
+                        alt={article.title}
+                        src={article.image}
+                        preview={false}
+                        onError={() => setIsCoverUnavailable(true)}
+                        className={b('image')}
+                    />
+                )
             }
         >
             <Flex
                 className={b('info-wrapper')}
-                justify='end'
                 align='start'
                 vertical
-                gap={8}
+                gap={12}
                 style={{
                     padding: paddingSM,
-                    borderRadius,
                 }}
             >
                 <Title
@@ -62,7 +90,16 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({article, onClick}) => {
                 >
                     {article.title}
                 </Title>
-                <Flex justify='start' align='center' gap={4} wrap>
+                <Text type='secondary' className={b('description')}>
+                    {article.description}
+                </Text>
+                <Flex
+                    className={b('tags')}
+                    justify='start'
+                    align='center'
+                    gap={6}
+                    wrap
+                >
                     {article.tags?.slice(0, 3).map((tag) => (
                         <Tag key={tag.id} className={b('tag')}>
                             {tag.name}
@@ -76,7 +113,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({article, onClick}) => {
                     gap={8}
                     className={b('footer')}
                 >
-                    <Flex gap={4}>
+                    <Flex className={b('date')} gap={6} align='center'>
                         <CalendarOutlined />
                         <Typography.Text type='secondary'>
                             {formatDate(article?.createdAt)}

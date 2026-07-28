@@ -27,6 +27,7 @@ describe("UsersService authorization", () => {
         });
         const repository = {
             findOne: jest.fn<Repository<User>["findOne"]>().mockResolvedValue(user),
+            findOneBy: jest.fn<Repository<User>["findOneBy"]>().mockResolvedValue(user),
             createQueryBuilder: jest.fn(() => ({
                 addSelect: jest.fn().mockReturnThis(),
                 where: jest.fn().mockReturnThis(),
@@ -91,6 +92,13 @@ describe("UsersService authorization", () => {
     it("allows an administrator to read another user", async () => {
         const {service, user} = await setup();
         await expect(service.findForActor(owner.id, admin)).resolves.toBe(user);
+    });
+
+    it("finds the administrator used for public nowadays data", async () => {
+        const {repository, service, user} = await setup();
+
+        await expect(service.findAdmin()).resolves.toBe(user);
+        expect(repository.findOneBy).toHaveBeenCalledWith({role: Role.ADMIN});
     });
 
     it("prevents a regular user from changing their role", async () => {

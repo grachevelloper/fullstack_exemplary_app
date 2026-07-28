@@ -51,6 +51,7 @@ const formatter: StatisticProps['formatter'] = () => (
         useEasing
     />
 );
+const approvedRoutes = ['/', 'rezume'];
 
 export const Animation = () => {
     const [isStopped, setStopped] = useState<boolean>(false);
@@ -81,7 +82,6 @@ export const Animation = () => {
         setStopped(true);
     };
 
-    const approvedRoutes = ['/'];
     if (!approvedRoutes.includes(pathname)) {
         return null;
     }

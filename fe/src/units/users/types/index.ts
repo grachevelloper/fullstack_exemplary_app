@@ -12,6 +12,11 @@ export interface User extends BaseEntity {
     nowBeingIn?: string | null;
 }
 
+export type Nowadays = Pick<
+    User,
+    'nowWatch' | 'nowReading' | 'nowListening' | 'nowBeingIn'
+>;
+
 export interface SubmitData {
     isLoading: boolean;
     onFinish?: () => void;

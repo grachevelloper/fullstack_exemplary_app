@@ -3,9 +3,11 @@ import {
     CalendarOutlined,
     CodeOutlined,
     DownOutlined,
+    GlobalOutlined,
     IdcardOutlined,
     ReadOutlined,
     UpOutlined,
+    UserOutlined,
 } from '@ant-design/icons';
 import {Button, Card, Flex, Image, Tag, theme, Tooltip, Typography} from 'antd';
 import block from 'bem-cn-lite';
@@ -36,6 +38,12 @@ type SkillItem = {
     title: string;
 };
 
+type Language = {
+    code: string;
+    level: string;
+    name: string;
+};
+
 const b = block('resume-page');
 
 export const ResumePage = () => {
@@ -57,13 +65,18 @@ export const ResumePage = () => {
         },
     } = theme.useToken();
 
-    const getStringList = useCallback((key: string) => {
-        const value = t(key, {returnObjects: true});
+    const getStringList = useCallback(
+        (key: string) => {
+            const value = t(key, {returnObjects: true});
 
-        return Array.isArray(value)
-            ? value.filter((item): item is string => typeof item === 'string')
-            : [];
-    }, [t]);
+            return Array.isArray(value)
+                ? value.filter(
+                      (item): item is string => typeof item === 'string'
+                  )
+                : [];
+        },
+        [t]
+    );
 
     const experience = useMemo<ResumeItem[]>(
         () => [
@@ -109,6 +122,27 @@ export const ResumePage = () => {
         [t]
     );
 
+    const languages = useMemo<Language[]>(
+        () => [
+            {
+                code: 'RU',
+                name: t('resume.languages.russian.name'),
+                level: t('resume.languages.russian.level'),
+            },
+            {
+                code: 'EN',
+                name: t('resume.languages.english.name'),
+                level: t('resume.languages.english.level'),
+            },
+            {
+                code: 'DE',
+                name: t('resume.languages.german.name'),
+                level: t('resume.languages.german.level'),
+            },
+        ],
+        [t]
+    );
+
     const skills = useMemo<SkillGroup[]>(
         () => [
             {
@@ -142,6 +176,20 @@ export const ResumePage = () => {
                         title: 'BDUI',
                         description: t('resume.skills.deeplinks.description'),
                     },
+                    {
+                        title: 'Redux',
+                        description: t('resume.skills.redux.description'),
+                    },
+                    {
+                        title: 'TanStack Query',
+                        description: t(
+                            'resume.skills.tanstackQuery.description'
+                        ),
+                    },
+                    {
+                        title: 'MobX',
+                        description: t('resume.skills.mobx.description'),
+                    },
                 ],
             },
             {
@@ -170,6 +218,14 @@ export const ResumePage = () => {
                     {
                         title: 'SQL',
                         description: t('resume.skills.sql.description'),
+                    },
+                    {
+                        title: 'MongoDB',
+                        description: t('resume.skills.mongodb.description'),
+                    },
+                    {
+                        title: 'gRPC',
+                        description: t('resume.skills.grpc.description'),
                     },
                 ],
             },
@@ -261,6 +317,16 @@ export const ResumePage = () => {
                         title: 'Confluence',
                         description: t('resume.skills.confluence.description'),
                     },
+                    {
+                        title: t('resume.skills.designReview.title'),
+                        description: t(
+                            'resume.skills.designReview.description'
+                        ),
+                    },
+                    {
+                        title: 'Code review',
+                        description: t('resume.skills.codeReview.description'),
+                    },
                 ],
             },
         ],
@@ -323,6 +389,29 @@ export const ResumePage = () => {
                         {t('about.subtitle')}
                     </Typography.Paragraph>
                 </div>
+            </section>
+
+            <section className={b('section')}>
+                <Flex align='center' gap={10} className={b('section-heading')}>
+                    <UserOutlined style={{color: colorPrimary}} />
+                    <Typography.Title level={2}>
+                        {t('resume.about.title')}
+                    </Typography.Title>
+                </Flex>
+                <Card className={b('about-card')} style={sectionStyle}>
+                    <Typography.Paragraph
+                        className={b('about-text')}
+                        style={{color: colorTextSecondary}}
+                    >
+                        {t('resume.about.professional')}
+                    </Typography.Paragraph>
+                    <Typography.Paragraph
+                        className={b('about-text')}
+                        style={{color: colorTextSecondary}}
+                    >
+                        {t('resume.about.personal')}
+                    </Typography.Paragraph>
+                </Card>
             </section>
 
             <section className={b('section')}>
@@ -529,6 +618,51 @@ export const ResumePage = () => {
                         </Typography.Text>
                     </Card>
                 ))}
+            </section>
+
+            <section className={b('section')}>
+                <Flex align='center' gap={10} className={b('section-heading')}>
+                    <GlobalOutlined style={{color: colorPrimary}} />
+                    <Typography.Title level={2}>
+                        {t('resume.languages.title')}
+                    </Typography.Title>
+                </Flex>
+                <Card className={b('languages-card')} style={sectionStyle}>
+                    <div className={b('languages-list')}>
+                        {languages.map((language) => (
+                            <div
+                                key={language.code}
+                                className={b('language')}
+                                style={{
+                                    backgroundColor: colorPrimaryBg,
+                                    borderColor: colorBorderSecondary,
+                                }}
+                            >
+                                <Typography.Text
+                                    strong
+                                    className={b('language-code')}
+                                    style={{color: colorPrimary}}
+                                >
+                                    {language.code}
+                                </Typography.Text>
+                                <div className={b('language-copy')}>
+                                    <Typography.Text
+                                        strong
+                                        className={b('language-name')}
+                                    >
+                                        {language.name}
+                                    </Typography.Text>
+                                    <Typography.Text
+                                        className={b('language-level')}
+                                        style={{color: colorTextSecondary}}
+                                    >
+                                        {language.level}
+                                    </Typography.Text>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </Card>
             </section>
 
             <section className={b('section')}>

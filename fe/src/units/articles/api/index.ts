@@ -7,6 +7,7 @@ import {
     DtoCreateArticle,
     DtoUpdateArticle,
     DtoUpdateArticleContent,
+    DtoUpdateArticleDescription,
     DtoUpdateArticleImage,
     DtoUpdateArticleReadTime,
     DtoUpdateArticleTags,
@@ -29,6 +30,16 @@ const api: ArticleApi = {
         const {id, title} = data;
         const response = await query.patch<Article>(`articles/${id}`, {
             title,
+        });
+        return response;
+    },
+
+    updateDescription: async (
+        data: DtoUpdateArticleDescription
+    ): Promise<Article> => {
+        const {id, description} = data;
+        const response = await query.patch<Article>(`articles/${id}`, {
+            description,
         });
         return response;
     },
@@ -68,7 +79,9 @@ const api: ArticleApi = {
     },
 
     delete: async (id: string): Promise<void> => {
-        return await query.delete(`articles/${id}`);
+        return await query.delete(`articles/${id}`, {
+            skipErrorRedirect: true,
+        });
     },
 
     getById: async (id: string): Promise<Article> => {

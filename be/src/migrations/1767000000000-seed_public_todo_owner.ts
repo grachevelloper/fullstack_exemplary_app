@@ -1,10 +1,8 @@
 import bcrypt from "bcrypt";
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-import {
-    PUBLIC_TODO_OWNER_EMAIL,
-    PUBLIC_TODO_OWNER_USERNAME,
-} from "@/todos/constants";
+const PUBLIC_TODO_OWNER_EMAIL = "gracheveloper@gmail.com";
+const PUBLIC_TODO_OWNER_USERNAME = "Коля Грачев";
 
 export class SeedPublicTodoOwner1767000000000 implements MigrationInterface {
     name = "SeedPublicTodoOwner1767000000000";

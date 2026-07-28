@@ -53,7 +53,6 @@ export const ArticlesList = ({
                 {skeletons.map((_: Article, index: number) => (
                     <Col
                         key={index}
-                        xl={6}
                         md={12}
                         xs={24}
                         className={b('col')}
@@ -72,7 +71,6 @@ export const ArticlesList = ({
             {articles.map((article: Article) => (
                 <Col
                     key={article.id}
-                    xl={6}
                     md={12}
                     xs={24}
                     className={b('col')}

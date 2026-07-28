@@ -1,6 +1,6 @@
 import {query} from '@/shared/configs/api';
 
-import {User} from '../types';
+import {Nowadays, User} from '../types';
 
 import {
     DtoChangePassword,
@@ -54,6 +54,10 @@ const Api: UserApi = {
 
     getMe: async () => {
         return await query.get<User>('/users/me');
+    },
+
+    getNowadays: async () => {
+        return await query.get<Nowadays | null>('/users/nowadays');
     },
 
     updateMe: async (data: Omit<DtoUpdateUser, 'id'>) => {

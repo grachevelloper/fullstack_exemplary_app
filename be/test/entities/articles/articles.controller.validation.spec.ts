@@ -17,6 +17,7 @@ describe("ArticlesController validation", () => {
     } as AuthenticatedUser;
     const articlesService = {
         create: jest.fn(),
+        update: jest.fn(),
     };
 
     beforeEach(async () => {
@@ -51,5 +52,14 @@ describe("ArticlesController validation", () => {
             actor,
             data: {},
         });
+    });
+
+    it("rejects an article description longer than 300 characters", async () => {
+        await request(app.getHttpServer())
+            .patch("/api/articles/f43e19d0-8c1a-41d4-81b2-983d19648916")
+            .send({description: "a".repeat(301)})
+            .expect(400);
+
+        expect(articlesService.update).not.toHaveBeenCalled();
     });
 });

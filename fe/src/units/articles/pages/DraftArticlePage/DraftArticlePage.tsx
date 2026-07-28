@@ -1,7 +1,8 @@
 import {MDXEditorMethods} from '@mdxeditor/editor';
 import {
-    Button,
     Col,
+    Form,
+    Grid,
     Image,
     Input,
     InputNumber,
@@ -22,7 +23,9 @@ import {useAuth} from '@/shared/context';
 import {useSidebar} from '@/shared/context/Sidebar';
 import {useDebouncedCallback} from '@/shared/hooks';
 import {DEBOUNCE_ARTICLE_UPDATE_MS} from '@/shared/utils';
+import {Role} from '@/typings/common';
 
+import {DeleteArticleButton} from '../../components/DeleteArticleButton';
 import {TagsSelect} from '../../components/TagsSelect';
 import {TagsWrapper} from '../../components/TagsWrapper';
 import {ViewModeToggle} from '../../components/ViewModeToggle';
@@ -33,13 +36,16 @@ import {Article, Tag, UpdateDraftField} from '../../types';
 import './DraftArticlePage.scss';
 
 const b = block('draft-article-page');
+const DESCRIPTION_MAX_LENGTH = 300;
 
 export const DraftArticlePage = () => {
+    const [form] = Form.useForm<{description: string}>();
     const {user} = useAuth();
     const mdRef = useRef<MDXEditorMethods>(null);
     const {
-        token: {padding},
+        token: {padding, paddingXL},
     } = theme.useToken();
+    const screens = Grid.useBreakpoint();
     const {t} = useTranslation('article');
     const {t: tCommon} = useTranslation('common');
     const navigate = useNavigate();
@@ -48,6 +54,7 @@ export const DraftArticlePage = () => {
 
     const {
         updateTitle,
+        updateDescription,
         updateContent,
         updateTags,
         updateImage,
@@ -78,6 +85,9 @@ export const DraftArticlePage = () => {
 
     const {error: errorUpdatingTitle, mutateAsync: mutateTitle} = updateTitle;
 
+    const {error: errorUpdatingDescription, mutateAsync: mutateDescription} =
+        updateDescription;
+
     const {
         error: errorPublish,
         isPending: isPublishingPending,
@@ -91,6 +101,7 @@ export const DraftArticlePage = () => {
 
     const updateErrors = {
         title: !!errorUpdatingTitle,
+        description: !!errorUpdatingDescription,
         content: !!errorUpdatingContent,
         tags: !!updateTags.error,
         image: !!errorUpdatingImage,
@@ -105,6 +116,7 @@ export const DraftArticlePage = () => {
     const contextHolder = useUpdateErrors(errorFields);
     const isSaving =
         updateTitle.isPending ||
+        updateDescription.isPending ||
         updateContent.isPending ||
         updateTags.isPending ||
         updateImage.isPending ||
@@ -113,8 +125,11 @@ export const DraftArticlePage = () => {
     useEffect(() => {
         if (!isArticleLoading && serverArticle) {
             setLocalArticle(serverArticle);
+            form.setFieldsValue({
+                description: serverArticle.description || '',
+            });
         }
-    }, [serverArticle, isArticleLoading]);
+    }, [form, serverArticle, isArticleLoading]);
 
     const debouncedUpdateTitle = useDebouncedCallback(
         async (title: string) => {
@@ -134,6 +149,16 @@ export const DraftArticlePage = () => {
         },
         DEBOUNCE_ARTICLE_UPDATE_MS,
         [draftId, mutateContent]
+    );
+
+    const debouncedUpdateDescription = useDebouncedCallback(
+        async (newDescription: string) => {
+            if (!draftId) return;
+
+            await mutateDescription(draftId, newDescription);
+        },
+        DEBOUNCE_ARTICLE_UPDATE_MS,
+        [draftId, mutateDescription]
     );
 
     const debouncedUpdateImage = useDebouncedCallback(
@@ -181,6 +206,23 @@ export const DraftArticlePage = () => {
         [debouncedUpdateContent]
     );
 
+    const handleDescriptionChange = useCallback(
+        (newDescription: string) => {
+            setLocalArticle((prev) => ({
+                ...prev,
+                description: newDescription,
+            }));
+            if (
+                newDescription.trim() &&
+                form.getFieldError('description').length
+            ) {
+                form.setFields([{name: 'description', errors: []}]);
+            }
+            debouncedUpdateDescription(newDescription);
+        },
+        [debouncedUpdateDescription, form]
+    );
+
     const handleImageChange = useCallback(
         (newImage: string) => {
             setLocalArticle((prev) => ({...prev, image: newImage}));
@@ -211,10 +253,10 @@ export const DraftArticlePage = () => {
     );
 
     const handlePublish = useCallback(async () => {
-        if (draftId) {
-            await mutatePublishDraft(draftId, false);
-            navigate(`/articles/${draftId}`);
-        }
+        if (!draftId) return;
+
+        await mutatePublishDraft(draftId, false);
+        navigate(`/articles/${draftId}`);
     }, [draftId, mutatePublishDraft, navigate]);
 
     useEffect(() => {
@@ -224,10 +266,15 @@ export const DraftArticlePage = () => {
     }, [isArticleLoading, serverArticle?.content]);
 
     useEffect(() => {
-        if (user?.id && author?.id && user.id !== author.id) {
+        if (
+            user?.id &&
+            author?.id &&
+            user.id !== author.id &&
+            user.role !== Role.ADMIN
+        ) {
             navigate('/no-permission');
         }
-    }, [author?.id, navigate, user?.id]);
+    }, [author?.id, navigate, user?.id, user?.role]);
 
     if (!localArticle) {
         return (
@@ -238,121 +285,100 @@ export const DraftArticlePage = () => {
     }
 
     return (
-        <div className={b({reading: isCollapsed})} style={{padding}}>
+        <div
+            className={b({reading: isCollapsed})}
+            style={{
+                paddingBlock: padding,
+                paddingInline: screens.md ? paddingXL : padding,
+            }}
+        >
             {contextHolder}
 
             <ViewModeToggle />
-            <Row gutter={[16, 16]} align='top' className={b('header')}>
-                <Col xs={24} lg={16}>
-                    <Input
-                        value={title}
-                        onChange={(e) => handleTitleChange(e.target.value)}
-                        placeholder={t('articles.form.title.placeholder')}
-                        variant='borderless'
-                        data-marker='draft-title-input'
-                        disabled={updateTitle.isPending}
-                        className={b('title-input')}
-                    />
-                </Col>
-                <Col xs={24} lg={8} className={b('meta')}>
-                    <Space wrap size={[8, 8]} className={b('meta-actions')}>
-                        {updatedAt && (
-                            <Typography.Text type='secondary'>
-                                {tCommon('updated-at', {
-                                    date: new Date(updatedAt).toLocaleString(),
-                                })}
-                            </Typography.Text>
-                        )}
-                        {isSaving && (
-                            <Typography.Text
-                                type='secondary'
-                                data-marker='draft-save-button'
-                            >
-                                {t('article.draft.saving')}
-                            </Typography.Text>
-                        )}
-                        <Button
-                            type='primary'
-                            loading={isPublishingPending}
-                            onClick={() => {
-                                void handlePublish();
-                            }}
-                            data-marker='draft-publish-button'
-                        >
-                            {t('article.draft.publish')}
-                        </Button>
-                    </Space>
-                </Col>
-            </Row>
-
-            <Row gutter={[16, 16]} className={b('settings')}>
-                <Col xs={24} lg={16}>
-                    <Input
-                        value={image}
-                        onChange={(e) => handleImageChange(e.target.value)}
-                        onBlur={(e) => handleImageBlur(e.target.value)}
-                        placeholder={t('articles.form.image.placeholder')}
-                        addonBefore={t('articles.form.image.label')}
-                        disabled={updateImage.isPending}
-                        data-marker='draft-image-input'
-                    />
-                </Col>
-                <Col xs={24} lg={8}>
-                    <InputNumber
-                        min={1}
-                        value={readTime}
-                        onChange={handleReadTimeChange}
-                        addonBefore={t('articles.form.readTime.label')}
-                        addonAfter={t('articles.form.readTime.after')}
-                        disabled={updateReadTime.isPending}
-                        data-marker='draft-read-time-input'
-                        className={b('read-time-input')}
-                    />
-                </Col>
-            </Row>
-
-            {image && (
-                <Row className={b('cover')}>
-                    <Col span={24}>
-                        <Image
-                            src={image}
-                            alt={title}
-                            className={b('cover-image')}
-                            preview={false}
+            <Form
+                form={form}
+                component={false}
+                onFinish={() => {
+                    void handlePublish();
+                }}
+            >
+                <Row gutter={[16, 16]} align='top' className={b('header')}>
+                    <Col xs={24} lg={16}>
+                        <Input
+                            value={title}
+                            onChange={(e) => handleTitleChange(e.target.value)}
+                            placeholder={t('articles.form.title.placeholder')}
+                            variant='borderless'
+                            data-marker='draft-title-input'
+                            disabled={updateTitle.isPending}
+                            className={b('title-input')}
                         />
                     </Col>
+                    <Col xs={24} lg={8} className={b('meta')}>
+                        <Space wrap size={[8, 8]} className={b('meta-actions')}>
+                            {updatedAt && (
+                                <Typography.Text type='secondary'>
+                                    {tCommon('updated-at', {
+                                        date: new Date(
+                                            updatedAt
+                                        ).toLocaleString(),
+                                    })}
+                                </Typography.Text>
+                            )}
+                            {isSaving && (
+                                <Typography.Text
+                                    type='secondary'
+                                    data-marker='draft-save-button'
+                                >
+                                    {t('article.draft.saving')}
+                                </Typography.Text>
+                            )}
+                        </Space>
+                    </Col>
                 </Row>
-            )}
 
-            <Row align='middle' gutter={[12, 12]} className={b('tags-row')}>
-                <Col>
-                    <Typography.Text type='secondary'>
-                        {t('articles.form.tags.label')}
-                    </Typography.Text>
-                </Col>
-                <Col flex='auto'>
-                    <Space wrap size={[8, 8]}>
-                        <TagsSelect
-                            onChange={(newTags) => {
-                                void handleTagsChange(newTags);
-                            }}
-                            value={tags}
-                        />
-                        <TagsWrapper
-                            tags={tags}
-                            editable={{
-                                onChange: (newTags) => {
-                                    void handleTagsChange(newTags);
+                <Row className={b('description-row')}>
+                    <Col span={24}>
+                        <Typography.Text
+                            className={b('description-label')}
+                            strong
+                        >
+                            {t('articles.form.description.label')}
+                        </Typography.Text>
+                        <Form.Item
+                            name='description'
+                            validateTrigger={[]}
+                            rules={[
+                                {
+                                    required: true,
+                                    whitespace: true,
+                                    message: t(
+                                        'articles.form.description.required'
+                                    ),
                                 },
-                            }}
-                            isPending={updateTags.isPending}
-                        />
-                    </Space>
-                </Col>
-            </Row>
+                            ]}
+                        >
+                            <Input.TextArea
+                                onChange={(event) =>
+                                    handleDescriptionChange(event.target.value)
+                                }
+                                placeholder={t(
+                                    'articles.form.description.placeholder'
+                                )}
+                                maxLength={DESCRIPTION_MAX_LENGTH}
+                                showCount
+                                autoSize={{minRows: 2, maxRows: 5}}
+                                disabled={updateDescription.isPending}
+                                data-marker='draft-description-input'
+                                className={b('description-input')}
+                            />
+                        </Form.Item>
+                    </Col>
+                </Row>
+            </Form>
 
-            <Row className={b('editor-row')}>
-                <Col span={24}>
+            <Row gutter={[24, 24]} align='top' className={b('workspace')}>
+                <Col xs={24} xl={17} className={b('editor-column')}>
                     <MdEditor
                         ref={mdRef}
                         placeholder={t('article.placeholder')}
@@ -364,17 +390,101 @@ export const DraftArticlePage = () => {
                         entityType='article'
                     />
                 </Col>
+                <Col xs={24} xl={7}>
+                    <aside className={b('sidebar')}>
+                        <div className={b('sidebar-section')}>
+                            <Typography.Text
+                                className={b('sidebar-label')}
+                                strong
+                            >
+                                {t('articles.form.image.label')}
+                            </Typography.Text>
+                            <Input
+                                value={image}
+                                onChange={(e) =>
+                                    handleImageChange(e.target.value)
+                                }
+                                onBlur={(e) => handleImageBlur(e.target.value)}
+                                placeholder={t(
+                                    'articles.form.image.placeholder'
+                                )}
+                                disabled={updateImage.isPending}
+                                data-marker='draft-image-input'
+                            />
+                            {image && (
+                                <Image
+                                    src={image}
+                                    alt={title}
+                                    className={b('cover-image')}
+                                    rootClassName={b('cover')}
+                                    preview={false}
+                                />
+                            )}
+                        </div>
+
+                        <div className={b('sidebar-section')}>
+                            <Typography.Text
+                                className={b('sidebar-label')}
+                                strong
+                            >
+                                {t('articles.form.readTime.label')}
+                            </Typography.Text>
+                            <InputNumber
+                                min={1}
+                                value={readTime}
+                                onChange={handleReadTimeChange}
+                                addonAfter={t('articles.form.readTime.after')}
+                                disabled={updateReadTime.isPending}
+                                data-marker='draft-read-time-input'
+                                className={b('read-time-input')}
+                            />
+                        </div>
+
+                        <div className={b('sidebar-section')}>
+                            <Typography.Text
+                                className={b('sidebar-label')}
+                                strong
+                            >
+                                {t('articles.form.tags.label')}
+                            </Typography.Text>
+                            <Space
+                                direction='vertical'
+                                size={10}
+                                className={b('tags')}
+                            >
+                                <TagsSelect
+                                    onChange={(newTags) => {
+                                        void handleTagsChange(newTags);
+                                    }}
+                                    value={tags}
+                                />
+                                <TagsWrapper
+                                    tags={tags}
+                                    editable={{
+                                        onChange: (newTags) => {
+                                            void handleTagsChange(newTags);
+                                        },
+                                    }}
+                                    isPending={updateTags.isPending}
+                                />
+                            </Space>
+                        </div>
+                    </aside>
+                </Col>
             </Row>
             <Row justify='end' className={b('footer')}>
                 <Col>
-                    <ButtonAccept
-                        text={t('article.draft.publish')}
-                        loading={isPublishingPending}
-                        onClick={() => {
-                            void handlePublish();
-                        }}
-                        className={b('button-publish')}
-                    />
+                    <Space wrap>
+                        <ButtonAccept
+                            text={t('article.draft.publish')}
+                            loading={isPublishingPending}
+                            onClick={() => form.submit()}
+                            className={b('button-publish')}
+                        />
+                        {serverArticle && (
+                            <DeleteArticleButton article={serverArticle} />
+                        )}
+                    </Space>
                 </Col>
             </Row>
         </div>

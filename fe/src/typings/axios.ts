@@ -3,10 +3,12 @@ import {AxiosError, InternalAxiosRequestConfig} from 'axios';
 declare module 'axios' {
     export interface AxiosRequestConfig {
         skipAuthRedirect?: boolean;
+        skipErrorRedirect?: boolean;
     }
 
     export interface InternalAxiosRequestConfig {
         skipAuthRedirect?: boolean;
+        skipErrorRedirect?: boolean;
     }
 }
 

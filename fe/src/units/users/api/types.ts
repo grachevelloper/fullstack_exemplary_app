@@ -1,4 +1,4 @@
-import {User} from '../types';
+import {Nowadays, User} from '../types';
 
 export type SignResponse = User;
 
@@ -32,6 +32,7 @@ export interface UserApi {
     signUp: (signUpData: DtoSignUpUser) => Promise<User>;
     logout: () => Promise<void>;
     getMe: () => Promise<User>;
+    getNowadays: () => Promise<Nowadays | null>;
     updateMe: (updateData: Omit<DtoUpdateUser, 'id'>) => Promise<User>;
     changeMyPassword: (data: DtoChangePassword) => Promise<void>;
     getUserById: (id: string) => Promise<User>;

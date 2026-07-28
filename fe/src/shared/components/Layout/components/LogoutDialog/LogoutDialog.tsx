@@ -23,6 +23,7 @@ export const LogoutDialog = ({isOpen, onCancel}: LogoutDialogProps) => {
 
     const handleLogout = useCallback(() => {
         mutate();
+        onCancel();
     }, [mutate]);
 
     return (

@@ -115,6 +115,18 @@ describe("ArticlesController", () => {
         ).toBe(HttpStatus.NO_CONTENT);
     });
 
+    it("passes deletion actor and article id to the service", async () => {
+        const service = {
+            delete: jest.fn<ArticlesService["delete"]>().mockResolvedValue(),
+        } as unknown as ArticlesService;
+        const controller = new ArticlesController(service);
+        const id = "82c130b1-1c47-4a0c-8a1c-e79cc39282ad";
+
+        await controller.delete(actor, id);
+
+        expect(service.delete).toHaveBeenCalledWith({actor, id});
+    });
+
     it("uses UUID parsing for article id route parameters", () => {
         const routeArgs = Reflect.getMetadata(
             ROUTE_ARGS_METADATA,

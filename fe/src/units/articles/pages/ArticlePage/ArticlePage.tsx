@@ -10,6 +10,7 @@ import {NotFoundPage} from '@/shared/pages/NotFoundPage';
 import {formatDate} from '@/shared/utils';
 
 import {ArticleTag} from '../../components/ArticleTag';
+import {DeleteArticleButton} from '../../components/DeleteArticleButton';
 import {useGetArticleById} from '../../store';
 import {type Tag} from '../../types';
 
@@ -113,6 +114,11 @@ export const ArticlePage = () => {
                                         date: formatDate(data?.createdAt),
                                     })}
                                 </Text>
+                            </Col>
+                        )}
+                        {data && (
+                            <Col>
+                                <DeleteArticleButton article={data} />
                             </Col>
                         )}
                     </Row>

@@ -10,7 +10,7 @@ import Lottie from 'lottie-react';
 import type {ReactNode} from 'react';
 import {useTranslation} from 'react-i18next';
 
-import {useAuth} from '@/shared/context';
+import {useNowadays} from '@/users/store';
 
 import booksAnimation from '@/public/lottie/books.json';
 import movieAnimation from '@/public/lottie/movie.json';
@@ -30,12 +30,9 @@ type NowadaysData = {
 
 export const Nowadays = () => {
     const {t} = useTranslation('todo');
-    const {user} = useAuth();
+    const {data: nowadays} = useNowadays();
     const {
         token: {
-            borderRadius,
-            colorBgContainer,
-            colorBorderSecondary,
             colorPrimary,
             colorText,
             colorTextSecondary,
@@ -44,25 +41,25 @@ export const Nowadays = () => {
     const data: NowadaysData[] = [
         {
             title: t('todo.nowadays.place.title'),
-            content: user?.nowBeingIn ?? '',
+            content: nowadays?.nowBeingIn ?? '',
             icon: <EnvironmentOutlined />,
             lottie: placeAnimation,
         },
         {
             title: t('todo.nowadays.book.title'),
-            content: user?.nowReading ?? '',
+            content: nowadays?.nowReading ?? '',
             icon: <ReadOutlined />,
             lottie: booksAnimation,
         },
         {
             title: t('todo.nowadays.series.title'),
-            content: user?.nowWatch ?? '',
+            content: nowadays?.nowWatch ?? '',
             icon: <PlayCircleOutlined />,
             lottie: movieAnimation,
         },
         {
             title: t('todo.nowadays.music.title'),
-            content: user?.nowListening ?? '',
+            content: nowadays?.nowListening ?? '',
             icon: <CustomerServiceOutlined />,
             lottie: musicAnimation,
         },

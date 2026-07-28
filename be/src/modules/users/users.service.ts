@@ -42,6 +42,10 @@ export class UsersService {
         return this.usersRepository.findOneBy({yandexId});
     }
 
+    async findAdmin(): Promise<User | null> {
+        return this.usersRepository.findOneBy({role: Role.ADMIN});
+    }
+
     async findForActor(id: string, actor: AuthenticatedUser): Promise<User> {
         this.assertSelfOrAdmin(id, actor);
         return this.findById(id);

@@ -51,6 +51,7 @@ describe("ArticlesService", () => {
     const article = Object.assign(new Article(), {
         id: "f43e19d0-8c1a-41d4-81b2-983d19648916",
         title: "Article",
+        description: "A concise article description",
         image: "https://cdn.example.com/image.png",
         content: "Content",
         readTime: 4,
@@ -140,6 +141,7 @@ describe("ArticlesService", () => {
             expect.objectContaining({
                 author,
                 content: "Content",
+                description: "",
                 isDraft: true,
                 tags,
                 title: "Article",
@@ -179,6 +181,7 @@ describe("ArticlesService", () => {
         expect(repository.create).toHaveBeenCalledWith(
             expect.objectContaining({
                 content: "",
+                description: "",
                 isDraft: true,
                 title: "Article",
             }),
@@ -206,6 +209,7 @@ describe("ArticlesService", () => {
         expect(repository.create).toHaveBeenCalledWith(
             expect.objectContaining({
                 content: "",
+                description: "",
                 isDraft: true,
                 title: "Untitled article",
             }),
@@ -250,6 +254,23 @@ describe("ArticlesService", () => {
             expect.objectContaining({isDraft: false}),
         );
         expect(result.isDraft).toBe(false);
+    });
+
+    it("rejects publishing a draft without a description", async () => {
+        repository.findOne.mockResolvedValue({
+            ...article,
+            description: "   ",
+            isDraft: true,
+        });
+
+        await expect(
+            service.publish({id: article.id, actor: owner}),
+        ).rejects.toThrow(
+            new BadRequestException(
+                "Article description is required before publishing",
+            ),
+        );
+        expect(repository.save).not.toHaveBeenCalled();
     });
 
     it("rejects publishing an already published article", async () => {
@@ -329,18 +350,39 @@ describe("ArticlesService", () => {
         await expect(
             service.delete({id: article.id, actor: owner}),
         ).rejects.toBeInstanceOf(NotFoundException);
-        expect(repository.delete).not.toHaveBeenCalled();
+        expect(
+            aggregateDeletionService.deleteArticleAggregate,
+        ).not.toHaveBeenCalled();
     });
 
-    it("delegates physical article aggregate deletion after mutation access check", async () => {
-        repository.findOne.mockResolvedValue(article);
-        aggregateDeletionService.deleteArticleAggregate.mockResolvedValue();
+    it.each([
+        {actor: owner, isDraft: true, scenario: "owner draft"},
+        {actor: owner, isDraft: false, scenario: "owner published article"},
+        {actor: admin, isDraft: true, scenario: "administrator foreign draft"},
+        {
+            actor: admin,
+            isDraft: false,
+            scenario: "administrator foreign published article",
+        },
+    ])("deletes an article for $scenario", async ({actor, isDraft}) => {
+        repository.findOne.mockResolvedValue({...article, isDraft});
 
-        await service.delete({id: article.id, actor: owner});
+        await service.delete({id: article.id, actor});
 
         expect(aggregateDeletionService.deleteArticleAggregate).toHaveBeenCalledWith(
             article.id,
         );
+    });
+
+    it("forbids deleting another user's article", async () => {
+        repository.findOne.mockResolvedValue({...article, isDraft: false});
+
+        await expect(
+            service.delete({id: article.id, actor: stranger}),
+        ).rejects.toBeInstanceOf(ForbiddenException);
+        expect(
+            aggregateDeletionService.deleteArticleAggregate,
+        ).not.toHaveBeenCalled();
     });
 });
 
