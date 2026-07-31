@@ -18,6 +18,7 @@ import {TodosModule} from "@/todos/todos.module";
 import {UsersModule} from "@/users/users.module";
 
 import dataSourceOptions from "./data-source";
+import {HealthModule} from "./health/health.module";
 
 dotenv.config();
 
@@ -33,7 +34,6 @@ dotenv.config();
             useFactory: () => ({
                 ...dataSourceOptions,
                 autoLoadEntities: true,
-                migrationsRun: true,
                 migrationsTableName: "migrations",
             }),
             inject: [ConfigService],
@@ -46,6 +46,7 @@ dotenv.config();
         ArticlesModule,
         TagsModule,
         AttachmentModule,
+        HealthModule,
     ],
     providers: [
         {
