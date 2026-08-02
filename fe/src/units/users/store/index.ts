@@ -4,7 +4,7 @@ import {queryClient} from '@/shared/configs/api';
 import {useAuth} from '@/shared/context';
 
 import api from '../api';
-import {DtoChangePassword, DtoSignInUser, DtoSignUpUser, DtoUpdateUser} from '../api/types';
+import {DtoSignInUser, DtoSignUpUser, DtoUpdateUser} from '../api/types';
 
 export const nowadaysQueryKey = ['users', 'nowadays'] as const;
 
@@ -60,13 +60,6 @@ export const useUpdateMeMutation = () => {
                 nowWatch: user.nowWatch,
             });
         },
-    });
-};
-
-export const useChangeMyPasswordMutation = () => {
-    return useMutation({
-        mutationKey: ['users', 'me', 'password'],
-        mutationFn: (data: DtoChangePassword) => api.changeMyPassword(data),
     });
 };
 

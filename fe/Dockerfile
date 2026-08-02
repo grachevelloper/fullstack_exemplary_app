@@ -1,4 +1,4 @@
-FROM node:20-alpine AS build
+FROM node:24-alpine AS build
 
 RUN corepack enable
 
@@ -13,7 +13,7 @@ COPY . .
 
 RUN pnpm run build
 
-FROM nginx:1.27-alpine
+FROM nginx:stable-alpine
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY public /usr/share/nginx/html
