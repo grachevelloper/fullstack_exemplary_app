@@ -35,16 +35,22 @@ Stop the infrastructure with:
 docker compose -f be/dev/db/compose.yaml down
 ```
 
-## Complete Docker stack
+## VPS deployment
 
-From the repository root:
+The root `docker-compose.yaml` is the single production Compose configuration.
+Before the first deployment, create `.env` from `.env.example`, set real secrets
+and the domain, then obtain the TLS certificate:
 
 ```bash
-docker compose up --build
+sh scripts/prod/bootstrap-tls.sh
 ```
 
-Stop it with `docker compose down`.
+For subsequent releases, run:
+
+```bash
+sh scripts/prod/deploy.sh
+```
 
 ## Requirements
 
-Docker must be running, and ports 80, 3000, 5173, and 5432 must be free. Names ending in `.localhost` resolve to the loopback interface in modern browsers, so `/etc/hosts` normally does not need to be changed.
+Docker must be running. Local host development uses ports 3000 and 5173; the VPS deployment needs ports 80 and 443. Names ending in `.localhost` resolve to the loopback interface in modern browsers, so `/etc/hosts` normally does not need to be changed.

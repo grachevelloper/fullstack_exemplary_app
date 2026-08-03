@@ -5,6 +5,7 @@ import {SnakeNamingStrategy} from "typeorm-naming-strategies";
 dotenv.config({path: "../.env"});
 
 const {NODE_ENV} = process.env;
+const isProduction = NODE_ENV === "production";
 
 const AppDataSource = new DataSource({
     type: "postgres",
@@ -13,8 +14,10 @@ const AppDataSource = new DataSource({
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: ["src/**/*.entity.ts"],
-    migrations: ["src/migrations/**/*.ts"],
+    entities: [isProduction ? "dist/src/**/*.entity.js" : "src/**/*.entity.ts"],
+    migrations: [
+        isProduction ? "dist/src/migrations/**/*.js" : "src/migrations/**/*.ts",
+    ],
     synchronize: NODE_ENV === "development",
     namingStrategy: new SnakeNamingStrategy(),
     logging: true,
