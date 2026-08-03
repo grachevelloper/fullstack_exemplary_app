@@ -98,9 +98,7 @@ describe("AuthService", () => {
         };
         const jwtService = {
             signAsync: jest
-                .fn<
-                    (payload: {role: Role; sub: string}) => Promise<string>
-                >()
+                .fn<(payload: {sub: string}) => Promise<string>>()
                 .mockResolvedValue("new-access"),
         };
         const service = createService({
@@ -123,7 +121,6 @@ describe("AuthService", () => {
         );
         expect(jwtService.signAsync).toHaveBeenCalledWith({
             sub: user.id,
-            role: Role.USER,
         });
     });
 

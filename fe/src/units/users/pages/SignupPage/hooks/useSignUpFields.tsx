@@ -69,7 +69,10 @@ export const useSignUpFields = (
             autoComplete: 'username',
             label: t('auth.username.label'),
             placeholder: t('auth.username.placeholder'),
-            rules: [{required: true, message: t('auth.username.required')}],
+            rules: [
+                {required: true, message: t('auth.username.required')},
+                {max: 50, message: t('auth.username.max_length')},
+            ],
             index: 1,
             actions: [
                 <ButtonDeny key='username-prev' onClick={handlePrevStep} />,

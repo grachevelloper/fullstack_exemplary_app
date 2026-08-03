@@ -7,17 +7,14 @@ import {
     ParseEnumPipe,
     ParseUUIDPipe,
     Post,
-    UseGuards,
 } from "@nestjs/common";
 
 import {CurrentUser} from "../../shared/decorators/current-user.decorator";
-import {AuthGuard} from "../../shared/guards/auth.guard";
 import {AuthenticatedUser} from "../../types";
 import {LIKE_TARGET_TYPES} from "./likes.dto";
 import {EntityLikeType} from "./likes.entity";
 import {LikesService} from "./likes.service";
 
-@UseGuards(AuthGuard)
 @Controller("likes")
 export class LikesController {
     constructor(private readonly likesService: LikesService) {}

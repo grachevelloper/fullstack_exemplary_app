@@ -50,6 +50,9 @@ export const SignStep = (props: SignStepProps) => {
             key={content.index}
             rootClassName={b(undefined, className)}
             actions={content.actions ? content.actions : []}
+            actionsClassName={
+                content.index === 0 ? b('actions', {welcome: true}) : undefined
+            }
         >
             <div className={b('header')}>
                 <Typography.Text className={b('counter')}>

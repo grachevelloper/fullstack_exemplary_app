@@ -60,7 +60,7 @@ export class AuthService {
 
     async issueTokens(user: User): Promise<TokenPair> {
         const [accessToken, refreshToken] = await Promise.all([
-            this.jwtService.signAsync({sub: user.id, role: user.role}),
+            this.jwtService.signAsync({sub: user.id}),
             this.refreshTokensService.createToken(user.id),
         ]);
 

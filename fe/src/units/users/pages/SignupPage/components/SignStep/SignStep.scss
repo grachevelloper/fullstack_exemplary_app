@@ -74,6 +74,10 @@
         margin-left: auto;
     }
 
+    &__actions_welcome {
+        width: 100%;
+    }
+
     @media (max-width: 576px) {
         padding: 18px;
 
@@ -98,9 +102,28 @@
 
         .flexible-card__actions {
             margin-top: 22px;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+
+            .flexible-card__action-item,
+            .ant-btn {
+                width: 100%;
+            }
+        }
+
+        &__actions_welcome {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+
+            .flexible-card__action-item,
+            .ant-btn {
+                width: 100%;
+            }
 
             .ant-btn {
-                min-width: 0;
+                height: 48px;
             }
         }
     }

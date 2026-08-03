@@ -16,6 +16,7 @@ export const useSignInFields = (
     actions?: SignInFieldActions
 ): FormField[] => {
     const {t} = useTranslation('auth');
+    const isSignup = Boolean(actions);
     const isPasswordValid = useFieldValidation<string>(form, 'password');
     const isEmailValid = useFieldValidation<string>(form, 'email');
 
@@ -30,6 +31,7 @@ export const useSignInFields = (
             rules: [
                 {required: true, message: t('auth.email.required')},
                 {type: 'email', message: t('auth.email.invalid')},
+                {max: 255, message: t('auth.email.max_length')},
             ],
             index: startsWith,
             actions: actions
@@ -55,7 +57,22 @@ export const useSignInFields = (
             label: t('auth.password.label'),
             type: 'password',
             placeholder: t('auth.password.placeholder'),
-            rules: [{required: true, message: t('auth.password.required')}],
+            rules: [
+                {required: true, message: t('auth.password.required')},
+                ...(isSignup
+                    ? [
+                          {
+                              min: 8,
+                              max: 32,
+                              message: t('auth.password.length'),
+                          },
+                          {
+                              pattern: /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/,
+                              message: t('auth.password.strength'),
+                          },
+                      ]
+                    : []),
+            ],
             index: startsWith + 1,
             actions: actions
                 ? [

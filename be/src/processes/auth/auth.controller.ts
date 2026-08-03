@@ -10,7 +10,6 @@ import {
     Req,
     Res,
     UnauthorizedException,
-    UseGuards,
 } from "@nestjs/common";
 import {randomBytes, timingSafeEqual} from "crypto";
 import {Request, Response} from "express";
@@ -21,7 +20,6 @@ import {UsersMapper} from "@/users/users.mapper";
 
 import {Public} from "../../shared/decorators/auth.decorator";
 import {CurrentUser} from "../../shared/decorators/current-user.decorator";
-import {AuthGuard} from "../../shared/guards/auth.guard";
 import {AuthenticatedUser} from "../../types";
 import {AuthService} from "./auth.service";
 import {ACCESS_TOKEN_TTL_IN_MS, REFRESH_TOKEN_TTL_IN_MS} from "./constants";
@@ -176,14 +174,12 @@ export class AuthController {
 
     @HttpCode(HttpStatus.OK)
     @Get("check")
-    @UseGuards(AuthGuard)
     check(@CurrentUser() user: AuthenticatedUser) {
         return !!user;
     }
 
     @HttpCode(HttpStatus.OK)
     @Get("me")
-    @UseGuards(AuthGuard)
     async getMe(
         @CurrentUser() user: AuthenticatedUser,
     ): Promise<UserResponseDto> {

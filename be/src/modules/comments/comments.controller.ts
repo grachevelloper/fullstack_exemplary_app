@@ -11,11 +11,9 @@ import {
     Patch,
     Post,
     Query,
-    UseGuards,
 } from "@nestjs/common";
 
 import {CurrentUser} from "../../shared/decorators/current-user.decorator";
-import {AuthGuard} from "../../shared/guards/auth.guard";
 import {AuthenticatedUser, Order} from "../../types";
 import {
     COMMENT_TARGET_TYPES,
@@ -29,7 +27,6 @@ import {EntityCommentType} from "./comments.entity";
 import {CommentsMapper} from "./comments.mapper";
 import {CommentsService} from "./comments.service";
 
-@UseGuards(AuthGuard)
 @Controller("comments")
 export class CommentsController {
     constructor(private readonly commentsService: CommentsService) {}

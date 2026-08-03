@@ -13,6 +13,7 @@ interface FlexibleCardProps extends Omit<CardProps, 'actions'> {
         | 'space-between'
         | 'space-around';
     actionsVertical?: boolean;
+    actionsClassName?: string;
     className?: string;
 }
 
@@ -20,6 +21,7 @@ export const FlexibleCard: React.FC<FlexibleCardProps> = ({
     actions = [],
     actionsAlign = 'end',
     actionsVertical = false,
+    actionsClassName,
     className,
     children,
     ...cardProps
@@ -34,7 +36,7 @@ export const FlexibleCard: React.FC<FlexibleCardProps> = ({
                     justify={actionsAlign}
                     align='start'
                     vertical={actionsVertical}
-                    className={b('actions')}
+                    className={b('actions', actionsClassName)}
                 >
                     {actions.map((action, index) => (
                         <div key={index} className={b('action-item')}>

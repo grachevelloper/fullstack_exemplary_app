@@ -1,4 +1,5 @@
 import {Alert, Flex, Form, Steps, Typography} from 'antd';
+import axios from 'axios';
 import block from 'bem-cn-lite';
 import {useCallback, useState} from 'react';
 import {useTranslation} from 'react-i18next';
@@ -8,6 +9,7 @@ import {useAuth} from '@/shared/context';
 import {type CardProps, type FormField} from '@/typings/components';
 import {useSignupMutation} from '@/users/store';
 import {type User} from '@/users/types';
+import {ApiErrorResponse} from '@/typings/axios';
 
 import {getYandexOAuthErrorKey} from '../../utils/yandexOAuth';
 
@@ -32,6 +34,24 @@ const initialSignUpData: SignUpFormData = {
     confirmPassword: '',
 };
 
+const getValidationErrorField = (messages: string[]) => {
+    const message = messages.join(' ').toLowerCase();
+
+    if (message.includes('парол') || message.includes('password')) {
+        return {name: 'password', step: 3} as const;
+    }
+
+    if (message.includes('почт') || message.includes('email')) {
+        return {name: 'email', step: 2} as const;
+    }
+
+    if (message.includes('имя') || message.includes('username')) {
+        return {name: 'username', step: 1} as const;
+    }
+
+    return undefined;
+};
+
 export const SignupPage = () => {
     const {t} = useTranslation('auth');
     const [searchParams] = useSearchParams();
@@ -43,19 +63,42 @@ export const SignupPage = () => {
     const {isPending, isError, mutateAsync} = useSignupMutation();
 
     const handleSubmit = useCallback(async () => {
-        const userData = await form.validateFields([
-            'email',
-            'password',
-            'confirmPassword',
-            'username',
-        ]);
-        const user = await mutateAsync({
-            email: userData.email,
-            password: userData.password,
-            username: userData.username,
-        });
-        form.resetFields();
-        setRegisteredUser(user);
+        try {
+            const userData = await form.validateFields([
+                'email',
+                'password',
+                'confirmPassword',
+                'username',
+            ]);
+            const user = await mutateAsync({
+                email: userData.email,
+                password: userData.password,
+                username: userData.username,
+            });
+            form.resetFields();
+            setRegisteredUser(user);
+        } catch (error) {
+            if (!axios.isAxiosError<ApiErrorResponse>(error)) {
+                throw error;
+            }
+
+            const messages = error.response?.data.message;
+            const validationMessages = Array.isArray(messages)
+                ? messages
+                : messages
+                  ? [messages]
+                  : [];
+            const validationField = getValidationErrorField(validationMessages);
+
+            if (validationField) {
+                form.setFields([
+                    {name: validationField.name, errors: validationMessages},
+                ]);
+                setSignStep(validationField.step);
+            }
+
+            throw error;
+        }
     }, [form, mutateAsync]);
 
     const signUpFields = useSignUpFields(

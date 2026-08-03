@@ -362,11 +362,44 @@
 
         &__hero {
             grid-template-columns: 1fr;
-            padding: 20px;
+            gap: 20px;
+            padding: 16px;
+            border-radius: 16px;
         }
 
         &__avatar-wrap {
-            width: min(48vw, 164px);
+            width: 100%;
+            aspect-ratio: 564 / 554;
+            border-radius: 12px;
+        }
+
+        &__title {
+            font-size: clamp(34px, 10vw, 44px) !important;
+            line-height: 1 !important;
+        }
+
+        &__role {
+            margin-top: 8px;
+            font-size: 20px;
+        }
+
+        &__summary {
+            margin-top: 14px !important;
+            font-size: 17px;
+            line-height: 1.55;
+        }
+
+        &__section {
+            margin-top: 40px;
+        }
+
+        &__section-heading {
+            gap: 8px;
+            margin-bottom: 16px;
+
+            h2 {
+                font-size: 24px !important;
+            }
         }
 
         &__summary,
@@ -378,7 +411,62 @@
         }
 
         &__timeline-item {
-            gap: 16px;
+            grid-template-columns: 10px minmax(0, 1fr);
+            gap: 12px;
+            padding: 16px;
+            border: 1px solid rgb(15 23 42 / 8%);
+            border-radius: 16px;
+            background: color-mix(
+                in srgb,
+                var(--ant-color-bg-container) 82%,
+                transparent
+            );
+
+            &::before {
+                display: none;
+            }
+
+            &:hover {
+                transform: none;
+            }
+        }
+
+        &__dot {
+            width: 10px;
+            height: 10px;
+            margin-top: 9px;
+        }
+
+        &__item-head {
+            flex-wrap: nowrap;
+            gap: 8px;
+            margin-bottom: 6px;
+
+            h3 {
+                font-size: 20px !important;
+                line-height: 1.2 !important;
+            }
+        }
+
+        &__item-heading-copy {
+            flex-basis: auto;
+            gap: 6px 10px;
+        }
+
+        &__period {
+            width: 100%;
+            margin-top: 2px;
+            font-size: 14px;
+        }
+
+        &__experience-toggle {
+            width: 32px;
+            min-width: 32px;
+            height: 32px;
+            border: 1px solid rgb(79 70 229 / 24%);
+            border-radius: 10px;
+            color: #4f46e5;
+            background: rgb(79 70 229 / 6%);
         }
 
         &__skills-grid {
