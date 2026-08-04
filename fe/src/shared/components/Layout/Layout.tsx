@@ -1,7 +1,7 @@
 import {QueryErrorResetBoundary} from '@tanstack/react-query';
 import {Layout as AntLayout, Button, Flex, theme} from 'antd';
 import block from 'bem-cn-lite';
-import {lazy, Suspense, useEffect} from 'react';
+import {lazy, Suspense, useCallback, useEffect} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 import {useTranslation} from 'react-i18next';
 import {MdOutlineMenuOpen} from 'react-icons/md';
@@ -46,8 +46,12 @@ export const Layout = () => {
     const location = useLocation();
     const {isDesktop} = useLayout();
     const {isOffline} = useNetworkStatus();
-    const {value} = useCookie(COOKIE_ACCEPT_KEY);
+    const {value, setValue} = useCookie(COOKIE_ACCEPT_KEY);
     const {isCollapsed, toggleCollapsed, setCollapsed} = useSidebar();
+
+    const handleCookieAccept = useCallback(() => {
+        setValue('true');
+    }, [setValue]);
 
     const {
         token: {colorPrimary, colorTextLightSolid},
@@ -109,7 +113,7 @@ export const Layout = () => {
                         </Suspense>
                         {!value && (
                             <Suspense fallback={null}>
-                                <CookieMessage />
+                                <CookieMessage onAccept={handleCookieAccept} />
                             </Suspense>
                         )}
 

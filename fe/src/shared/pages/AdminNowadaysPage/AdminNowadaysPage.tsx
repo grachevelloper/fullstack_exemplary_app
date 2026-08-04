@@ -5,10 +5,7 @@ import {useEffect} from 'react';
 import {useTranslation} from 'react-i18next';
 
 import {useAuth} from '@/shared/context';
-import {Role} from '@/typings/common';
 import {useUpdateMeMutation} from '@/users/store';
-
-import {NoPermissionPage} from '../NoPermissionPage';
 
 import './AdminNowadaysPage.scss';
 
@@ -41,10 +38,6 @@ export const AdminNowadaysPage = () => {
             nowWatch: user?.nowWatch ?? '',
         });
     }, [form, user]);
-
-    if (user?.role !== Role.ADMIN) {
-        return <NoPermissionPage />;
-    }
 
     const handleFinish = async (values: NowadaysFormValues) => {
         try {

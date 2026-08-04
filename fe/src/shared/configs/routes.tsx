@@ -24,6 +24,7 @@ const routes: RouteProps[] = [
 const authRoutes: RouteProps[] = [...usersRoutes.slice(0, 2)];
 
 const protectedRoutes: Record<string, Role[] | undefined> = {
+    'admin/nowadays': [Role.ADMIN],
     'articles/draft/:id': [Role.ADMIN, Role.WRITER],
     'articles/drafts': [Role.ADMIN, Role.WRITER],
     'todos/new': [Role.ADMIN],

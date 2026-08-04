@@ -3,23 +3,24 @@ import {useCallback, useEffect} from 'react';
 import {useTranslation} from 'react-i18next';
 import {LuCookie} from 'react-icons/lu';
 
-import {useCookie} from '@/shared/hooks/useCookie';
-
-import {ANIMATION__DURATION_IN_MS, COOKIE_ACCEPT_KEY} from '../../constants';
+import {ANIMATION__DURATION_IN_MS} from '../../constants';
 
 const {Text} = Typography;
 
-export const CookieMessage = () => {
+type CookieMessageProps = {
+    onAccept: () => void;
+};
+
+export const CookieMessage = ({onAccept}: CookieMessageProps) => {
     const {t} = useTranslation('common');
     const {token} = theme.useToken();
     const [api, contextHolder] = notification.useNotification();
-    const {setValue} = useCookie(COOKIE_ACCEPT_KEY);
     const notificationKey = 'cookie-notification';
 
     const handleAccept = useCallback(() => {
-        setValue('true');
+        onAccept();
         api.destroy(notificationKey);
-    }, [api, setValue]);
+    }, [api, onAccept]);
 
     useEffect(() => {
         const timeoutId = window.setTimeout(() => {

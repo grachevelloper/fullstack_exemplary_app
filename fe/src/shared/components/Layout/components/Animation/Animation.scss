@@ -2,8 +2,7 @@
 
 .animation {
     position: fixed;
-    height: 100dvh;
-    width: 100dvw;
+    inset: 0;
     z-index: 100000;
 
     &_night {
@@ -209,10 +208,7 @@
 
     &__light {
         position: absolute;
-        left: 0%;
-        top: 0%;
-        width: 100vw;
-        height: 100vh;
+        inset: 0;
 
         background: radial-gradient(
             circle at 80% 20%,
