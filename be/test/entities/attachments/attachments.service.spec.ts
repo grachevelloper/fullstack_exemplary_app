@@ -232,6 +232,23 @@ describe("AttachmentsService", () => {
         expect(storage.delete).not.toHaveBeenCalled();
     });
 
+    it("finds an attachment only when it belongs to the article", async () => {
+        const articleAttachment = Object.assign(new Attachment(), {
+            ...attachment,
+            entityType: "article" as const,
+        });
+        repository.findOneBy.mockResolvedValue(articleAttachment);
+
+        await expect(
+            service.getArticleAttachment(attachment.id, attachment.entityId),
+        ).resolves.toBe(articleAttachment);
+        expect(repository.findOneBy).toHaveBeenCalledWith({
+            id: attachment.id,
+            entityType: "article",
+            entityId: attachment.entityId,
+        });
+    });
+
     it("checks user targets by id", async () => {
         repository.create.mockReturnValue({...attachment, entityType: "user"});
         userRepository.findOne.mockResolvedValue({id: actor.id} as User);

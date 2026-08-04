@@ -1,6 +1,5 @@
-import {Card, Col, Flex, Row, theme, Typography} from 'antd';
+import {Card, Col, Flex, Row, theme} from 'antd';
 import block from 'bem-cn-lite';
-import {useTranslation} from 'react-i18next';
 
 import {useTodosQuery} from '@/todos/store';
 
@@ -13,14 +12,9 @@ import './MainPage.scss';
 const b = block('main-page');
 
 export const MainPage = () => {
-    const {t} = useTranslation('common');
     const {data: todos} = useTodosQuery();
     const {
-        token: {
-            colorBgContainer,
-            colorBorderSecondary,
-            colorPrimaryBg,
-        },
+        token: {colorBgContainer, colorBorderSecondary, colorPrimaryBg},
     } = theme.useToken();
 
     return (
@@ -43,9 +37,6 @@ export const MainPage = () => {
                         >
                             <div className={b('hero-copy')}>
                                 <HelloTitle />
-                                <Typography.Paragraph className={b('lead')}>
-                                    {t('main.lead')}
-                                </Typography.Paragraph>
                             </div>
                         </Flex>
                         <div

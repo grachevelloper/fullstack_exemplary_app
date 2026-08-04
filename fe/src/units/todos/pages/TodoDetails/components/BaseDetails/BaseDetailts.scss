@@ -9,10 +9,12 @@
     padding: 8px 24px 48px;
 
     &__header {
+        min-width: 0;
         padding: 8px 0 4px;
     }
 
     &__meta {
+        min-width: 0;
         margin-top: 12px;
     }
 
@@ -24,15 +26,18 @@
 
     &__body {
         width: 100%;
+        min-width: 0;
     }
 
     &__main {
+        min-width: 0;
         display: flex;
         flex-direction: column;
         gap: 24px;
     }
 
     &__aside {
+        min-width: 0;
         position: sticky;
         top: 24px;
         align-self: flex-start;
@@ -40,6 +45,12 @@
 
     &__panel {
         width: 100%;
+        min-width: 0;
+
+        .ant-card-head,
+        .ant-card-body {
+            min-width: 0;
+        }
     }
 
     &__content {
@@ -66,7 +77,29 @@
 @media (max-width: 767px) {
     .base-details {
         gap: 16px;
-        padding: 0 12px 32px;
+        padding: 0 16px 32px;
+
+        &__header,
+        &__body {
+            margin-inline: 0 !important;
+        }
+
+        &__header > .ant-col,
+        &__body > .ant-col {
+            padding-inline: 0 !important;
+        }
+
+        &__header {
+            padding: 0;
+        }
+
+        &__meta {
+            width: 100%;
+
+            .ant-space-item {
+                min-width: 0;
+            }
+        }
 
         &__like {
             justify-content: flex-start;
@@ -75,6 +108,24 @@
 
         &__main {
             gap: 16px;
+        }
+
+        &__panel {
+            border-radius: 12px;
+
+            .ant-card-head {
+                padding: 0 16px;
+            }
+
+            .ant-card-body {
+                padding: 16px;
+            }
+        }
+
+        &__content {
+            min-height: 180px !important;
+            font-size: 15px;
+            line-height: 1.55;
         }
     }
 }

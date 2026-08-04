@@ -28,6 +28,7 @@ type SignStepProps = FormStep | TextStep;
 
 export const SignStep = (props: SignStepProps) => {
     const {type, content, className} = props;
+    const stepNumber = content.index + 1;
 
     const renderBody = () => {
         switch (type) {
@@ -35,7 +36,9 @@ export const SignStep = (props: SignStepProps) => {
                 return <FormInput field={content} />;
             case 'text':
                 return typeof content.content === 'string' ? (
-                    <Typography.Text>{content.content}</Typography.Text>
+                    <Typography.Paragraph className={b('content')}>
+                        {content.content}
+                    </Typography.Paragraph>
                 ) : (
                     content.content
                 );
@@ -46,9 +49,21 @@ export const SignStep = (props: SignStepProps) => {
         <FlexibleCard
             key={content.index}
             rootClassName={b(undefined, className)}
-            title={content?.title}
             actions={content.actions ? content.actions : []}
+            actionsClassName={
+                content.index === 0 ? b('actions', {welcome: true}) : undefined
+            }
         >
+            <div className={b('header')}>
+                <Typography.Text className={b('counter')}>
+                    {stepNumber.toString().padStart(2, '0')}
+                </Typography.Text>
+                {content.title && (
+                    <Typography.Title level={2} className={b('title')}>
+                        {content.title}
+                    </Typography.Title>
+                )}
+            </div>
             {renderBody()}
         </FlexibleCard>
     );

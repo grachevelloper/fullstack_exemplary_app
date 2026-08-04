@@ -1,6 +1,6 @@
 import {Card, Col, Flex, Row, theme, Typography} from 'antd';
 import block from 'bem-cn-lite';
-import {useMemo, useState} from 'react';
+import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
 import {useAuth} from '@/shared/context';
@@ -9,7 +9,7 @@ import {Role} from '@/typings/common';
 import {ArticlesList} from '../../components/ArticlesList';
 import {CreateNewArticleButton} from '../../components/CreateNewArticleButton';
 import {SearchPanel} from '../../components/SearchPanel';
-import {useGetAllArticles, useGetAuthorDrafts} from '../../store';
+import {useGetAllArticles} from '../../store';
 
 import './ArticlesListPage.scss';
 
@@ -20,7 +20,7 @@ const {Title, Text} = Typography;
 export const ArticlesListPage = () => {
     const {t} = useTranslation('article');
     const {
-        token: {colorBgContainer, colorBorderSecondary, colorPrimaryBg},
+        token: {colorBgContainer, colorBorderSecondary},
     } = theme.useToken();
     const {user} = useAuth();
     const [search, setSearch] = useState('');
@@ -28,26 +28,12 @@ export const ArticlesListPage = () => {
 
     const canWriteArticle = role === Role.WRITER || role === Role.ADMIN;
     const normalizedSearch = search.trim();
-    const {data: articlesPage, isPending, error} =
-        useGetAllArticles(normalizedSearch || undefined);
     const {
-        data: drafts = [],
-        isPending: isDraftsPending,
-        error: draftsError,
-    } = useGetAuthorDrafts(canWriteArticle);
-
-    const articles = useMemo(() => {
-        const published = articlesPage?.items ?? [];
-        const filteredDrafts = normalizedSearch
-            ? drafts.filter((draft) =>
-                  draft.title
-                      .toLowerCase()
-                      .includes(normalizedSearch.toLowerCase())
-              )
-            : drafts;
-
-        return [...filteredDrafts, ...published];
-    }, [articlesPage?.items, drafts, normalizedSearch]);
+        data: articlesPage,
+        isPending,
+        error,
+    } = useGetAllArticles(normalizedSearch || undefined);
+    const articles = articlesPage?.items ?? [];
 
     const renderNewArticleButton = () => {
         return canWriteArticle && <CreateNewArticleButton />;
@@ -78,10 +64,6 @@ export const ArticlesListPage = () => {
                         {renderNewArticleButton()}
                     </Col>
                 </Row>
-                <div
-                    className={b('hero-accent')}
-                    style={{backgroundColor: colorPrimaryBg}}
-                />
             </Card>
 
             <Card
@@ -104,10 +86,7 @@ export const ArticlesListPage = () => {
                             {t('articles.search.description')}
                         </Text>
                     </Flex>
-                    <SearchPanel
-                        value={search}
-                        onSearchChange={setSearch}
-                    />
+                    <SearchPanel value={search} onSearchChange={setSearch} />
                 </Flex>
             </Card>
 
@@ -122,9 +101,9 @@ export const ArticlesListPage = () => {
                     <Title level={2}>{t('articles.recent')}</Title>
                 </Flex>
                 <ArticlesList
-                    isPending={isPending || (canWriteArticle && isDraftsPending)}
+                    isPending={isPending}
                     data={articles}
-                    error={error || draftsError}
+                    error={error}
                 />
             </section>
         </main>

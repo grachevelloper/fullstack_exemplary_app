@@ -19,16 +19,16 @@ export class Todo extends BaseEntity {
     @Column({
         type: "enum",
         enumName: "todo_priority",
-        enum: ["High", "Medium", "Low", "Super"],
-        default: "Medium",
+        enum: TodoPriority,
+        default: TodoPriority.MEDIUM,
     })
     priority?: TodoPriority;
 
     @Column({
         type: "enum",
         enumName: "todo_state",
-        enum: ["Planning", "In_work", "Finished", "Canceled"],
-        default: "Planning",
+        enum: TodoState,
+        default: TodoState.PLANNING,
     })
     state?: TodoState;
 

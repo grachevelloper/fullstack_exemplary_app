@@ -1,21 +1,112 @@
 .checklist {
-    &__title {
-        display: inline-flex;
-        width: 100%;
-        justify-content: space-between;
-        padding: 0 5px;
+    position: relative;
+    width: 100%;
+    min-width: 0;
+
+    .ant-card-head {
+        min-width: 0;
+        padding: 0 16px;
+        border-bottom-color: rgb(0 0 0 / 6%);
     }
-    &__popover {
-        .ant-popover-inner-content {
-            padding: 16px;
-        }
+
+    .ant-card-head-wrapper {
+        min-width: 0;
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .ant-card-head-title {
+        min-width: min(100%, 260px);
+        padding: 14px 0 12px;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .ant-card-extra {
+        flex: 0 0 auto;
+        min-width: max-content;
+        margin-inline-start: 0;
+        padding: 14px 0 12px;
+    }
+
+    .ant-card-body {
+        padding-top: 18px;
+    }
+
+    &__title {
+        width: 100%;
+        min-width: 0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    &__title-copy {
+        flex: 0 0 auto;
+        min-width: max-content;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    &__title-text {
+        font-size: 16px;
+        line-height: 1.25;
+        white-space: nowrap;
+    }
+
+    &__pending-text {
+        font-size: 12px;
+        line-height: 1.25;
+        white-space: nowrap;
+    }
+
+    &__edit-button,
+    &__add-button {
+        flex: 0 0 auto;
+        border-radius: 6px;
+    }
+
+    &__add-button {
+        box-shadow: 0 6px 16px rgb(15 23 42 / 6%);
+    }
+
+    &__popover-content {
+        width: min(320px, calc(100vw - 48px));
+    }
+
+    &__popover-fields {
+        width: 100%;
+    }
+
+    &__steps {
+        min-height: 300px;
+        max-width: 100%;
+    }
+
+    .ant-steps-item-container {
+        min-width: 0;
+    }
+
+    .ant-steps-item-content {
+        min-width: 0;
+        max-width: 100%;
     }
 
     .ant-steps-item {
         &-title {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+            padding-inline-end: 0;
+            white-space: normal;
+        }
+
+        &-description {
+            white-space: normal;
         }
     }
 
@@ -29,13 +120,120 @@
         }
     }
 
-    &__actions {
-        margin-left: 8px;
-        opacity: 0;
-        transition: opacity 0.2s ease;
+    &__step-title {
+        display: flex;
+        min-width: 0;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
     }
 
-    .ant-steps-item:hover &__actions {
+    &__step-text {
+        min-width: 0;
+        overflow-wrap: anywhere;
+        line-height: 1.45;
+    }
+
+    &__step-actions {
+        flex: 0 0 auto;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+
+        .ant-space-item {
+            min-width: 0;
+        }
+    }
+
+    &__edit-field {
+        width: 100%;
+        min-width: 0;
+
+        .ant-input {
+            min-width: 0;
+        }
+    }
+
+    .ant-steps-item:hover &__step-actions,
+    .ant-steps-item:focus-within &__step-actions {
         opacity: 1;
+    }
+
+    &_pending {
+        .ant-card-body {
+            opacity: 0.55;
+            filter: grayscale(0.25);
+            pointer-events: none;
+            transition:
+                opacity 0.2s ease,
+                filter 0.2s ease;
+        }
+    }
+
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .ant-card-head-wrapper {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .ant-card-extra {
+            width: 100%;
+            padding-top: 0;
+        }
+
+        .ant-card-extra .ant-btn {
+            width: 100%;
+        }
+
+        &__step-title {
+            flex-direction: column;
+        }
+
+        &__step-actions {
+            opacity: 1;
+        }
+
+        &__edit-field {
+            display: flex;
+            flex-wrap: wrap;
+
+            .ant-input {
+                flex: 1 1 100%;
+                width: 100%;
+            }
+
+            .ant-btn {
+                flex: 1 1 calc(50% - 4px);
+            }
+        }
+    }
+
+    @media (max-width: 767px) {
+        .ant-card-head-wrapper {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .ant-card-extra {
+            width: 100%;
+            padding-top: 0;
+        }
+
+        .ant-card-extra .ant-btn {
+            width: 100%;
+        }
+
+        &__title {
+            gap: 8px;
+        }
+
+        &__step-title {
+            flex-direction: column;
+        }
+
+        &__step-actions {
+            opacity: 1;
+        }
     }
 }

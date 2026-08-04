@@ -2,6 +2,7 @@ import {forwardRef, Module} from "@nestjs/common";
 import {TypeOrmModule} from "@nestjs/typeorm";
 
 import {ArticlesModule} from "../articles/articles.module";
+import {Like} from "../likes/likes.entity";
 import {LikesModule} from "../likes/likes.module";
 import {TodosModule} from "../todos/todos.module";
 import {UsersModule} from "../users/users.module";
@@ -11,7 +12,7 @@ import {CommentsService} from "./comments.service";
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Comment]),
+        TypeOrmModule.forFeature([Comment, Like]),
         UsersModule,
         forwardRef(() => TodosModule),
         ArticlesModule,

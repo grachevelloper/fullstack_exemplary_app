@@ -19,10 +19,6 @@ import {UsersService} from "../users/users.service";
 import {CreateCommentDto, UpdateCommentDto} from "./comments.dto";
 import {Comment, EntityCommentType} from "./comments.entity";
 
-type CommentWithLikedState = Comment & {
-    hasLiked?: boolean;
-};
-
 interface UpdateCommentCommand {
     actor: AuthenticatedUser;
     data: UpdateCommentDto;
@@ -43,11 +39,17 @@ interface FindEntityCommentsCommand {
     page?: number;
 }
 
+type CommentWithLikedState = Comment & {
+    hasLiked: boolean;
+};
+
 @Injectable()
 export class CommentsService {
     constructor(
         @InjectRepository(Comment)
         private commentRepository: Repository<Comment>,
+        @InjectRepository(Like)
+        private likesRepository: Repository<Like>,
         private usersService: UsersService,
         @Inject(forwardRef(() => TodosService))
         private todosService: TodosService,
@@ -170,23 +172,42 @@ export class CommentsService {
             skip: (page - 1) * limit,
             take: limit,
         });
-        const commentsWithLikedState = await Promise.all(
-            comments.map(async (comment) => ({
-                ...comment,
-                hasLiked: await this.likesService.hasLiked({
-                    entityId: comment.id,
-                    entityType: "comment",
-                    userId: actor.id,
-                }),
-            })),
+        const likedCommentIds = await this.getLikedCommentIds(
+            actor.id,
+            comments.map((comment) => comment.id),
+        );
+        const items = comments.map((comment) =>
+            Object.assign(comment, {
+                hasLiked: likedCommentIds.has(comment.id),
+            }),
         );
 
         return new PaginatedResponseDto<CommentWithLikedState>(
-            commentsWithLikedState,
+            items,
             page,
             limit,
             total,
         );
+    }
+
+    private async getLikedCommentIds(
+        userId: string,
+        commentIds: string[],
+    ): Promise<Set<string>> {
+        if (commentIds.length === 0) {
+            return new Set<string>();
+        }
+
+        const likes = await this.likesRepository.find({
+            select: ["entityId"],
+            where: {
+                authorId: userId,
+                entityType: "comment",
+                entityId: In(commentIds),
+            },
+        });
+
+        return new Set(likes.map((like) => like.entityId));
     }
 
     private async assertCanReadTarget(

@@ -1,7 +1,16 @@
-import {Carousel, Flex, Typography, theme} from 'antd';
+import {
+    CustomerServiceOutlined,
+    EnvironmentOutlined,
+    PlayCircleOutlined,
+    ReadOutlined,
+} from '@ant-design/icons';
+import {Carousel, Typography, theme} from 'antd';
 import block from 'bem-cn-lite';
 import Lottie from 'lottie-react';
+import type {ReactNode} from 'react';
 import {useTranslation} from 'react-i18next';
+
+import {useNowadays} from '@/users/store';
 
 import booksAnimation from '@/public/lottie/books.json';
 import movieAnimation from '@/public/lottie/movie.json';
@@ -10,76 +19,108 @@ import musicAnimation from '@/public/lottie/music.json';
 import './Nowadays.scss';
 
 const b = block('nowadays');
+const placeAnimation = '/lottie/place.svg';
 
 type NowadaysData = {
     title: string;
     content: string;
-    lottie?: object;
+    icon: ReactNode;
+    lottie?: object | string;
 };
 
 export const Nowadays = () => {
     const {t} = useTranslation('todo');
+    const {data: nowadays} = useNowadays();
     const {
-        token: {colorBgSpotlight, borderRadius},
+        token: {
+            colorPrimary,
+            colorText,
+            colorTextSecondary,
+        },
     } = theme.useToken();
     const data: NowadaysData[] = [
         {
+            title: t('todo.nowadays.place.title'),
+            content: nowadays?.nowBeingIn ?? '',
+            icon: <EnvironmentOutlined />,
+            lottie: placeAnimation,
+        },
+        {
             title: t('todo.nowadays.book.title'),
-            content: 'Лев Толстой - Воскресенье',
+            content: nowadays?.nowReading ?? '',
+            icon: <ReadOutlined />,
             lottie: booksAnimation,
         },
         {
             title: t('todo.nowadays.series.title'),
-            content: '5 сезон Очень странные дела',
+            content: nowadays?.nowWatch ?? '',
+            icon: <PlayCircleOutlined />,
             lottie: movieAnimation,
         },
         {
             title: t('todo.nowadays.music.title'),
-            content: 'Иногда - Моя мишель',
+            content: nowadays?.nowListening ?? '',
+            icon: <CustomerServiceOutlined />,
             lottie: musicAnimation,
         },
-    ];
+    ].filter((one) => one.content);
+
+    if (!data.length) {
+        return null;
+    }
+
     return (
-        <Carousel
-            className={b()}
-            draggable
-            waitForAnimate
-            autoplay
-        >
+        <Carousel className={b()} draggable waitForAnimate autoplay>
             {data.map((one) => (
-                <Flex
-                    key={one.title}
-                    vertical
-                    gap={8}
-                    className={b('block')}
-                    justify='center'
-                    align='start'
-                    style={{
-                        borderRadius: borderRadius,
-                    }}
-                >
-                    {one?.lottie && (
-                        <Lottie
-                            animationData={one?.lottie}
-                            loop={true}
-                            className={b('lottie')}
-                        />
-                    )}
-                    <Typography.Title
-                        className={b('title')}
-                        level={3}
-                        style={{
-                            backgroundColor: colorBgSpotlight,
-                        }}
-                    >
-                        {one.title}
-                    </Typography.Title>
-                    <Typography.Text
-                        className={b('content')}
-                    >
-                        {one.content}
-                    </Typography.Text>
-                </Flex>
+                <section key={one.title} className={b('block')} style={{}}>
+                    <div
+                        className={b('glow')}
+                        style={{backgroundColor: colorPrimary}}
+                    />
+                    <div className={b('copy')}>
+                        <div className={b('eyebrow')}>
+                            <span
+                                className={b('icon')}
+                                style={{
+                                    backgroundColor: colorPrimary,
+                                }}
+                            >
+                                {one.icon}
+                            </span>
+                            <Typography.Text
+                                className={b('label')}
+                                style={{color: colorTextSecondary}}
+                            >
+                                {one.title}
+                            </Typography.Text>
+                        </div>
+
+                        <Typography.Title
+                            className={b('content')}
+                            level={3}
+                            style={{color: colorText}}
+                        >
+                            {one.content}
+                        </Typography.Title>
+                    </div>
+
+                    <div className={b('media')} aria-hidden>
+                        {one?.lottie && typeof one?.lottie === 'object' && (
+                            <Lottie
+                                animationData={one?.lottie}
+                                loop={true}
+                                className={b('lottie')}
+                            />
+                        )}
+                        {one?.lottie && typeof one?.lottie === 'string' && (
+                            <img
+                                src={one?.lottie}
+                                className={b('lottie')}
+                                alt=''
+                            />
+                        )}
+                    </div>
+                </section>
             ))}
         </Carousel>
     );

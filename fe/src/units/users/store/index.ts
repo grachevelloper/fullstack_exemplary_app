@@ -1,10 +1,19 @@
-import {useMutation} from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
 
 import {queryClient} from '@/shared/configs/api';
 import {useAuth} from '@/shared/context';
 
 import api from '../api';
-import {DtoChangePassword, DtoSignInUser, DtoSignUpUser, DtoUpdateUser} from '../api/types';
+import {DtoSignInUser, DtoSignUpUser, DtoUpdateUser} from '../api/types';
+
+export const nowadaysQueryKey = ['users', 'nowadays'] as const;
+
+export const useNowadays = () => {
+    return useQuery({
+        queryKey: nowadaysQueryKey,
+        queryFn: () => api.getNowadays(),
+    });
+};
 
 export const useSignupMutation = () => {
     return useMutation({
@@ -44,14 +53,13 @@ export const useUpdateMeMutation = () => {
         mutationFn: (data: Omit<DtoUpdateUser, 'id'>) => api.updateMe(data),
         onSuccess: (user) => {
             queryClient.setQueryData(['users', 'me'], user);
+            queryClient.setQueryData(nowadaysQueryKey, {
+                nowBeingIn: user.nowBeingIn,
+                nowListening: user.nowListening,
+                nowReading: user.nowReading,
+                nowWatch: user.nowWatch,
+            });
         },
-    });
-};
-
-export const useChangeMyPasswordMutation = () => {
-    return useMutation({
-        mutationKey: ['users', 'me', 'password'],
-        mutationFn: (data: DtoChangePassword) => api.changeMyPassword(data),
     });
 };
 

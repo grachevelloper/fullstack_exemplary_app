@@ -1,20 +1,15 @@
-import axios from 'axios';
-
 import {query} from '@/shared/configs/api';
 
-import {User} from '../types';
+import {Nowadays, User} from '../types';
 
 import {
     DtoChangePassword,
     DtoSignInUser,
     DtoSignUpUser,
     DtoUpdateUser,
-    ResponseYandex0Auth,
     SignResponse,
     type UserApi,
 } from './types';
-
-const {YANDEX_CLIENT_ID} = process.env;
 
 class FetchApiError extends Error {
     isAxiosError = true;
@@ -57,23 +52,12 @@ const Api: UserApi = {
         await query.post('/auth/logout');
     },
 
-    yandexSignIn: async () => {
-        const response = await axios.get<ResponseYandex0Auth>(
-            'https://login.yandex.ru/info',
-            {
-                params: {
-                    format: 'json',
-                },
-                headers: {
-                    Authorization: `OAuth ${YANDEX_CLIENT_ID}`,
-                },
-            }
-        );
-        return response.data;
-    },
-
     getMe: async () => {
         return await query.get<User>('/users/me');
+    },
+
+    getNowadays: async () => {
+        return await query.get<Nowadays | null>('/users/nowadays');
     },
 
     updateMe: async (data: Omit<DtoUpdateUser, 'id'>) => {

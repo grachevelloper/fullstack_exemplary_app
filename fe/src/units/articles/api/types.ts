@@ -2,26 +2,40 @@ import {PaginatedResponse} from '@/typings/common';
 
 import {Article, Tag} from '../types';
 
-export type DtoCreateArticle = Pick<Article, 'title' | 'content'>;
+export type DtoCreateArticle = Partial<
+    Pick<Article, 'title' | 'description' | 'content' | 'readTime' | 'tags'>
+>;
 
 export type DtoUpdateArticle = {id: string} & Partial<
-    Pick<Article, 'title' | 'content' | 'image' | 'readTime' | 'tags'>
+    Pick<
+        Article,
+        'title' | 'description' | 'content' | 'image' | 'readTime' | 'tags'
+    >
 >;
 
 export type DtoUpdateArticleTitle = Pick<Article, 'id' | 'title'>;
+export type DtoUpdateArticleDescription = Pick<
+    Article,
+    'id' | 'description'
+>;
 export type DtoUpdateArticleContent = Pick<Article, 'id' | 'content'>;
 export type DtoUpdateArticleImage = Pick<Article, 'id' | 'image'>;
+export type DtoUpdateArticleCover = Pick<Article, 'id'> & {
+    coverAttachmentId: string;
+};
 export type DtoUpdateArticleReadTime = Pick<Article, 'id' | 'readTime'>;
 export type DtoUpdateArticleTags = Pick<Article, 'id' | 'tags'>;
 export type DtoCreateTag = Omit<Tag, 'id'>;
 
 export interface ArticleApi {
-    create: (createData: DtoCreateArticle) => Promise<Article>;
+    create: (createData?: DtoCreateArticle) => Promise<Article>;
     update: (updateData: DtoUpdateArticle) => Promise<Article>;
 
     updateTitle: (data: DtoUpdateArticleTitle) => Promise<Article>;
+    updateDescription: (data: DtoUpdateArticleDescription) => Promise<Article>;
     updateContent: (data: DtoUpdateArticleContent) => Promise<Article>;
     updateImage: (data: DtoUpdateArticleImage) => Promise<Article>;
+    updateCover: (data: DtoUpdateArticleCover) => Promise<Article>;
     updateReadTime: (data: DtoUpdateArticleReadTime) => Promise<Article>;
     updateTags: (data: DtoUpdateArticleTags) => Promise<Article>;
 

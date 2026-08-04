@@ -1,9 +1,8 @@
-FROM node:20-alpine
+FROM node:24-alpine AS build
 
 RUN corepack enable
 
 WORKDIR /app
-
 
 COPY package*json ./
 COPY pnpm-lock.yaml ./
@@ -14,6 +13,12 @@ COPY . .
 
 RUN pnpm run build
 
-EXPOSE 5173
+FROM nginx:stable-alpine
 
-CMD ["pnpm", "start"]
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY public /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

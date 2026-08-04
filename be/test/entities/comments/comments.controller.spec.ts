@@ -75,11 +75,12 @@ describe("CommentsController", () => {
     });
 
     it("returns entity comments in the shared paginated shape", async () => {
+        const likedComment = Object.assign(comment, {hasLiked: true});
         const service = {
             findByEntity: jest
                 .fn<CommentsService["findByEntity"]>()
                 .mockResolvedValue({
-                    items: [comment],
+                    items: [likedComment],
                     page: 1,
                     limit: 10,
                     total: 1,
@@ -104,7 +105,7 @@ describe("CommentsController", () => {
             order: undefined,
         });
         expect(result).toEqual({
-            items: [expect.objectContaining({id: comment.id})],
+            items: [expect.objectContaining({id: comment.id, hasLiked: true})],
             page: 1,
             limit: 10,
             total: 1,

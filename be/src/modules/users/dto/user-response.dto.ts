@@ -13,3 +13,10 @@ export interface UserResponseDto {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface NowadaysResponseDto {
+    nowReading: string | null;
+    nowWatch: string | null;
+    nowBeingIn: string | null;
+    nowListening: string | null;
+}

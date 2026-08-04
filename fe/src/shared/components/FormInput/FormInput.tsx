@@ -67,8 +67,8 @@ export function FormInput({field}: FormInputProps) {
             dependencies={dependencies}
             className={className}
             style={style}
-            validateDebounce={1000}
-            validateTrigger='onBlur'
+            validateDebounce={500}
+            validateTrigger={['onChange', 'onBlur']}
         >
             {renderInput()}
         </Form.Item>

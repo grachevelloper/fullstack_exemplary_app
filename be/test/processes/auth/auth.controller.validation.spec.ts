@@ -5,6 +5,7 @@ import {Test} from "@nestjs/testing";
 import {configureApplication} from "src/app/application-setup";
 import {AuthController} from "src/processes/auth/auth.controller";
 import {AuthService} from "src/processes/auth/auth.service";
+import {YandexOAuthService} from "src/processes/auth/yandex-oauth.service";
 import request from "supertest";
 
 describe("AuthController validation", () => {
@@ -20,6 +21,7 @@ describe("AuthController validation", () => {
             controllers: [AuthController],
             providers: [
                 {provide: AuthService, useValue: authService},
+                {provide: YandexOAuthService, useValue: {}},
                 {provide: JwtService, useValue: {verifyAsync: jest.fn()}},
             ],
         }).compile();

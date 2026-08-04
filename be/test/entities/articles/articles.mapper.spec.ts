@@ -27,6 +27,7 @@ describe("ArticlesMapper", () => {
         const article = Object.assign(new Article(), {
             id: "f43e19d0-8c1a-41d4-81b2-983d19648916",
             title: "Draft",
+            description: "A concise article description",
             image: "https://cdn.example.com/image.png",
             content: "Content",
             readTime: 3,
@@ -43,6 +44,7 @@ describe("ArticlesMapper", () => {
         expect(result).toEqual({
             id: article.id,
             title: "Draft",
+            description: "A concise article description",
             image: "https://cdn.example.com/image.png",
             content: "Content",
             readTime: 3,

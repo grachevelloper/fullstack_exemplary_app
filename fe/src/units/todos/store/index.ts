@@ -7,10 +7,38 @@ import {
 } from '@tanstack/react-query';
 
 import {queryClient} from '@/shared/configs/api';
+import type {PaginatedResponse} from '@/typings/common';
 
 import api from '../api';
 import {DtoCreateTodo, DtoUpdateTodo} from '../api/types';
 import {Todo, TodoPriority, TodoState} from '../types';
+
+const removeUndefinedFields = <T extends object>(data: T): Partial<T> =>
+    Object.fromEntries(
+        Object.entries(data).filter(([, value]) => value !== undefined)
+    ) as Partial<T>;
+
+const mergeTodo = (todo: Todo, update: Partial<Todo>): Todo => ({
+    ...todo,
+    ...removeUndefinedFields(update),
+});
+
+const patchTodosList = (
+    list: PaginatedResponse<Todo> | undefined,
+    todoId: string,
+    update: Partial<Todo>
+): PaginatedResponse<Todo> | undefined => {
+    if (!list) {
+        return list;
+    }
+
+    return {
+        ...list,
+        items: list.items.map((todo) =>
+            todo.id === todoId ? mergeTodo(todo, update) : todo
+        ),
+    };
+};
 
 export const useTodosQuery = () => {
     const {data} = useSuspenseQuery({
@@ -60,23 +88,37 @@ export const useTodoMutations = () => {
             mutationFn: (updateData: DtoUpdateTodo) =>
                 api.updateTodoById(updateData),
             onMutate: async (variables) => {
-                await queryClient.cancelQueries({
-                    queryKey: ['todo', variables.id],
-                });
+                await Promise.all([
+                    queryClient.cancelQueries({
+                        queryKey: ['todo', variables.id],
+                    }),
+                    queryClient.cancelQueries({
+                        queryKey: ['todos'],
+                    }),
+                ]);
 
                 const previousTodo = queryClient.getQueryData<Todo>([
                     'todo',
                     variables.id,
                 ]);
+                const previousTodos =
+                    queryClient.getQueryData<PaginatedResponse<Todo>>([
+                        'todos',
+                    ]);
 
                 if (previousTodo) {
-                    queryClient.setQueryData(['todo', variables.id], {
-                        ...previousTodo,
-                        ...variables,
-                    });
+                    queryClient.setQueryData(
+                        ['todo', variables.id],
+                        mergeTodo(previousTodo, variables)
+                    );
                 }
 
-                return {previousTodo};
+                queryClient.setQueryData(
+                    ['todos'],
+                    patchTodosList(previousTodos, variables.id, variables)
+                );
+
+                return {previousTodo, previousTodos};
             },
             onError: (err, variables, context) => {
                 if (context?.previousTodo) {
@@ -85,20 +127,20 @@ export const useTodoMutations = () => {
                         context.previousTodo
                     );
                 }
+                if (context?.previousTodos) {
+                    queryClient.setQueryData(['todos'], context.previousTodos);
+                }
             },
             onSuccess: (data, variables) => {
-                queryClient.setQueryData<Todo>(
+                queryClient.setQueryData(
                     ['todo', variables.id],
-                    (previous) => {
-                        if (!previous) {
-                            return data;
-                        }
-
-                        return {
-                            ...previous,
-                            ...data,
-                        };
-                    }
+                    (previousTodo: Todo | undefined) =>
+                        previousTodo ? mergeTodo(previousTodo, data) : data
+                );
+                queryClient.setQueryData(
+                    ['todos'],
+                    (previousTodos: PaginatedResponse<Todo> | undefined) =>
+                        patchTodosList(previousTodos, variables.id, data)
                 );
             },
         },

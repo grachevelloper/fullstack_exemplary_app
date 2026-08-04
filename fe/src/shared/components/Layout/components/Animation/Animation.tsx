@@ -1,9 +1,10 @@
 import {Flex, Statistic, StatisticProps} from 'antd';
 import block from 'bem-cn-lite';
-import {type CSSProperties, useEffect, useMemo, useState} from 'react';
+import {type CSSProperties, useMemo, useState} from 'react';
 import CountUp from 'react-countup';
+import {useLocation} from 'react-router-dom';
 
-import {CURRENT_TIME, formatTime} from '@/shared/utils';
+import {formatTime} from '@/shared/utils';
 
 import {START_OF_DAY, TOTAL_DAY_DURATION} from './utils';
 
@@ -11,7 +12,7 @@ import './Animation.scss';
 
 const b = block('animation');
 
-const millisecondsSinceStartOfDay = CURRENT_TIME - START_OF_DAY;
+const millisecondsSinceStartOfDay = Date.now() - START_OF_DAY;
 
 const minutesSinceStartOfDay = millisecondsSinceStartOfDay / (1000 * 60) - 1;
 
@@ -50,9 +51,11 @@ const formatter: StatisticProps['formatter'] = () => (
         useEasing
     />
 );
+const approvedRoutes = ['/', 'rezume'];
 
 export const Animation = () => {
     const [isStopped, setStopped] = useState<boolean>(false);
+    const {pathname} = useLocation();
 
     const pathLength = 400;
     let strokeDashoffset = pathLength - ((pathLength * progress) / 100) * 0.65;
@@ -79,13 +82,9 @@ export const Animation = () => {
         setStopped(true);
     };
 
-    useEffect(() => {
-        const approvedRoutes = ['/', '/resume'];
-        if (!approvedRoutes.includes(window.location.pathname)) {
-            setStopped(true);
-            return;
-        }
-    }, []);
+    if (!approvedRoutes.includes(pathname)) {
+        return null;
+    }
 
     return (
         !isStopped && (

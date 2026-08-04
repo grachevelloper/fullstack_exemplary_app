@@ -11,8 +11,11 @@ export class User extends BaseEntity {
     @Column({unique: true})
     email!: string;
 
-    @Column({select: false})
-    password!: string;
+    @Column({type: "varchar", select: false, nullable: true})
+    password!: string | null;
+
+    @Column({name: "yandex_id", type: "varchar", unique: true, nullable: true})
+    yandexId!: string | null;
 
     @Column({
         type: "enum",
@@ -22,18 +25,18 @@ export class User extends BaseEntity {
     })
     role!: Role;
 
-    @Column({nullable: true})
-    avatar?: string;
+    @Column({type: "varchar", nullable: true})
+    avatar?: string | null;
 
-    @Column({nullable: true})
-    nowReading?: string;
+    @Column({type: "varchar", nullable: true})
+    nowReading?: string | null;
 
-    @Column({nullable: true})
-    nowWatch?: string;
+    @Column({type: "varchar", nullable: true})
+    nowWatch?: string | null;
 
-    @Column({nullable: true})
-    nowBeingIn?: string;
+    @Column({type: "varchar", nullable: true})
+    nowBeingIn?: string | null;
 
-    @Column({nullable: true})
-    nowListening?: string;
+    @Column({type: "varchar", nullable: true})
+    nowListening?: string | null;
 }

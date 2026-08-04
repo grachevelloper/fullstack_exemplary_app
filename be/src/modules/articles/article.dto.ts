@@ -11,6 +11,7 @@ import {
     IsUrl,
     IsUUID,
     Max,
+    MaxLength,
     Min,
     ValidateNested,
 } from "class-validator";
@@ -29,11 +30,17 @@ export class TagDto {
 export class CreateArticleDto {
     @IsString()
     @IsNotEmpty()
-    title!: string;
+    @IsOptional()
+    title?: string;
 
     @IsString()
-    @IsNotEmpty()
-    content!: string;
+    @MaxLength(300)
+    @IsOptional()
+    description?: string;
+
+    @IsString()
+    @IsOptional()
+    content?: string;
 
     @IsArray()
     @ValidateNested({each: true})
@@ -53,9 +60,18 @@ export class UpdateArticleDto {
     @IsOptional()
     title?: string;
 
+    @IsString()
+    @MaxLength(300)
+    @IsOptional()
+    description?: string;
+
     @IsUrl()
     @IsOptional()
     image?: string;
+
+    @IsUUID()
+    @IsOptional()
+    coverAttachmentId?: string;
 
     @IsString()
     @IsNotEmpty()
@@ -77,6 +93,7 @@ export class UpdateArticleDto {
 export class ArticleResponseDto {
     id!: string;
     title!: string;
+    description!: string;
     image!: string;
     content!: string;
     tags!: TagResponseDto[];

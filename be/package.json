@@ -8,23 +8,15 @@
     "license": "UNLICENSED",
     "scripts": {
         "build": "nest build",
-        "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
         "start": "nest start  --env-file ../.env",
-        "start:debug": "nest start --debug --watch  --env-file ../.env",
-        "start:prod": "node dist/main  --env-file ../.env",
-        "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
         "test": "jest --config ./jest.config.js",
-        "test:unit": "jest --config ./jest.config.js",
-        "test:integration": "jest --config ./jest.integration.config.js",
-        "test:watch": "jest --config ./jest.config.js --watch",
-        "test:cov": "jest --config ./jest.config.js --coverage",
-        "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --config ./jest.config.js --runInBand",
         "knip": "knip",
         "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli",
-        "migration:run": "npm run typeorm migration:run -- -d ./src/data-source-cli.ts",
-        "migration:create": "npm run typeorm -- migration:create ",
-        "migration:generate": "npm run typeorm -- -d ./src/data-source-cli.ts migration:generate",
-        "migration:revert": "npm run typeorm -- -d ./src/config/typeorm.ts migration:revert"
+        "migration:run": "npm run typeorm -- migration:run -d ./src/data-source-cli.ts",
+        "migration:run:prod": "node ./node_modules/typeorm/cli.js migration:run -d ./dist/src/data-source-cli.js",
+        "migration:create": "npm run typeorm -- migration:create",
+        "migration:generate": "npm run typeorm -- migration:generate -d ./src/data-source-cli.ts",
+        "migration:revert": "npm run typeorm -- migration:revert -d ./src/data-source-cli.ts"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.948.0",

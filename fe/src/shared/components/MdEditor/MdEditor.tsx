@@ -1,5 +1,6 @@
 import {
     BoldItalicUnderlineToggles,
+    BlockTypeSelect,
     CreateLink,
     HighlightToggle,
     InsertCodeBlock,
@@ -15,7 +16,7 @@ import {
 import '@mdxeditor/editor/style.css';
 import {Flex} from 'antd';
 import block from 'bem-cn-lite';
-import {ForwardedRef, memo} from 'react';
+import {ForwardedRef, memo, useRef} from 'react';
 
 import './MdEditor.scss';
 import {readPlugins, writePlugins} from './plugins';
@@ -42,6 +43,8 @@ export function MdEditor({
     entityId,
     ...props
 }: InitializedMDXEditorProps) {
+    const attachmentIdsByUrl = useRef(new Map<string, string>());
+
     return (
         <div data-marker={dataMarker}>
             <MDXEditor
@@ -53,6 +56,7 @@ export function MdEditor({
                         ? writePlugins({
                               entityId,
                               entityType,
+                              attachmentIdsByUrl: attachmentIdsByUrl.current,
                               toolbar: () => <ToolbarComponent />,
                           })
                         : readPlugins
@@ -69,6 +73,7 @@ const ToolbarComponent = memo(() => {
     return (
         <Flex gap={2} className={b('toolbar')}>
             <UndoRedo />
+            <BlockTypeSelect />
             <BoldItalicUnderlineToggles />
             <StrikeThroughSupSubToggles />
             <HighlightToggle />

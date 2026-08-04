@@ -1,4 +1,4 @@
-import {User} from '../types';
+import {Nowadays, User} from '../types';
 
 export type SignResponse = User;
 
@@ -15,11 +15,11 @@ export interface DtoSignInUser {
 
 export interface DtoUpdateUser extends Pick<User, 'id'> {
     username?: string;
-    avatar?: string;
-    nowBeingIn?: string;
-    nowListening?: string;
-    nowReading?: string;
-    nowWatch?: string;
+    avatar?: string | null;
+    nowBeingIn?: string | null;
+    nowListening?: string | null;
+    nowReading?: string | null;
+    nowWatch?: string | null;
 }
 
 export interface DtoChangePassword {
@@ -27,21 +27,12 @@ export interface DtoChangePassword {
     newPassword: string;
 }
 
-export interface ResponseYandex0Auth {
-    login: string;
-    id: string;
-    default_email: string;
-    is_avatar_empty: boolean;
-    default_avatar_id: string;
-    display_name: string;
-}
-
 export interface UserApi {
     signIn: (signInData: DtoSignInUser) => Promise<SignResponse>;
     signUp: (signUpData: DtoSignUpUser) => Promise<User>;
     logout: () => Promise<void>;
-    yandexSignIn: () => Promise<ResponseYandex0Auth>;
     getMe: () => Promise<User>;
+    getNowadays: () => Promise<Nowadays | null>;
     updateMe: (updateData: Omit<DtoUpdateUser, 'id'>) => Promise<User>;
     changeMyPassword: (data: DtoChangePassword) => Promise<void>;
     getUserById: (id: string) => Promise<User>;

@@ -1,7 +1,9 @@
 .nowadays {
-    width: 100%;
+    width: min(100%, max(360px, 33vw));
     height: 100%;
-    padding-top: 56px;
+    margin-left: auto;
+    padding-top: 32px;
+    border-radius: 2%;
 
     .slick-list,
     .slick-track,
@@ -9,49 +11,160 @@
     .slick-slide > div {
         height: 100%;
     }
+    .slick-slide {
+        padding: 0 16px;
+    }
 
     &__block {
         width: 100%;
-        min-height: 310px;
+        min-height: 230px;
         text-align: start;
         position: relative;
         overflow: hidden;
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) 132px;
+        align-items: stretch;
+        border: 1px solid;
+        border-radius: 2%;
     }
 
-    &__title {
-        width: 100%;
-        min-height: 76px;
-        margin: 0 !important;
-        padding: 20px 24px;
-        clip-path: polygon(0% 0%, 100% 0%, 100% 30%, 70% 100%, 0% 100%);
-    }
-
-    &__content {
-        padding: 20px 24px;
-    }
-
-    &__lottie {
+    &__glow {
         position: absolute;
-        right: 0;
-        top: 0;
-        height: 100%;
-        justify-self: end;
-        max-width: 45%;
-        z-index: 1;
+        inset: 12px 12px auto auto;
+        width: 118px;
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
+        opacity: 0.1;
+        filter: blur(18px);
         pointer-events: none;
     }
 
+    &__copy {
+        position: relative;
+        z-index: 2;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 28px;
+        padding: 22px 0 22px 22px;
+    }
+
+    &__eyebrow {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    &__icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        color: #fff;
+        box-shadow: 0 10px 22px rgb(15 23 42 / 16%);
+    }
+
+    &__label {
+        min-width: 0;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0;
+        line-height: 1.2;
+        text-transform: uppercase;
+    }
+
+    &__content {
+        margin: 0 !important;
+        max-width: 100%;
+        font-size: clamp(22px, 2vw, 30px) !important;
+        line-height: 1.1 !important;
+        overflow-wrap: anywhere;
+    }
+
+    &__media {
+        position: relative;
+        z-index: 1;
+        min-width: 0;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        padding: 44px 10px 12px 0;
+        overflow: hidden;
+    }
+
+    &__lottie {
+        width: 160px;
+        max-width: 120%;
+        height: 160px;
+        max-height: 100%;
+        object-fit: contain;
+        pointer-events: none;
+    }
+
+    img.nowadays__lottie {
+        display: block;
+        max-width: auto;
+    }
+
     @media (max-width: 1199px) {
+        width: 100%;
+        margin-left: 0;
         padding-top: 0;
+        height: 280px;
+
+        &__block {
+            grid-template-columns: minmax(0, 1fr) minmax(160px, 32%);
+            height: 280px;
+        }
+
+        &__copy {
+            padding: 26px 0 26px 28px;
+        }
+
+        &__content {
+            font-size: clamp(28px, 5vw, 44px) !important;
+        }
+
+        &__media {
+            padding: 34px 20px 18px 0;
+        }
+
+        &__lottie {
+            width: min(260px, 100%);
+            height: min(260px, 100%);
+        }
     }
 
     @media (max-width: 575px) {
         &__block {
-            min-height: 240px;
+            min-height: 150px;
+            max-height: 200px;
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr 118px;
+        }
+
+        &__copy {
+            gap: 22px;
+            padding: 20px 20px 0;
+        }
+
+        &__content {
+            font-size: 26px !important;
+        }
+
+        &__media {
+            justify-content: flex-end;
+            padding: 0 18px 8px 0;
         }
 
         &__lottie {
-            max-width: 38%;
+            width: 132px;
+            height: 132px;
         }
     }
 }

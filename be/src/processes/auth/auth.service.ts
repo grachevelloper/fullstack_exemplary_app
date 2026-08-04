@@ -46,7 +46,7 @@ export class AuthService {
         if (!user) {
             throw new UnauthorizedException("User not found");
         }
-        if (!(await bcrypt.compare(pass, user.password))) {
+        if (!user.password || !(await bcrypt.compare(pass, user.password))) {
             throw new UnauthorizedException("Incorrect password");
         }
         return user;
@@ -60,7 +60,7 @@ export class AuthService {
 
     async issueTokens(user: User): Promise<TokenPair> {
         const [accessToken, refreshToken] = await Promise.all([
-            this.jwtService.signAsync({sub: user.id, role: user.role}),
+            this.jwtService.signAsync({sub: user.id}),
             this.refreshTokensService.createToken(user.id),
         ]);
 

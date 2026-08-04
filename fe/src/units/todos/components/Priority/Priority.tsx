@@ -1,21 +1,18 @@
-import {DoubleLeftOutlined} from '@ant-design/icons';
-import {Button, Popover, Space, type ButtonProps} from 'antd';
+import {DownOutlined} from '@ant-design/icons';
+import {Button, Dropdown, type MenuProps} from 'antd';
 import block from 'bem-cn-lite';
-import {useState} from 'react';
+import {useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
 import {TodoPriority} from '@/todos/types';
+import {
+    normalizeTodoPriority,
+    priorityKeyByValue,
+} from '@/todos/utils/todoMeta';
 
 import './Priority.scss';
 
 const b = block('priority');
-
-const priorityKeyByValue: Record<TodoPriority, string> = {
-    [TodoPriority.LOW]: 'low',
-    [TodoPriority.MEDIUM]: 'medium',
-    [TodoPriority.HIGH]: 'high',
-    [TodoPriority.SUPER]: 'super',
-};
 
 const priorities = [
     TodoPriority.LOW,
@@ -25,40 +22,11 @@ const priorities = [
 ];
 
 interface PriorityProps {
-    priority: TodoPriority;
+    priority: Nullable<TodoPriority>;
     editable?: {isEdited: boolean};
     onUpdate?: (priority: TodoPriority) => void;
     isLoading?: boolean;
 }
-
-const getCustomize = (priority: TodoPriority): Pick<
-    ButtonProps,
-    'variant' | 'color' | 'icon'
-> => {
-    switch (priority) {
-        case TodoPriority.LOW:
-            return {
-                variant: 'filled',
-                color: 'green',
-            };
-        case TodoPriority.MEDIUM:
-            return {
-                variant: 'filled',
-                color: 'default',
-            };
-        case TodoPriority.HIGH:
-            return {
-                variant: 'solid',
-                color: 'orange',
-            };
-        case TodoPriority.SUPER:
-            return {
-                variant: 'solid',
-                color: 'red',
-                icon: <DoubleLeftOutlined rotate={90} />,
-            };
-    }
-};
 
 export const Priority = ({
     priority,
@@ -69,49 +37,64 @@ export const Priority = ({
     const {t} = useTranslation('todo');
     const [isOpen, setIsOpen] = useState(false);
     const isEdited = Boolean(editable?.isEdited);
-
-    const customize = getCustomize(priority);
-    const availablePriorities = priorities.filter(
-        (nextPriority) => nextPriority !== priority
+    const normalizedPriority = normalizeTodoPriority(priority);
+    const priorityKey = priorityKeyByValue[normalizedPriority];
+    const priorityItems = useMemo<MenuProps['items']>(
+        () =>
+            priorities
+                .filter((nextPriority) => nextPriority !== normalizedPriority)
+                .map((nextPriority) => ({
+                    key: nextPriority,
+                    label: t(
+                        `todo.priority.${priorityKeyByValue[nextPriority]}`
+                    ),
+                })),
+        [normalizedPriority, t]
     );
-    const handleUpdate = (newPriority: TodoPriority) => {
-        onUpdate?.(newPriority);
+    const handleMenuClick: MenuProps['onClick'] = ({key}) => {
         setIsOpen(false);
+        onUpdate?.(key as TodoPriority);
     };
-    const content = (
-        <Space direction='vertical' size={4}>
-            {availablePriorities.map((nextPriority) => (
-                <Button
-                    key={nextPriority}
-                    type='text'
-                    size='small'
-                    block
-                    onClick={() => handleUpdate(nextPriority)}
-                    {...getCustomize(nextPriority)}
-                >
-                    {t(`todo.priority.${priorityKeyByValue[nextPriority]}`)}
-                </Button>
-            ))}
-        </Space>
+    const handleButtonClick = () => {
+        if (!onUpdate || isLoading) {
+            return;
+        }
+
+        setIsOpen((currentValue) => !currentValue);
+    };
+
+    const button = (
+        <Button
+            className={b({
+                'is-edited': isEdited,
+                editable: Boolean(onUpdate),
+                [priorityKey]: true,
+            })}
+            onClick={handleButtonClick}
+            loading={isLoading}
+            size='middle'
+            type='text'
+        >
+            <span className={b('label')}>
+                {t(`todo.priority.${priorityKey}`)}
+            </span>
+            {onUpdate ? <DownOutlined className={b('chevron')} /> : null}
+        </Button>
     );
+
+    if (!onUpdate) {
+        return button;
+    }
 
     return (
-        <Popover
-            title={t('todo.change.priority')}
-            content={content}
-            trigger='click'
-            open={Boolean(onUpdate) && isOpen}
-            onOpenChange={(nextOpen) => setIsOpen(nextOpen)}
+        <Dropdown
+            menu={{items: priorityItems, onClick: handleMenuClick}}
+            onOpenChange={setIsOpen}
+            open={isOpen}
+            trigger={[]}
+            disabled={isLoading}
         >
-            <Button
-                className={b({'is-edited': isEdited})}
-                disabled={!onUpdate}
-                loading={isLoading}
-                size='middle'
-                {...customize}
-            >
-                {t(`todo.priority.${priorityKeyByValue[priority]}`)}
-            </Button>
-        </Popover>
+            {button}
+        </Dropdown>
     );
 };

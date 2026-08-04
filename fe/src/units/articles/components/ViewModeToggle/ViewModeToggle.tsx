@@ -2,15 +2,17 @@ import {FloatButton} from 'antd';
 import block from 'bem-cn-lite';
 import {FaEyeSlash, FaRegEye} from 'react-icons/fa';
 
-import {useSidebar} from '@/shared/context/Sidebar';
 import {useLayout} from '@/shared/hooks';
 import './ViewModeToggle.scss';
 
 const b = block('view-mode-toggle');
 
-export const ViewModeToggle = () => {
-    const {isCollapsed, toggleCollapsed} = useSidebar();
+type ViewModeToggleProps = {
+    isReading: boolean;
+    onToggle: () => void;
+};
 
+export const ViewModeToggle = ({isReading, onToggle}: ViewModeToggleProps) => {
     const {isDesktop} = useLayout();
 
     return (
@@ -19,16 +21,16 @@ export const ViewModeToggle = () => {
                 className={b()}
                 shape='circle'
                 type='primary'
-                onClick={toggleCollapsed}
+                onClick={onToggle}
                 icon={
-                    isCollapsed ? (
+                    isReading ? (
                         <FaEyeSlash size={24} />
                     ) : (
                         <FaRegEye size={24} />
                     )
                 }
                 tooltip={
-                    isCollapsed ? 'Выйти из режима чтения' : 'Режим чтения'
+                    isReading ? 'Выйти из режима чтения' : 'Режим чтения'
                 }
             />
         )

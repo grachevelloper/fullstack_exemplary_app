@@ -10,17 +10,14 @@ import {
     Patch,
     Post,
     Query,
-    UseGuards,
 } from "@nestjs/common";
 import {Public} from "src/shared/decorators/auth.decorator";
 import {CurrentUser} from "src/shared/decorators/current-user.decorator";
-import {AuthGuard} from "src/shared/guards/auth.guard";
 import {AuthenticatedUser} from "src/types";
 
 import {CreateTodoDto, QueryTodosDto, ResponseGetTodos, UpdateTodoDto} from "./todo.dto";
 import {TodosService} from "./todos.service";
 
-@UseGuards(AuthGuard)
 @Controller("todos")
 export class TodosController {
     constructor(private readonly todosService: TodosService) {}

@@ -9,6 +9,7 @@ export class ArticlesMapper {
         return {
             id: article.id,
             title: article.title,
+            description: article.description,
             image: article.image,
             content: article.content,
             tags: (article.tags ?? []).map((tag) => this.toTagResponse(tag)),

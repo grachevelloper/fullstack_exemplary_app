@@ -9,11 +9,11 @@ import {JwtService} from "@nestjs/jwt";
 import {Request} from "express";
 import {JWT_SECRET} from "src/processes/auth/constants";
 
-import {Role} from "../../types";
+import {UsersService} from "@/users/users.service";
+
 import {IS_PUBLIC_KEY} from "../decorators/auth.decorator";
 
 interface JwtPayload {
-    role: Role;
     sub: string;
     iat: number;
     exp: number;
@@ -24,6 +24,7 @@ export class AuthGuard implements CanActivate {
     constructor(
         private jwtService: JwtService,
         private reflector: Reflector,
+        private usersService: UsersService,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -51,14 +52,14 @@ export class AuthGuard implements CanActivate {
                 },
             );
 
-            const user = {
+            const user = await this.usersService.findById(payload.sub);
+
+            req["user"] = {
                 id: payload.sub,
                 iat: payload.iat,
-                role: payload.role,
+                role: user.role,
                 exp: payload.exp,
             };
-
-            req["user"] = user;
         } catch {
             if (isPublic) {
                 return true;

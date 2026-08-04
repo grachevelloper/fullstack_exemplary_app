@@ -25,7 +25,6 @@ services:
       BE_PORT: 3000
       NODE_ENV: test
       JWT_SECRET: ${JWT_SECRET:-e2e-local-jwt-secret}
-      REFRESH_SECRET: ${REFRESH_SECRET:-e2e-local-refresh-secret}
       GRACHEVELOPERS_PASSWORD: ${GRACHEVELOPERS_PASSWORD:-e2e-local-gracheveloper-password}
       S3_ACCESS_KEY: ${S3_ACCESS_KEY:-e2e-local-access-key}
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-e2e-local-secret-key}
@@ -36,8 +35,6 @@ services:
 
   frontend:
     build: ./fe
-    environment:
-      FE_PORT: 5173
     depends_on:
       - backend
 

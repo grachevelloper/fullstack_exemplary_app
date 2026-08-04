@@ -11,13 +11,11 @@ import {
     ParseUUIDPipe,
     Post,
     UploadedFile,
-    UseGuards,
     UseInterceptors,
 } from "@nestjs/common";
 import {FileInterceptor} from "@nestjs/platform-express";
 
 import {CurrentUser} from "../../shared/decorators/current-user.decorator";
-import {AuthGuard} from "../../shared/guards/auth.guard";
 import {AuthenticatedUser} from "../../types";
 import {
     ATTACHMENT_TARGET_TYPES,
@@ -39,7 +37,6 @@ class ImageMimeTypeValidator extends FileValidator<Record<string, never>> {
     }
 }
 
-@UseGuards(AuthGuard)
 @Controller("attachments")
 export class AttachmentsController {
     constructor(private attachmentsService: AttachmentsService) {}

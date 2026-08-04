@@ -1,7 +1,6 @@
 {
     "$schema": "https://unpkg.com/knip/schema.json",
     "entry": [
-        "src/__test__/mocks/handlers/**/*.ts",
         "src/typings/**/*.d.ts"
     ],
     "project": [

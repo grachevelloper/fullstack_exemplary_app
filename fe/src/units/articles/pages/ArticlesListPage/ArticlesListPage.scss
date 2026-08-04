@@ -41,16 +41,6 @@
         z-index: 1;
     }
 
-    &__hero-accent {
-        position: absolute;
-        inset: auto -90px -140px auto;
-        width: 320px;
-        aspect-ratio: 1 / 1;
-        border-radius: 50%;
-        opacity: 0.8;
-        pointer-events: none;
-    }
-
     &__search-card,
     &__content {
         margin-top: 24px;
@@ -58,10 +48,6 @@
 
     &__search-layout {
         width: 100%;
-    }
-
-    &__search-copy {
-        flex: 1 1 260px;
     }
 
     &__content-heading {

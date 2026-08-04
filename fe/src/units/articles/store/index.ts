@@ -1,5 +1,5 @@
 import {useMutation, useQuery} from '@tanstack/react-query';
-import {useTranslation} from 'react-i18next';
+import axios from 'axios';
 
 import {queryClient} from '@/shared/configs/api';
 import {PaginatedResponse} from '@/typings/common';
@@ -49,14 +49,8 @@ const useGetArticlesByAuthor = (authorId: string | undefined) => {
 };
 
 export const useCreateArticle = () => {
-    const {t} = useTranslation('article');
-
-    const emptyArticle = {
-        title: t('article.new.title'),
-        content: t('article.new.content'),
-    };
-    return useMutation<Article, Error, void>({
-        mutationFn: () => api.create(emptyArticle),
+    return useMutation<Article, Error, Parameters<typeof api.create>[0] | void>({
+        mutationFn: (data) => api.create(data ?? undefined),
         onSuccess: (data) => {
             queryClient.invalidateQueries({queryKey: articleKeys.lists()});
             queryClient.setQueryData(articleKeys.detail(data.id), data);
@@ -109,6 +103,7 @@ export const useUpdateArticle = () => {
                     data
                 );
                 queryClient.invalidateQueries({queryKey: articleKeys.lists()});
+                queryClient.invalidateQueries({queryKey: articleKeys.drafts()});
             },
         });
 
@@ -124,28 +119,60 @@ export const useUpdateArticle = () => {
     };
 
     const updateTitle = createMutation('title');
+    const updateDescription = createMutation('description');
     const updateContent = createMutation('content');
     const updateImage = createMutation('image');
+    const updateCoverMutation = useMutation<
+        Article,
+        Error,
+        {coverAttachmentId: string; id: string}
+    >({
+        mutationFn: api.updateCover,
+        onSuccess: (data) => {
+            queryClient.setQueryData(articleKeys.detail(data.id), data);
+            queryClient.invalidateQueries({queryKey: articleKeys.lists()});
+            queryClient.invalidateQueries({queryKey: articleKeys.drafts()});
+        },
+    });
     const updateReadTime = createMutation('readTime');
     const updateTags = createMutation('tags');
     const updateDraftStatus = createMutation('isDraft');
 
     return {
         updateTitle,
+        updateDescription,
         updateContent,
         updateImage,
+        updateCover: {
+            mutateAsync: (id: string, coverAttachmentId: string) =>
+                updateCoverMutation.mutateAsync({id, coverAttachmentId}),
+            isPending: updateCoverMutation.isPending,
+            error: updateCoverMutation.error,
+        },
         updateReadTime,
         updateTags,
         updateDraftStatus,
     };
 };
 
-const useDeleteArticle = () => {
+export const useDeleteArticle = () => {
+    const syncDeletedArticleCaches = (id: string) => {
+        queryClient.removeQueries({queryKey: articleKeys.detail(id)});
+        queryClient.invalidateQueries({queryKey: articleKeys.lists()});
+        queryClient.invalidateQueries({queryKey: articleKeys.drafts()});
+        queryClient.invalidateQueries({queryKey: articleKeys.authors()});
+    };
+
     return useMutation<void, Error, string>({
         mutationFn: (id) => api.delete(id),
-        onSuccess: (_, id) => {
-            queryClient.removeQueries({queryKey: articleKeys.detail(id)});
-            queryClient.invalidateQueries({queryKey: articleKeys.lists()});
+        onSuccess: (_, id) => syncDeletedArticleCaches(id),
+        onError: (error, id) => {
+            if (
+                axios.isAxiosError(error) &&
+                error.response?.status === 404
+            ) {
+                syncDeletedArticleCaches(id);
+            }
         },
     });
 };

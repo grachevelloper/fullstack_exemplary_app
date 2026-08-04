@@ -27,6 +27,7 @@ describe("UsersService authorization", () => {
         });
         const repository = {
             findOne: jest.fn<Repository<User>["findOne"]>().mockResolvedValue(user),
+            findOneBy: jest.fn<Repository<User>["findOneBy"]>().mockResolvedValue(user),
             createQueryBuilder: jest.fn(() => ({
                 addSelect: jest.fn().mockReturnThis(),
                 where: jest.fn().mockReturnThis(),
@@ -93,6 +94,13 @@ describe("UsersService authorization", () => {
         await expect(service.findForActor(owner.id, admin)).resolves.toBe(user);
     });
 
+    it("finds the administrator used for public nowadays data", async () => {
+        const {repository, service, user} = await setup();
+
+        await expect(service.findAdmin()).resolves.toBe(user);
+        expect(repository.findOneBy).toHaveBeenCalledWith({role: Role.ADMIN});
+    });
+
     it("prevents a regular user from changing their role", async () => {
         const {service, repository} = await setup();
         await expect(service.update(owner.id, {role: Role.ADMIN}, owner)).rejects.toBeInstanceOf(ForbiddenException);
@@ -108,6 +116,28 @@ describe("UsersService authorization", () => {
             expect.objectContaining({
                 id: owner.id,
                 username: "updated-reader",
+            }),
+        );
+    });
+
+    it("prevents a regular user from updating nowadays fields", async () => {
+        const {service, repository} = await setup();
+
+        await expect(
+            service.update(owner.id, {nowReading: "A book"}, owner),
+        ).rejects.toBeInstanceOf(ForbiddenException);
+        expect(repository.save).not.toHaveBeenCalled();
+    });
+
+    it("allows an administrator to update nowadays fields", async () => {
+        const {service, repository} = await setup();
+
+        await service.update(owner.id, {nowReading: "A book"}, admin);
+
+        expect(repository.save).toHaveBeenCalledWith(
+            expect.objectContaining({
+                id: owner.id,
+                nowReading: "A book",
             }),
         );
     });

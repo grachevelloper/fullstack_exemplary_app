@@ -74,7 +74,7 @@ describe("Users and auth PostgreSQL integration", () => {
         expect(persisted.password).not.toBe("StrongPassword123");
         expect(publicRead.password).toBeUndefined();
         await expect(
-            bcrypt.compare("StrongPassword123", persisted.password),
+            bcrypt.compare("StrongPassword123", persisted.password!),
         ).resolves.toBe(true);
         await expect(
             authService.signIn(email, "StrongPassword123"),

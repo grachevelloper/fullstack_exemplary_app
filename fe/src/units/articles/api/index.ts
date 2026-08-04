@@ -7,6 +7,8 @@ import {
     DtoCreateArticle,
     DtoUpdateArticle,
     DtoUpdateArticleContent,
+    DtoUpdateArticleCover,
+    DtoUpdateArticleDescription,
     DtoUpdateArticleImage,
     DtoUpdateArticleReadTime,
     DtoUpdateArticleTags,
@@ -14,7 +16,7 @@ import {
 } from './types';
 
 const api: ArticleApi = {
-    create: async (createData: DtoCreateArticle): Promise<Article> => {
+    create: async (createData: DtoCreateArticle = {}): Promise<Article> => {
         const response = await query.post<Article>('articles', createData);
         return response;
     },
@@ -33,6 +35,16 @@ const api: ArticleApi = {
         return response;
     },
 
+    updateDescription: async (
+        data: DtoUpdateArticleDescription
+    ): Promise<Article> => {
+        const {id, description} = data;
+        const response = await query.patch<Article>(`articles/${id}`, {
+            description,
+        });
+        return response;
+    },
+
     updateContent: async (data: DtoUpdateArticleContent): Promise<Article> => {
         const {id, content} = data;
         const response = await query.patch<Article>(`articles/${id}`, {
@@ -45,6 +57,14 @@ const api: ArticleApi = {
         const {id, image} = data;
         const response = await query.patch<Article>(`articles/${id}`, {
             image,
+        });
+        return response;
+    },
+
+    updateCover: async (data: DtoUpdateArticleCover): Promise<Article> => {
+        const {id, coverAttachmentId} = data;
+        const response = await query.patch<Article>(`articles/${id}`, {
+            coverAttachmentId,
         });
         return response;
     },
@@ -68,7 +88,9 @@ const api: ArticleApi = {
     },
 
     delete: async (id: string): Promise<void> => {
-        return await query.delete(`articles/${id}`);
+        return await query.delete(`articles/${id}`, {
+            skipErrorRedirect: true,
+        });
     },
 
     getById: async (id: string): Promise<Article> => {

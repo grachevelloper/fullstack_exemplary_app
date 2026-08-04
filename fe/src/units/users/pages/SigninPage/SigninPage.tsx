@@ -1,9 +1,9 @@
-import {Flex, Form, theme, Typography} from 'antd';
+import {Alert, Divider, Flex, Form, Typography} from 'antd';
 import axios from 'axios';
 import block from 'bem-cn-lite';
 import {useCallback} from 'react';
 import {useTranslation} from 'react-i18next';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useSearchParams} from 'react-router-dom';
 
 import {ButtonAccept} from '@/shared/components/actions';
 import {FlexibleCard} from '@/shared/components/FlexibleCard';
@@ -11,7 +11,9 @@ import {FormInput} from '@/shared/components/FormInput';
 import {useAuth} from '@/shared/context';
 import {ApiErrorResponse} from '@/typings/axios';
 
+import {YandexAuthButton} from '../../components/YandexAuthButton';
 import {useSigninMutatuon} from '../../store';
+import {getYandexOAuthErrorKey} from '../../utils/yandexOAuth';
 
 import {useSignInFields} from './hooks';
 
@@ -52,12 +54,10 @@ const getSignInErrorKey = (error: Error | null): string | undefined => {
 };
 
 export const SigninPage = () => {
-    const {
-        token: {colorError, paddingSM},
-    } = theme.useToken();
     const {t} = useTranslation('auth');
     const [form] = Form.useForm<SignInForm>();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const {isPending, error, mutateAsync} = useSigninMutatuon();
     const {refreshUser, setUserData} = useAuth();
     const handleSubmit = useCallback(async () => {
@@ -75,31 +75,28 @@ export const SigninPage = () => {
         }
     }, [form, mutateAsync, navigate, refreshUser, setUserData]);
     const signInFields = useSignInFields(form);
+    const oauthErrorKey = getYandexOAuthErrorKey(
+        searchParams.get('oauthError')
+    );
 
     const renderSignInFields = useCallback(() => {
         return signInFields.map((field) => (
             <FormInput
-                field={{...field, style: {marginBottom: paddingSM}}}
+                field={{...field, className: b('field')}}
                 key={field.name}
             />
         ));
-    }, [paddingSM, signInFields]);
+    }, [signInFields]);
 
     const renderErrors = useCallback(() => {
         const errorKey = getSignInErrorKey(error);
 
         return (
-            <span
-                style={{
-                    paddingLeft: paddingSM,
-                    color: colorError,
-                }}
-                className={b('server-error')}
-            >
+            <div className={b('server-error')} role='alert'>
                 {errorKey ? t(errorKey) : null}
-            </span>
+            </div>
         );
-    }, [colorError, error, paddingSM, t]);
+    }, [error, t]);
 
     return (
         <Flex className={b()} align='center' justify='center'>
@@ -116,24 +113,41 @@ export const SigninPage = () => {
                 <FlexibleCard
                     className={b('container')}
                     title={
-                        <Typography.Title level={2} className={b('title')}>
-                            {t('auth.signin.title')}
-                        </Typography.Title>
+                        <div className={b('heading')}>
+                            <Typography.Text className={b('eyebrow')}>
+                                {t('auth.signin.eyebrow')}
+                            </Typography.Text>
+                            <Typography.Title
+                                level={2}
+                                className={b('title')}
+                            >
+                                {t('auth.signin.title')}
+                            </Typography.Title>
+                        </div>
                     }
-                    actionsAlign='end'
-                    actions={[
-                        <ButtonAccept
-                            text={t('auth.signin.submit')}
-                            key={'accept-signin'}
-                            htmlType='submit'
-                            data-marker='auth-submit'
-                            loading={isPending}
-                            disabled={isPending}
-                        />,
-                    ]}
                 >
+                    {oauthErrorKey && (
+                        <Alert
+                            className={b('oauth-error')}
+                            message={t(oauthErrorKey)}
+                            type='error'
+                            showIcon
+                        />
+                    )}
                     {renderSignInFields()}
                     {renderErrors()}
+                    <ButtonAccept
+                        className={b('submit')}
+                        text={t('auth.signin.submit')}
+                        htmlType='submit'
+                        data-marker='auth-submit'
+                        loading={isPending}
+                        disabled={isPending}
+                    />
+                    <Divider className={b('divider')}>
+                        {t('auth.signin.divider')}
+                    </Divider>
+                    <YandexAuthButton source='signin' />
                 </FlexibleCard>
             </Form>
         </Flex>

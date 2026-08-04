@@ -1,49 +1,92 @@
 .comment {
     width: 100%;
-    padding: 10px;
+    min-width: 0;
+    padding: 10px 0;
+    padding-left: min(calc(var(--comment-depth, 0) * 20px), 64px);
 
     &__title {
         width: 100%;
+        min-width: 0;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    &__author {
+        min-width: 0;
+        flex: 1 1 220px;
+    }
+
+    &__updated-at {
+        min-width: 0;
+        justify-content: flex-end;
+        flex: 0 1 auto;
     }
 
     &__created-at {
-        font-size: 10px;
+        color: var(--ant-color-text-secondary);
+        font-size: 12px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
     }
 
     &__content {
-        min-width: 300px;
+        min-width: 0;
         width: 100%;
+        margin-top: 4px;
         resize: none !important;
-        overflow-y: none !important;
+        overflow-wrap: anywhere;
+        line-height: 1.5;
     }
 
     &__actions {
+        flex-wrap: wrap;
+        gap: 4px;
         width: 100%;
-        margin-top: 4px;
+        margin-top: 8px;
     }
 
     &__divider {
         margin: 10px 0 4px 0;
     }
 
-    &__reply {
-        text-align: center;
-        padding-inline: 4px;
+    &__action {
+        height: 28px;
+        padding-inline: 8px;
+        color: var(--ant-color-text-secondary);
+        font-weight: 600;
+
+        &_danger:hover,
+        &_danger:focus-visible {
+            color: var(--ant-color-error);
+        }
     }
 
-    &__icon {
-        cursor: pointer;
-        svg {
-            path:nth-child(1) {
-                fill: var(--ant-color-bg-container-disabled) !important;
-            }
-            path:nth-child(2) {
-                fill: var(--ant-color-primary) !important;
-            }
+    @media (max-width: 575px) {
+        padding: 10px 0;
+        padding-left: min(calc(var(--comment-depth, 0) * 10px), 20px);
+
+        &__title {
+            gap: 6px;
         }
 
-        &_error {
-            color: var(--ant-color-error);
+        &__author,
+        &__updated-at {
+            flex: 1 1 100%;
+            justify-content: flex-start;
+        }
+
+        &__created-at {
+            white-space: normal;
+        }
+
+        &__actions {
+            align-items: flex-start;
+            gap: 2px 6px;
+        }
+
+        &__action {
+            padding-inline: 4px;
         }
     }
 }

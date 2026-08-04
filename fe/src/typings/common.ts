@@ -1,8 +1,3 @@
-export interface Tokens {
-    refreshToken: string;
-    accessToken: string;
-}
-
 export interface BaseEntity {
     createdAt?: Date;
     updatedAt?: Date;

@@ -8,8 +8,9 @@ export const articleKeys = {
     details: () => [...articleKeys.all, 'detail'] as const,
     detail: (id: string) => [...articleKeys.details(), id] as const,
     drafts: () => [...articleKeys.all, 'drafts'] as const,
+    authors: () => [...articleKeys.all, 'author'] as const,
     byAuthor: (authorId: string) =>
-        [...articleKeys.all, 'author', authorId] as const,
+        [...articleKeys.authors(), authorId] as const,
 };
 
 export const tagsKeys = {
@@ -25,6 +26,7 @@ export const fieldUpdateConfig: Record<
     (data: any) => Promise<unknown>
 > = {
     title: (data) => api.updateTitle(data),
+    description: (data) => api.updateDescription(data),
     content: (data) => api.updateContent(data),
     image: (data) => api.updateImage(data),
     readTime: (data) => api.updateReadTime(data),

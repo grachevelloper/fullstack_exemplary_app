@@ -10,6 +10,8 @@ import {Article} from "src/modules/articles/articles.entity";
 import {ArticlesService} from "src/modules/articles/articles.service";
 import {Tag} from "src/modules/articles/tags/tags.entity";
 import {TagsService} from "src/modules/articles/tags/tags.service";
+import {Attachment} from "src/modules/attachments/attachments.entity";
+import {AttachmentsService} from "src/modules/attachments/attachments.service";
 import {LikesService} from "src/modules/likes/likes.service";
 import {UsersService} from "src/modules/users/users.service";
 import {AggregateDeletionService} from "src/processes/aggregate-deletion/aggregate-deletion.service";
@@ -22,6 +24,7 @@ describe("ArticlesService", () => {
     let tagsService: jest.Mocked<TagsService>;
     let usersService: jest.Mocked<UsersService>;
     let aggregateDeletionService: jest.Mocked<AggregateDeletionService>;
+    let attachmentsService: jest.Mocked<AttachmentsService>;
     let queryBuilder: ReturnType<typeof createArticleQueryBuilderMock>;
 
     const owner = {
@@ -51,6 +54,7 @@ describe("ArticlesService", () => {
     const article = Object.assign(new Article(), {
         id: "f43e19d0-8c1a-41d4-81b2-983d19648916",
         title: "Article",
+        description: "A concise article description",
         image: "https://cdn.example.com/image.png",
         content: "Content",
         readTime: 4,
@@ -104,6 +108,13 @@ describe("ArticlesService", () => {
                         deleteArticleAggregate: jest.fn(),
                     },
                 },
+                {
+                    provide: AttachmentsService,
+                    useValue: {
+                        deleteAttachment: jest.fn(),
+                        getArticleAttachment: jest.fn(),
+                    },
+                },
             ],
         }).compile();
 
@@ -112,6 +123,7 @@ describe("ArticlesService", () => {
         tagsService = module.get(TagsService);
         usersService = module.get(UsersService);
         aggregateDeletionService = module.get(AggregateDeletionService);
+        attachmentsService = module.get(AttachmentsService);
         queryBuilder = createArticleQueryBuilderMock();
         queryBuilder.getManyAndCount.mockResolvedValue([[article], 1] as never);
         repository.createQueryBuilder.mockReturnValue(queryBuilder as never);
@@ -139,6 +151,8 @@ describe("ArticlesService", () => {
         expect(repository.create).toHaveBeenCalledWith(
             expect.objectContaining({
                 author,
+                content: "Content",
+                description: "",
                 isDraft: true,
                 tags,
                 title: "Article",
@@ -161,6 +175,56 @@ describe("ArticlesService", () => {
 
         expect(usersService.findById).not.toHaveBeenCalled();
         expect(repository.create).not.toHaveBeenCalled();
+    });
+
+    it("creates a draft article with empty content when content is omitted", async () => {
+        usersService.findById.mockResolvedValue(author as never);
+        repository.create.mockReturnValue({...article, content: ""});
+        repository.save.mockResolvedValue({...article, content: ""});
+
+        await service.create({
+            actor: writer,
+            data: {
+                title: "Article",
+            },
+        });
+
+        expect(repository.create).toHaveBeenCalledWith(
+            expect.objectContaining({
+                content: "",
+                description: "",
+                isDraft: true,
+                title: "Article",
+            }),
+        );
+    });
+
+    it("creates a draft article with a default title when title is omitted", async () => {
+        usersService.findById.mockResolvedValue(author as never);
+        repository.create.mockReturnValue({
+            ...article,
+            content: "",
+            title: "Untitled article",
+        });
+        repository.save.mockResolvedValue({
+            ...article,
+            content: "",
+            title: "Untitled article",
+        });
+
+        await service.create({
+            actor: writer,
+            data: {},
+        });
+
+        expect(repository.create).toHaveBeenCalledWith(
+            expect.objectContaining({
+                content: "",
+                description: "",
+                isDraft: true,
+                title: "Untitled article",
+            }),
+        );
     });
 
     it("forbids a regular user from updating another user's article", async () => {
@@ -191,6 +255,71 @@ describe("ArticlesService", () => {
         );
     });
 
+    it("replaces an article cover and deletes the previous attachment", async () => {
+        const previousCoverAttachmentId =
+            "58b6d8ed-b785-4a31-a1ee-d9c5e7e4f34e";
+        const nextCoverAttachmentId =
+            "7ff7cb30-5b9c-41e8-b895-e51af7b78759";
+        const previousCover = Object.assign(new Attachment(), {
+            id: previousCoverAttachmentId,
+            entityId: article.id,
+            entityType: "article" as const,
+            s3Key: "uploads/previous-cover.png",
+        });
+        const nextCover = Object.assign(new Attachment(), {
+            id: nextCoverAttachmentId,
+            entityId: article.id,
+            entityType: "article" as const,
+            url: "https://cdn.example.com/next-cover.png",
+        });
+        repository.findOne.mockResolvedValue({
+            ...article,
+            coverAttachmentId: previousCoverAttachmentId,
+        });
+        attachmentsService.getArticleAttachment
+            .mockResolvedValueOnce(nextCover)
+            .mockResolvedValueOnce(previousCover);
+        repository.save.mockResolvedValue({
+            ...article,
+            image: nextCover.url,
+            coverAttachmentId: nextCoverAttachmentId,
+        });
+
+        await service.update({
+            id: article.id,
+            actor: owner,
+            data: {coverAttachmentId: nextCoverAttachmentId},
+        });
+
+        expect(repository.save).toHaveBeenCalledWith(
+            expect.objectContaining({
+                coverAttachmentId: nextCoverAttachmentId,
+                image: nextCover.url,
+            }),
+        );
+        expect(attachmentsService.deleteAttachment).toHaveBeenCalledWith(
+            previousCover,
+        );
+    });
+
+    it("rejects a cover attachment that does not belong to the article", async () => {
+        repository.findOne.mockResolvedValue(article);
+        attachmentsService.getArticleAttachment.mockRejectedValue(
+            new NotFoundException("Article attachment not found"),
+        );
+
+        await expect(
+            service.update({
+                id: article.id,
+                actor: owner,
+                data: {
+                    coverAttachmentId: "c7ea7601-2db8-4db5-8227-532068e580ec",
+                },
+            }),
+        ).rejects.toBeInstanceOf(NotFoundException);
+        expect(repository.save).not.toHaveBeenCalled();
+    });
+
     it("publishes an existing draft article", async () => {
         repository.findOne.mockResolvedValue({...article, isDraft: true});
         repository.save.mockResolvedValue({...article, isDraft: false});
@@ -201,6 +330,23 @@ describe("ArticlesService", () => {
             expect.objectContaining({isDraft: false}),
         );
         expect(result.isDraft).toBe(false);
+    });
+
+    it("rejects publishing a draft without a description", async () => {
+        repository.findOne.mockResolvedValue({
+            ...article,
+            description: "   ",
+            isDraft: true,
+        });
+
+        await expect(
+            service.publish({id: article.id, actor: owner}),
+        ).rejects.toThrow(
+            new BadRequestException(
+                "Article description is required before publishing",
+            ),
+        );
+        expect(repository.save).not.toHaveBeenCalled();
     });
 
     it("rejects publishing an already published article", async () => {
@@ -280,18 +426,39 @@ describe("ArticlesService", () => {
         await expect(
             service.delete({id: article.id, actor: owner}),
         ).rejects.toBeInstanceOf(NotFoundException);
-        expect(repository.delete).not.toHaveBeenCalled();
+        expect(
+            aggregateDeletionService.deleteArticleAggregate,
+        ).not.toHaveBeenCalled();
     });
 
-    it("delegates physical article aggregate deletion after mutation access check", async () => {
-        repository.findOne.mockResolvedValue(article);
-        aggregateDeletionService.deleteArticleAggregate.mockResolvedValue();
+    it.each([
+        {actor: owner, isDraft: true, scenario: "owner draft"},
+        {actor: owner, isDraft: false, scenario: "owner published article"},
+        {actor: admin, isDraft: true, scenario: "administrator foreign draft"},
+        {
+            actor: admin,
+            isDraft: false,
+            scenario: "administrator foreign published article",
+        },
+    ])("deletes an article for $scenario", async ({actor, isDraft}) => {
+        repository.findOne.mockResolvedValue({...article, isDraft});
 
-        await service.delete({id: article.id, actor: owner});
+        await service.delete({id: article.id, actor});
 
         expect(aggregateDeletionService.deleteArticleAggregate).toHaveBeenCalledWith(
             article.id,
         );
+    });
+
+    it("forbids deleting another user's article", async () => {
+        repository.findOne.mockResolvedValue({...article, isDraft: false});
+
+        await expect(
+            service.delete({id: article.id, actor: stranger}),
+        ).rejects.toBeInstanceOf(ForbiddenException);
+        expect(
+            aggregateDeletionService.deleteArticleAggregate,
+        ).not.toHaveBeenCalled();
     });
 });
 

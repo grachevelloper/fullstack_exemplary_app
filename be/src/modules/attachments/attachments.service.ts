@@ -133,8 +133,29 @@ export class AttachmentsService {
             actor,
         );
 
+        await this.deleteAttachment(attachment);
+    }
+
+    async getArticleAttachment(
+        id: string,
+        articleId: string,
+    ): Promise<Attachment> {
+        const attachment = await this.attachmentsRepo.findOneBy({
+            id,
+            entityType: "article",
+            entityId: articleId,
+        });
+
+        if (!attachment) {
+            throw new NotFoundException("Article attachment not found");
+        }
+
+        return attachment;
+    }
+
+    async deleteAttachment(attachment: Attachment): Promise<void> {
         await this.storage.delete(attachment.s3Key);
-        await this.attachmentsRepo.delete({id});
+        await this.attachmentsRepo.delete({id: attachment.id});
     }
 
     private async assertCanAccessTarget(

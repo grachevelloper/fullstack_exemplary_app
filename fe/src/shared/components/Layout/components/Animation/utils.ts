@@ -1,7 +1,3 @@
-export function getRandomArbitrary(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min)) + min;
-}
-
 export const START_OF_DAY = new Date().setHours(0, 0, 0, 0);
 
 export const TOTAL_DAY_DURATION =

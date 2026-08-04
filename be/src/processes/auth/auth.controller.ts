@@ -1,14 +1,17 @@
 import {
     Body,
+    ConflictException,
     Controller,
     Get,
     HttpCode,
     HttpStatus,
     Post,
+    Query,
     Req,
     Res,
-    UseGuards,
+    UnauthorizedException,
 } from "@nestjs/common";
+import {randomBytes, timingSafeEqual} from "crypto";
 import {Request, Response} from "express";
 
 import {UserResponseDto} from "@/users/dto/user-response.dto";
@@ -17,15 +20,23 @@ import {UsersMapper} from "@/users/users.mapper";
 
 import {Public} from "../../shared/decorators/auth.decorator";
 import {CurrentUser} from "../../shared/decorators/current-user.decorator";
-import {AuthGuard} from "../../shared/guards/auth.guard";
 import {AuthenticatedUser} from "../../types";
 import {AuthService} from "./auth.service";
 import {ACCESS_TOKEN_TTL_IN_MS, REFRESH_TOKEN_TTL_IN_MS} from "./constants";
 import {clearTokenConfig, tokenConfig} from "./utils";
+import {YandexOAuthService} from "./yandex-oauth.service";
+
+const YANDEX_STATE_COOKIE = "yandexOauthState";
+const YANDEX_SOURCE_COOKIE = "yandexOauthSource";
+const YANDEX_STATE_TTL_IN_MS = 10 * 60 * 1000;
+type YandexAuthSource = "signin" | "signup";
 
 @Controller("auth")
 export class AuthController {
-    constructor(private authService: AuthService) {}
+    constructor(
+        private authService: AuthService,
+        private yandexOAuthService: YandexOAuthService,
+    ) {}
 
     @Public()
     @HttpCode(HttpStatus.CREATED)
@@ -62,6 +73,75 @@ export class AuthController {
     }
 
     @Public()
+    @Get("/yandex")
+    yandexSignIn(
+        @Query("source") requestedSource: string | undefined,
+        @Res() response: Response,
+    ): void {
+        const source: YandexAuthSource =
+            requestedSource === "signup" ? "signup" : "signin";
+        const state = randomBytes(32).toString("hex");
+
+        response.cookie(
+            YANDEX_STATE_COOKIE,
+            state,
+            tokenConfig(YANDEX_STATE_TTL_IN_MS),
+        );
+        response.cookie(
+            YANDEX_SOURCE_COOKIE,
+            source,
+            tokenConfig(YANDEX_STATE_TTL_IN_MS),
+        );
+        response.redirect(this.yandexOAuthService.getAuthorizationUrl(state));
+    }
+
+    @Public()
+    @Get("/yandex/callback")
+    async yandexCallback(
+        @Query("code") code: string | undefined,
+        @Query("state") state: string | undefined,
+        @Query("error") yandexError: string | undefined,
+        @Req() request: Request,
+        @Res() response: Response,
+    ): Promise<void> {
+        const source: YandexAuthSource =
+            request.cookies?.[YANDEX_SOURCE_COOKIE] === "signup"
+                ? "signup"
+                : "signin";
+        const errorPath = `/auth/${source}`;
+
+        response.clearCookie(YANDEX_STATE_COOKIE, clearTokenConfig());
+        response.clearCookie(YANDEX_SOURCE_COOKIE, clearTokenConfig());
+
+        if (yandexError) {
+            response.redirect(`${errorPath}?oauthError=access_denied`);
+            return;
+        }
+        if (
+            !code ||
+            !state ||
+            !this.isValidState(request.cookies?.[YANDEX_STATE_COOKIE], state)
+        ) {
+            response.redirect(`${errorPath}?oauthError=invalid_state`);
+            return;
+        }
+
+        try {
+            const user = await this.yandexOAuthService.authenticate(code);
+            await this.setTokenCookies(user, response);
+            response.redirect("/");
+        } catch (error) {
+            const errorCode =
+                error instanceof ConflictException
+                    ? "email_conflict"
+                    : error instanceof UnauthorizedException
+                      ? "unauthorized"
+                      : "provider_error";
+            response.redirect(`${errorPath}?oauthError=${errorCode}`);
+        }
+    }
+
+    @Public()
     @HttpCode(HttpStatus.OK)
     @Post("/refresh")
     async refresh(
@@ -94,14 +174,12 @@ export class AuthController {
 
     @HttpCode(HttpStatus.OK)
     @Get("check")
-    @UseGuards(AuthGuard)
     check(@CurrentUser() user: AuthenticatedUser) {
         return !!user;
     }
 
     @HttpCode(HttpStatus.OK)
     @Get("me")
-    @UseGuards(AuthGuard)
     async getMe(
         @CurrentUser() user: AuthenticatedUser,
     ): Promise<UserResponseDto> {
@@ -132,6 +210,19 @@ export class AuthController {
             "accessToken",
             accessToken,
             tokenConfig(ACCESS_TOKEN_TTL_IN_MS),
+        );
+    }
+
+    private isValidState(
+        expectedState: string | undefined,
+        actualState: string,
+    ): boolean {
+        if (!expectedState || expectedState.length !== actualState.length) {
+            return false;
+        }
+        return timingSafeEqual(
+            Buffer.from(expectedState),
+            Buffer.from(actualState),
         );
     }
 }

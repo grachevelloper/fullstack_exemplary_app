@@ -4,6 +4,7 @@ import {User} from '../../users/types';
 
 export interface Article extends LikedEntity {
     title: string;
+    description: string;
     image: string;
     content: string;
     tags?: Tag[];
@@ -24,5 +25,11 @@ export interface Tag {
 
 export type UpdateDraftField = keyof Pick<
     Article,
-    'content' | 'readTime' | 'tags' | 'title' | 'image' | 'isDraft'
+    | 'content'
+    | 'description'
+    | 'readTime'
+    | 'tags'
+    | 'title'
+    | 'image'
+    | 'isDraft'
 >;

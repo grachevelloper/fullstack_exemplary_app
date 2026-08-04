@@ -3,7 +3,8 @@ import block from 'bem-cn-lite';
 import {useTranslation} from 'react-i18next';
 import {useNavigate} from 'react-router-dom';
 
-import {Todo, TodoPriority, TodoState} from '@/todos/types';
+import {Todo, TodoState} from '@/todos/types';
+import {normalizeTodoPriority, priorityKeyByValue} from '@/todos/utils/todoMeta';
 
 import './TodoListTable.scss';
 
@@ -12,13 +13,6 @@ const b = block('todo-list-table');
 interface TodoListTableProps {
     todos: Todo[];
 }
-
-const priorityKeyByValue: Record<TodoPriority, string> = {
-    [TodoPriority.LOW]: 'low',
-    [TodoPriority.MEDIUM]: 'medium',
-    [TodoPriority.HIGH]: 'high',
-    [TodoPriority.SUPER]: 'super',
-};
 
 export const TodoListTable = ({todos}: TodoListTableProps) => {
     const {t} = useTranslation('todo');
@@ -53,7 +47,8 @@ export const TodoListTable = ({todos}: TodoListTableProps) => {
             <div className={b('list')}>
                 {todos.map((todo) => {
                     const isCompleted = todo.state === TodoState.FINISHED;
-                    const priorityKey = priorityKeyByValue[todo.priority];
+                    const priority = normalizeTodoPriority(todo.priority);
+                    const priorityKey = priorityKeyByValue[priority];
 
                     return (
                         <button

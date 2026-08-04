@@ -1,4 +1,7 @@
 .draft-article-page {
+    width: 100%;
+    max-width: 1480px;
+    margin-inline: auto;
     transition: padding 1.5s cubic-bezier(0.4, 0, 0.2, 1),
         max-width 0.6s cubic-bezier(0.4, 0, 0.2, 1),
         background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
@@ -32,26 +35,99 @@
         justify-content: flex-end;
     }
 
-    &__settings,
-    &__cover,
-    &__tags-row,
-    &__editor-row {
+    &__description-row,
+    &__workspace {
         margin-bottom: 20px;
+    }
+
+    &__description-row {
+        padding: 18px 20px;
+        border: 1px solid #e9e5f5;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #fff 0%, #fbfaff 100%);
+    }
+
+    &__description-label {
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    &__description-input {
+        resize: none;
+    }
+
+    &__description-form-item {
+        margin-bottom: 8px;
+    }
+
+    &__description-count {
+        display: block;
+        text-align: end;
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+    }
+
+    &__description-help {
+        display: block;
+        margin-top: 6px;
     }
 
     &__read-time-input {
         width: 100%;
     }
 
-    &__cover-image {
-        width: 100%;
-        max-height: 400px;
-        object-fit: cover;
-        border-radius: 8px;
+    &__editor-column {
+        min-width: 0;
     }
 
-    &__editor-row {
+    &__sidebar {
+        position: sticky;
+        top: 24px;
+        display: grid;
+        gap: 22px;
+        padding: 20px;
+        border: 1px solid var(--ant-color-border-secondary);
+        border-radius: 12px;
+        background: var(--ant-color-bg-container);
+    }
+
+    &__sidebar-section {
+        display: grid;
+        gap: 10px;
+        min-width: 0;
+    }
+
+    &__sidebar-label {
+        display: block;
+    }
+
+    &__cover {
+        display: block;
+        width: 100%;
+        margin-top: 2px;
+        overflow: hidden;
+        border-radius: 8px;
+        background: var(--ant-color-fill-quaternary);
+    }
+
+    &__cover-image {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+    }
+
+    &__tags {
+        width: 100%;
+
+        > .ant-space-item {
+            min-width: 0;
+        }
+    }
+
+    &__editor-column {
         .mdxeditor {
+            min-height: 560px;
             border: 1px solid var(--ant-color-border);
             border-radius: 8px;
             background: var(--ant-color-bg-container);
@@ -118,6 +194,11 @@
     }
 
     @media (max-width: 767px) {
+        &__description-row {
+            padding: 14px;
+            border-radius: 12px;
+        }
+
         &__title-input {
             font-size: 26px;
         }
@@ -125,6 +206,11 @@
         &__meta,
         &__meta-actions {
             justify-content: flex-start;
+        }
+
+        &__sidebar {
+            position: static;
+            padding: 16px;
         }
     }
 }

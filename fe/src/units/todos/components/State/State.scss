@@ -1,64 +1,95 @@
 @import 'animate.css';
 
 .state {
-    position: relative;
-    border-width: 1px;
-    width: 125px;
-    border-style: solid;
-    border-radius: 8px;
-    font-weight: 700;
-    padding: 4px;
+    --todo-control-accent: #8a8fa8;
+    --todo-control-bg: #f7f7fb;
+    --todo-control-border: #e5e7eb;
+    --todo-control-text: #4f5261;
+
+    min-width: 112px;
+    height: 32px;
+    max-width: 100%;
+    justify-content: flex-start;
+    border: 1px solid var(--todo-control-border) !important;
+    border-radius: 8px !important;
+    background: var(--todo-control-bg) !important;
+    color: var(--todo-control-text) !important;
+    font-weight: 650;
+    box-shadow: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition:
+        border-color 160ms ease,
+        background 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+
+    &::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        background: var(--todo-control-accent);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--todo-control-accent) 16%, transparent);
+    }
+
+    &:hover,
+    &:focus-visible {
+        border-color: color-mix(in srgb, var(--todo-control-accent) 42%, #d7d9e2) !important;
+        background: #fff !important;
+        box-shadow: 0 8px 22px rgb(45 39 121 / 8%);
+        transform: translateY(-1px);
+    }
+
+    &_editable {
+        cursor: pointer;
+    }
+
+    &_planning {
+        --todo-control-accent: #8a8fa8;
+        --todo-control-bg: #f8f8fb;
+        --todo-control-border: #e1e3ea;
+        --todo-control-text: #5e6170;
+    }
+
+    &_in_work {
+        --todo-control-accent: #4f46e5;
+        --todo-control-bg: #f3f2ff;
+        --todo-control-border: #d8d5ff;
+        --todo-control-text: #5048b8;
+    }
+
+    &_finished {
+        --todo-control-accent: #14a46c;
+        --todo-control-bg: #f2fbf7;
+        --todo-control-border: #c9efdc;
+        --todo-control-text: #16734f;
+    }
+
+    &_canceled {
+        --todo-control-accent: #d7354d;
+        --todo-control-bg: #fff3f5;
+        --todo-control-border: #efc9cf;
+        --todo-control-text: #9a2738;
+    }
+
+    &__label {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__chevron {
+        flex: 0 0 auto;
+        margin-left: 2px;
+        color: color-mix(in srgb, var(--todo-control-text) 70%, transparent);
+        font-size: 10px;
+    }
 
     &_is-edited {
         animation: fadeOutDown 0.3s ease-out,
             fadeInDown 0.4s ease-out 0.2s forwards;
     }
 }
-
-// @keyframes migrate {
-//     0% {
-//         left: 0;
-//         transform: scale(1);
-//     }
-//     20% {
-//         left: calc(40% - var(--element-width, 0px) * 0.4);
-//         transform: scale(1.04);
-//     }
-//     40% {
-//         left: calc(70% - var(--element-width, 0px) * 0.7);
-//         transform: scale(1.08);
-//     }
-//     60% {
-//         left: calc(90% - var(--element-width, 0px) * 0.9);
-//         transform: scale(1.1);
-//     }
-//     80% {
-//         left: calc(95% - var(--element-width, 0px) * 0.95);
-//         transform: scale(1.03);
-//     }
-//     100% {
-//         left: calc(100% - var(--element-width, 0px));
-//         transform: scale(1);
-//     }
-// }
-
-// @keyframes with_rotate {
-//     0% {
-//         transform: rotate(0deg) scale(1);
-//     }
-//     20% {
-//         transform: rotate(60deg) scale(0.8);
-//     }
-//     40% {
-//         transform: rotate(120deg) scale(0.6);
-//     }
-//     60% {
-//         transform: rotate(200deg) scale(0.7);
-//     }
-//     80% {
-//         transform: rotate(300deg) scale(0.9);
-//     }
-//     100% {
-//         transform: rotate(360deg) scale(1);
-//     }
-// }

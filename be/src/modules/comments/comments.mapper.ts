@@ -7,7 +7,10 @@ type CommentWithLikedState = Comment & {
 };
 
 export class CommentsMapper {
-    static toResponse(comment: CommentWithLikedState): CommentResponseDto {
+    static toResponse(
+        comment: CommentWithLikedState,
+        hasLiked = Boolean(comment.hasLiked),
+    ): CommentResponseDto {
         return {
             id: comment.id,
             content: comment.content,
@@ -16,7 +19,7 @@ export class CommentsMapper {
             parentId: comment.parentId,
             depth: comment.depth,
             likesCount: comment.likesCount,
-            hasLiked: Boolean(comment.hasLiked),
+            hasLiked,
             author: UsersMapper.toResponse(comment.author),
             createdAt: comment.createdAt,
             updatedAt: comment.updatedAt,

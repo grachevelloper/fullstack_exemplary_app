@@ -65,23 +65,23 @@ export class UpdateUserDto {
 
     @IsString()
     @IsOptional()
-    avatar?: string;
+    avatar?: string | null;
 
     @IsString()
     @IsOptional()
-    nowReading?: string;
+    nowReading?: string | null;
 
     @IsString()
     @IsOptional()
-    nowWatch?: string;
+    nowWatch?: string | null;
 
     @IsString()
     @IsOptional()
-    nowListening?: string;
+    nowListening?: string | null;
 
     @IsString()
     @IsOptional()
-    nowBeingIn?: string;
+    nowBeingIn?: string | null;
 }
 
 export class ChangePasswordDto {
