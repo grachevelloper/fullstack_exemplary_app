@@ -52,6 +52,9 @@ const formatter: StatisticProps['formatter'] = () => (
     />
 );
 const approvedRoutes = ['/', 'rezume'];
+const isAppleMobileDevice =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
 export const Animation = () => {
     const [isStopped, setStopped] = useState<boolean>(false);
@@ -82,7 +85,7 @@ export const Animation = () => {
         setStopped(true);
     };
 
-    if (!approvedRoutes.includes(pathname)) {
+    if (isAppleMobileDevice || !approvedRoutes.includes(pathname)) {
         return null;
     }
 
