@@ -98,7 +98,7 @@
     "resume.experience.avito.unit": "Jobs vertical",
     "resume.experience.avito.description": "Work on <strong>product microfrontends</strong> and shared <strong>frontend infrastructure</strong>. Independently analyze, decompose, and deliver tasks and projects lasting <strong>up to two quarters</strong>.",
     "resume.experience.avito.details": [
-        "Led the <strong>redesign of the resume package purchase page</strong>: coordinated delivery with design, analytics, and backend engineers; after launch, the solution generated <strong>RUB 2.4 million in revenue in its first month</strong>.",
+        "Designed and implemented the <strong>frontend part of the resume package purchase page redesign</strong>: coordinated delivery with design, analytics, and backend engineers; after launch, the solution generated <strong>RUB 2.4 million in revenue in its first month</strong>.",
         "<strong>Built from scratch</strong> a <strong>code review cycle-time analytics system</strong>: designed the <strong>SQL dataset</strong> and queries, launched a <strong>Redash</strong> dashboard, extended <strong>Python code</strong>, and configured automated <strong>AI notifications</strong>; the solution reduced median review time by <strong>2 working hours</strong>.",
         "Raised automated test coverage for packages and microfrontends handed over to the team to a healthy <strong>75%</strong>; wrote numerous <strong>unit and e2e tests</strong>, including work outside the core frontend stack.",
         "Launched product changes through <strong>successful A/B tests</strong>: configured experiment branching, <strong>exposure</strong>, and <strong>ClickStream</strong> events.",

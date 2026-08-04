@@ -3,11 +3,15 @@ import {Button, Flex, Layout, Menu, Typography} from 'antd';
 import block from 'bem-cn-lite';
 import {Fragment, useState} from 'react';
 import {useTranslation} from 'react-i18next';
+import {useNavigate} from 'react-router-dom';
 
 import {useAuth} from '@/shared/context';
 import {useSidebar} from '@/shared/context/Sidebar';
 
-import {useNavigation, useSiderActions} from '../../hooks';
+import {
+    useNavigation as useInternalNavigation,
+    useSiderActions,
+} from '../../hooks';
 import {LogoutDialog} from '../LogoutDialog';
 
 import './Sider.scss';
@@ -19,12 +23,13 @@ const SIDER_WIDTH = 288;
 
 export const Sider = () => {
     const {user} = useAuth();
+    const navigate = useNavigate();
     const {t} = useTranslation('common');
     const {isCollapsed, toggleCollapsed} = useSidebar();
 
     const [isSignoutModalOpen, setSignoutModalOpen] = useState<boolean>(false);
 
-    const {getNavigationItems, getDefaultSelectedKey} = useNavigation(
+    const {getNavigationItems, getDefaultSelectedKey} = useInternalNavigation(
         user?.role
     );
     const {getActionItems, contextNotificationHolder, contextMessageHolder} =
@@ -52,7 +57,12 @@ export const Sider = () => {
                         align='start'
                         orientation='horizontal'
                     >
-                        <div className={b('brand')}>
+                        <div
+                            className={b('brand')}
+                            onClick={() => {
+                                void navigate('/');
+                            }}
+                        >
                             <img src='/assets/favicon.ico' alt='' />
                             <div className={b('brand-copy')}>
                                 <span className={b('brand-name')}>
