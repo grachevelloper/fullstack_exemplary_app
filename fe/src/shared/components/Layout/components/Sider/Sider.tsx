@@ -52,11 +52,22 @@ export const Sider = () => {
                         align='start'
                         orientation='horizontal'
                     >
+                        <div className={b('brand')}>
+                            <img src='/assets/favicon.ico' alt='' />
+                            <div className={b('brand-copy')}>
+                                <span className={b('brand-name')}>
+                                    {t('layout.brand.name')}
+                                </span>
+                                <span className={b('brand-subtitle')}>
+                                    {t('layout.brand.subtitle')}
+                                </span>
+                            </div>
+                        </div>
                         <Menu
                             theme='light'
                             mode='vertical'
                             items={getNavigationItems()}
-                            defaultSelectedKeys={getDefaultSelectedKey()}
+                            selectedKeys={getDefaultSelectedKey()}
                             className={b('menu')}
                         />
                         <Button

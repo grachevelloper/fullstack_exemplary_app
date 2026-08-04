@@ -1,5 +1,6 @@
 import {
     BoldItalicUnderlineToggles,
+    BlockTypeSelect,
     CreateLink,
     HighlightToggle,
     InsertCodeBlock,
@@ -72,6 +73,7 @@ const ToolbarComponent = memo(() => {
     return (
         <Flex gap={2} className={b('toolbar')}>
             <UndoRedo />
+            <BlockTypeSelect />
             <BoldItalicUnderlineToggles />
             <StrikeThroughSupSubToggles />
             <HighlightToggle />

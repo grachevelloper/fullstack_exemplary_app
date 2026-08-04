@@ -22,6 +22,9 @@ export class Article extends BaseEntity {
     @Column()
     image!: string;
 
+    @Column({type: "uuid", nullable: true})
+    coverAttachmentId?: string | null;
+
     @Column("text")
     content!: string;
 

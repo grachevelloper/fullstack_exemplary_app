@@ -2,6 +2,7 @@ import {
     BadRequestException,
     ForbiddenException,
     Injectable,
+    Logger,
     NotFoundException,
 } from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
@@ -10,6 +11,7 @@ import {Repository} from "typeorm";
 import {AggregateDeletionService} from "../../processes/aggregate-deletion/aggregate-deletion.service";
 import {PaginatedResponseDto} from "../../shared/dto/paginated-response.dto";
 import {AuthenticatedUser, Order, Role, SortBy} from "../../types";
+import {AttachmentsService} from "../attachments/attachments.service";
 import {LikesService} from "../likes/likes.service";
 import {UsersService} from "../users/users.service";
 import {
@@ -74,6 +76,8 @@ const SORT_COLUMNS: Record<SortBy, string> = {
 
 @Injectable()
 export class ArticlesService {
+    private readonly logger = new Logger(ArticlesService.name);
+
     constructor(
         @InjectRepository(Article)
         private articlesRepository: Repository<Article>,
@@ -81,6 +85,7 @@ export class ArticlesService {
         private usersService: UsersService,
         private tagsService: TagsService,
         private aggregateDeletionService: AggregateDeletionService,
+        private attachmentsService: AttachmentsService,
     ) {}
 
     async create({
@@ -115,20 +120,49 @@ export class ArticlesService {
     }: UpdateArticleCommand): Promise<ResponseArticle> {
         const article = await this.findOneForMutation(id, actor);
         const tags = await this.resolveTags(data.tags);
+        const newCoverAttachment = data.coverAttachmentId
+            ? await this.attachmentsService.getArticleAttachment(
+                  data.coverAttachmentId,
+                  article.id,
+              )
+            : undefined;
+        const previousCoverAttachmentId = article.coverAttachmentId;
 
         Object.assign(article, {
             content: data.content ?? article.content,
             description: data.description ?? article.description,
-            image: data.image ?? article.image,
+            image: newCoverAttachment?.url ?? data.image ?? article.image,
+            coverAttachmentId:
+                newCoverAttachment?.id ?? article.coverAttachmentId,
             readTime: data.readTime ?? article.readTime,
             tags: data.tags ? tags : article.tags,
             title: data.title ?? article.title,
         });
 
-        return ArticlesMapper.toResponse(
-            await this.articlesRepository.save(article),
-            false,
-        );
+        const updatedArticle = await this.articlesRepository.save(article);
+
+        if (
+            newCoverAttachment &&
+            previousCoverAttachmentId &&
+            previousCoverAttachmentId !== newCoverAttachment.id
+        ) {
+            try {
+                await this.attachmentsService.deleteAttachment(
+                    await this.attachmentsService.getArticleAttachment(
+                        previousCoverAttachmentId,
+                        article.id,
+                    ),
+                );
+            } catch (error) {
+                this.logger.error("Failed to delete replaced article cover", {
+                    articleId: article.id,
+                    attachmentId: previousCoverAttachmentId,
+                    error,
+                });
+            }
+        }
+
+        return ArticlesMapper.toResponse(updatedArticle, false);
     }
 
     async publish({

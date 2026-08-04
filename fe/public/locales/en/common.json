@@ -21,6 +21,8 @@
     "layout.top.user.signup": "Sign up",
     "layout.top.articles": "Articles",
     "layout.top.drafts": "My drafts",
+    "layout.brand.name": "Nikolay Grachev",
+    "layout.brand.subtitle": "Personal site",
     "layout.navigation.open": "Open navigation",
     "layout.language": "Language",
     "layout.language.current": "Language: {{language}}",

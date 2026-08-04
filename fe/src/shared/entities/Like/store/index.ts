@@ -28,7 +28,7 @@ const detailKeyByEntityType = (
 const listsKeyByEntityType = (entityType: EntityLikeType) => {
     switch (entityType) {
         case 'article':
-            return ['articles'] as const;
+            return ['articles', 'list'] as const;
         case 'comment':
             return ['comments'] as const;
         case 'todo':
@@ -141,12 +141,6 @@ export const useToggleLikeMutation = () => {
             });
         },
         onSettled: (_data, _error, variables) => {
-            queryClient.invalidateQueries({
-                queryKey: detailKeyByEntityType(
-                    variables.entityType,
-                    variables.entityId
-                ),
-            });
             queryClient.invalidateQueries({
                 queryKey: listsKeyByEntityType(variables.entityType),
             });

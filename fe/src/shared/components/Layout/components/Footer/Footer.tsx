@@ -33,9 +33,6 @@ export const Footer = () => {
                 wrap='wrap'
             >
                 <div className={b('copy')}>
-                    <Typography.Title level={5} className={b('title')}>
-                        @gracheveloper
-                    </Typography.Title>
                     <Typography.Text
                         className={b('subtitle')}
                         style={{color: colorTextSecondary}}

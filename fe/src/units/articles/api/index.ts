@@ -7,6 +7,7 @@ import {
     DtoCreateArticle,
     DtoUpdateArticle,
     DtoUpdateArticleContent,
+    DtoUpdateArticleCover,
     DtoUpdateArticleDescription,
     DtoUpdateArticleImage,
     DtoUpdateArticleReadTime,
@@ -56,6 +57,14 @@ const api: ArticleApi = {
         const {id, image} = data;
         const response = await query.patch<Article>(`articles/${id}`, {
             image,
+        });
+        return response;
+    },
+
+    updateCover: async (data: DtoUpdateArticleCover): Promise<Article> => {
+        const {id, coverAttachmentId} = data;
+        const response = await query.patch<Article>(`articles/${id}`, {
+            coverAttachmentId,
         });
         return response;
     },

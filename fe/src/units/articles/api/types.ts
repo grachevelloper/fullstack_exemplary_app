@@ -20,6 +20,9 @@ export type DtoUpdateArticleDescription = Pick<
 >;
 export type DtoUpdateArticleContent = Pick<Article, 'id' | 'content'>;
 export type DtoUpdateArticleImage = Pick<Article, 'id' | 'image'>;
+export type DtoUpdateArticleCover = Pick<Article, 'id'> & {
+    coverAttachmentId: string;
+};
 export type DtoUpdateArticleReadTime = Pick<Article, 'id' | 'readTime'>;
 export type DtoUpdateArticleTags = Pick<Article, 'id' | 'tags'>;
 export type DtoCreateTag = Omit<Tag, 'id'>;
@@ -32,6 +35,7 @@ export interface ArticleApi {
     updateDescription: (data: DtoUpdateArticleDescription) => Promise<Article>;
     updateContent: (data: DtoUpdateArticleContent) => Promise<Article>;
     updateImage: (data: DtoUpdateArticleImage) => Promise<Article>;
+    updateCover: (data: DtoUpdateArticleCover) => Promise<Article>;
     updateReadTime: (data: DtoUpdateArticleReadTime) => Promise<Article>;
     updateTags: (data: DtoUpdateArticleTags) => Promise<Article>;
 

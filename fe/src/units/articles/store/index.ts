@@ -122,6 +122,18 @@ export const useUpdateArticle = () => {
     const updateDescription = createMutation('description');
     const updateContent = createMutation('content');
     const updateImage = createMutation('image');
+    const updateCoverMutation = useMutation<
+        Article,
+        Error,
+        {coverAttachmentId: string; id: string}
+    >({
+        mutationFn: api.updateCover,
+        onSuccess: (data) => {
+            queryClient.setQueryData(articleKeys.detail(data.id), data);
+            queryClient.invalidateQueries({queryKey: articleKeys.lists()});
+            queryClient.invalidateQueries({queryKey: articleKeys.drafts()});
+        },
+    });
     const updateReadTime = createMutation('readTime');
     const updateTags = createMutation('tags');
     const updateDraftStatus = createMutation('isDraft');
@@ -131,6 +143,12 @@ export const useUpdateArticle = () => {
         updateDescription,
         updateContent,
         updateImage,
+        updateCover: {
+            mutateAsync: (id: string, coverAttachmentId: string) =>
+                updateCoverMutation.mutateAsync({id, coverAttachmentId}),
+            isPending: updateCoverMutation.isPending,
+            error: updateCoverMutation.error,
+        },
         updateReadTime,
         updateTags,
         updateDraftStatus,

@@ -18,7 +18,7 @@ const AppDataSource = new DataSource({
     migrations: [
         isProduction ? "dist/src/migrations/**/*.js" : "src/migrations/**/*.ts",
     ],
-    synchronize: NODE_ENV === "development",
+    synchronize: false,
     namingStrategy: new SnakeNamingStrategy(),
     logging: true,
 });

@@ -1,5 +1,6 @@
 import {MDXEditorMethods} from '@mdxeditor/editor';
 import {
+    Button,
     Col,
     Form,
     Grid,
@@ -11,6 +12,7 @@ import {
     Spin,
     theme,
     Typography,
+    Upload,
 } from 'antd';
 import block from 'bem-cn-lite';
 import {useCallback, useEffect, useRef, useState} from 'react';
@@ -20,7 +22,7 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {ButtonAccept} from '@/shared/components/actions';
 import {MdEditor} from '@/shared/components/MdEditor';
 import {useAuth} from '@/shared/context';
-import {useSidebar} from '@/shared/context/Sidebar';
+import {attachmentsApi} from '@/shared/entities/Attachment';
 import {useDebouncedCallback} from '@/shared/hooks';
 import {DEBOUNCE_ARTICLE_UPDATE_MS} from '@/shared/utils';
 import {Role} from '@/typings/common';
@@ -50,14 +52,13 @@ export const DraftArticlePage = () => {
     const {t: tCommon} = useTranslation('common');
     const navigate = useNavigate();
     const {id: draftId} = useParams();
-    const {isCollapsed} = useSidebar();
 
     const {
         updateTitle,
         updateDescription,
         updateContent,
         updateTags,
-        updateImage,
+        updateCover,
         updateReadTime,
         updateDraftStatus,
     } = useUpdateArticle();
@@ -70,6 +71,9 @@ export const DraftArticlePage = () => {
     const [localArticle, setLocalArticle] = useState<Partial<Article> | null>(
         null
     );
+    const [isCoverUploading, setIsCoverUploading] = useState(false);
+    const [coverUploadFailed, setCoverUploadFailed] = useState(false);
+    const [isReadingMode, setIsReadingMode] = useState(false);
     const {
         title = '',
         content = '',
@@ -78,6 +82,7 @@ export const DraftArticlePage = () => {
         author,
         image = '',
         readTime,
+        description = '',
     } = localArticle || {};
 
     const {error: errorUpdatingContent, mutateAsync: mutateContent} =
@@ -97,14 +102,18 @@ export const DraftArticlePage = () => {
     const {error: errorUpdatingReadTime, mutateAsync: mutateReadTime} =
         updateReadTime;
 
-    const {error: errorUpdatingImage, mutateAsync: mutateImage} = updateImage;
+    const {
+        error: errorUpdatingCover,
+        isPending: isUpdatingCover,
+        mutateAsync: mutateCover,
+    } = updateCover;
 
     const updateErrors = {
         title: !!errorUpdatingTitle,
         description: !!errorUpdatingDescription,
         content: !!errorUpdatingContent,
         tags: !!updateTags.error,
-        image: !!errorUpdatingImage,
+        image: !!errorUpdatingCover,
         readTime: !!errorUpdatingReadTime,
         isDraft: !!errorPublish,
     };
@@ -119,7 +128,7 @@ export const DraftArticlePage = () => {
         updateDescription.isPending ||
         updateContent.isPending ||
         updateTags.isPending ||
-        updateImage.isPending ||
+        isUpdatingCover ||
         updateReadTime.isPending;
 
     useEffect(() => {
@@ -159,16 +168,6 @@ export const DraftArticlePage = () => {
         },
         DEBOUNCE_ARTICLE_UPDATE_MS,
         [draftId, mutateDescription]
-    );
-
-    const debouncedUpdateImage = useDebouncedCallback(
-        async (newImage: string) => {
-            if (!draftId) return;
-
-            await mutateImage(draftId, newImage);
-        },
-        DEBOUNCE_ARTICLE_UPDATE_MS,
-        [draftId, mutateImage]
     );
 
     const debouncedUpdateReadTime = useDebouncedCallback(
@@ -223,20 +222,39 @@ export const DraftArticlePage = () => {
         [debouncedUpdateDescription, form]
     );
 
-    const handleImageChange = useCallback(
-        (newImage: string) => {
-            setLocalArticle((prev) => ({...prev, image: newImage}));
-            debouncedUpdateImage(newImage);
-        },
-        [debouncedUpdateImage]
-    );
+    const handleCoverUpload = useCallback(
+        async (file: File) => {
+            if (!draftId || isCoverUploading || isUpdatingCover) {
+                return;
+            }
 
-    const handleImageBlur = useCallback(
-        (newImage: string) => {
-            if (!draftId) return;
-            void mutateImage(draftId, newImage);
+            setIsCoverUploading(true);
+            setCoverUploadFailed(false);
+            let attachmentId: string | undefined;
+
+            try {
+                const attachment = await attachmentsApi.uploadAttachment(
+                    'article',
+                    draftId,
+                    file
+                );
+                attachmentId = attachment.id;
+                const updatedArticle = await mutateCover(draftId, attachment.id);
+                setLocalArticle(updatedArticle);
+            } catch {
+                setCoverUploadFailed(true);
+                if (attachmentId) {
+                    try {
+                        await attachmentsApi.deleteAttachment(attachmentId);
+                    } catch {
+                        // The server has already reported the primary upload/update error.
+                    }
+                }
+            } finally {
+                setIsCoverUploading(false);
+            }
         },
-        [draftId, mutateImage]
+        [draftId, isCoverUploading, isUpdatingCover, mutateCover]
     );
 
     const handleReadTimeChange = useCallback(
@@ -286,7 +304,7 @@ export const DraftArticlePage = () => {
 
     return (
         <div
-            className={b({reading: isCollapsed})}
+            className={b({reading: isReadingMode})}
             style={{
                 paddingBlock: padding,
                 paddingInline: screens.md ? paddingXL : padding,
@@ -294,7 +312,10 @@ export const DraftArticlePage = () => {
         >
             {contextHolder}
 
-            <ViewModeToggle />
+            <ViewModeToggle
+                isReading={isReadingMode}
+                onToggle={() => setIsReadingMode((current) => !current)}
+            />
             <Form
                 form={form}
                 component={false}
@@ -346,6 +367,7 @@ export const DraftArticlePage = () => {
                             {t('articles.form.description.label')}
                         </Typography.Text>
                         <Form.Item
+                            className={b('description-form-item')}
                             name='description'
                             validateTrigger={[]}
                             rules={[
@@ -366,13 +388,18 @@ export const DraftArticlePage = () => {
                                     'articles.form.description.placeholder'
                                 )}
                                 maxLength={DESCRIPTION_MAX_LENGTH}
-                                showCount
                                 autoSize={{minRows: 2, maxRows: 5}}
                                 disabled={updateDescription.isPending}
                                 data-marker='draft-description-input'
                                 className={b('description-input')}
                             />
                         </Form.Item>
+                        <Typography.Text
+                            type='secondary'
+                            className={b('description-count')}
+                        >
+                            {description.length} / {DESCRIPTION_MAX_LENGTH}
+                        </Typography.Text>
                     </Col>
                 </Row>
             </Form>
@@ -399,18 +426,37 @@ export const DraftArticlePage = () => {
                             >
                                 {t('articles.form.image.label')}
                             </Typography.Text>
-                            <Input
-                                value={image}
-                                onChange={(e) =>
-                                    handleImageChange(e.target.value)
+                            <Upload
+                                accept='image/jpeg,image/png,image/webp'
+                                beforeUpload={(file) => {
+                                    void handleCoverUpload(file);
+                                    return Upload.LIST_IGNORE;
+                                }}
+                                disabled={
+                                    isCoverUploading || isUpdatingCover
                                 }
-                                onBlur={(e) => handleImageBlur(e.target.value)}
-                                placeholder={t(
-                                    'articles.form.image.placeholder'
-                                )}
-                                disabled={updateImage.isPending}
-                                data-marker='draft-image-input'
-                            />
+                                showUploadList={false}
+                            >
+                                <Button
+                                    data-marker='draft-cover-upload'
+                                    disabled={
+                                        isCoverUploading ||
+                                        isUpdatingCover
+                                    }
+                                    loading={isCoverUploading}
+                                >
+                                    {t(
+                                        isCoverUploading
+                                            ? 'articles.form.image.uploading'
+                                            : 'articles.form.image.upload'
+                                    )}
+                                </Button>
+                            </Upload>
+                            {coverUploadFailed && (
+                                <Typography.Text role='alert' type='danger'>
+                                    {t('articles.form.image.upload-error')}
+                                </Typography.Text>
+                            )}
                             {image && (
                                 <Image
                                     src={image}

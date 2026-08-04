@@ -22,6 +22,8 @@
     "layout.top.user.signup": "Зарегистрироваться",
     "layout.top.articles": "Статьи",
     "layout.top.drafts": "Мои черновики",
+    "layout.brand.name": "Николай Грачев",
+    "layout.brand.subtitle": "Личный сайт",
     "layout.navigation.open": "Открыть навигацию",
     "layout.language": "Язык",
     "layout.language.current": "Язык: {{language}}",

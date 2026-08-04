@@ -43,7 +43,7 @@
     &__container {
         min-width: 0;
         height: 100%;
-        padding: 16px 12px 18px;
+        padding: 16px 12px 30px;
         gap: 18px;
     }
 
@@ -51,6 +51,14 @@
     &__bottom {
         min-width: 0;
         width: 100%;
+    }
+
+    &__top {
+        display: block !important;
+        position: relative;
+        margin-bottom: 10px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #ede9fe;
     }
 
     &__bottom {
@@ -67,11 +75,62 @@
     }
 
     &__collapse-control {
+        position: absolute;
+        top: 0;
+        right: 0;
+        flex: 0 0 auto;
         width: 46px;
         height: 46px;
-        border-radius: 8px;
+        border-radius: 12px;
         font-size: 18px;
+        color: #475569;
+
+        &:hover {
+            color: #5b21b6 !important;
+            background: #f5f3ff !important;
+        }
+    }
+
+    &__brand {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 12px;
+        height: 46px;
+        margin-left: 3px;
+        margin-bottom: 20px;
+
+        img {
+            display: block;
+            width: 42px;
+            height: 42px;
+            object-fit: cover;
+            border-radius: 11px;
+            box-shadow: 0 6px 16px rgba(91, 33, 182, 0.14);
+        }
+    }
+
+    &__brand-copy {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        line-height: 1.2;
+    }
+
+    &__brand-name {
+        overflow: hidden;
+        color: #1e293b;
+        font-size: 16px;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__brand-subtitle {
         margin-top: 3px;
+        color: #7c3aed;
+        font-size: 12px;
+        font-weight: 600;
     }
 
     &__menu {
@@ -89,6 +148,24 @@
             margin: 3px 0;
             padding-inline: 14px !important;
             border-radius: 8px;
+
+            &:hover {
+                color: #5b21b6 !important;
+                background: #faf5ff !important;
+            }
+
+            &.ant-menu-item-selected {
+                color: #4c1d95 !important;
+                font-weight: 600;
+                background: linear-gradient(
+                    90deg,
+                    #ddd6fe 0%,
+                    #f3e8ff 100%
+                ) !important;
+                box-shadow:
+                    inset 4px 0 0 #7c3aed,
+                    0 4px 12px rgba(109, 40, 217, 0.1);
+            }
         }
 
         .ant-menu-item-icon,

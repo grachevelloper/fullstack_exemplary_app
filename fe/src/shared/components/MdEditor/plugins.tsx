@@ -1,6 +1,7 @@
 import {DeleteOutlined, SettingOutlined} from '@ant-design/icons';
 import {
     activeEditor$,
+    codeBlockPlugin,
     headingsPlugin,
     imagePlugin,
     linkDialogPlugin,
@@ -10,6 +11,7 @@ import {
     openEditImageDialog$,
     parseImageDimension,
     quotePlugin,
+    tablePlugin,
     thematicBreakPlugin,
     toolbarPlugin,
     useCellValue,
@@ -42,11 +44,13 @@ type EditImageToolbarProps = {
 };
 
 export const readPlugins = [
-    headingsPlugin({allowedHeadingLevels: [1, 2, 3]}),
+    headingsPlugin({allowedHeadingLevels: [1, 2, 3, 4, 5, 6]}),
+    codeBlockPlugin(),
     linkPlugin(),
     listsPlugin(),
     linkDialogPlugin(),
     quotePlugin(),
+    tablePlugin(),
     thematicBreakPlugin(),
     markdownShortcutPlugin(),
 ];

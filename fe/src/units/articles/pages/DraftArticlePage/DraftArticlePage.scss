@@ -40,6 +40,13 @@
         margin-bottom: 20px;
     }
 
+    &__description-row {
+        padding: 18px 20px;
+        border: 1px solid #e9e5f5;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #fff 0%, #fbfaff 100%);
+    }
+
     &__description-label {
         display: block;
         margin-bottom: 8px;
@@ -47,6 +54,18 @@
 
     &__description-input {
         resize: none;
+    }
+
+    &__description-form-item {
+        margin-bottom: 8px;
+    }
+
+    &__description-count {
+        display: block;
+        text-align: end;
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
     }
 
     &__description-help {
@@ -175,6 +194,11 @@
     }
 
     @media (max-width: 767px) {
+        &__description-row {
+            padding: 14px;
+            border-radius: 12px;
+        }
+
         &__title-input {
             font-size: 26px;
         }

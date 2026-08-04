@@ -69,6 +69,10 @@ export class UpdateArticleDto {
     @IsOptional()
     image?: string;
 
+    @IsUUID()
+    @IsOptional()
+    coverAttachmentId?: string;
+
     @IsString()
     @IsNotEmpty()
     @IsOptional()
