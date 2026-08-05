@@ -357,7 +357,7 @@ export const ResumePage = () => {
 
     useEffect(() => {
         const revealClassName = b('reveal');
-        const revealedClassName = b('reveal', {visible: true});
+        const revealedClassName = `${b()}__reveal_visible`;
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -369,7 +369,7 @@ export const ResumePage = () => {
                     observer.unobserve(entry.target);
                 });
             },
-            {threshold: 0.15}
+            {threshold: 0.4}
         );
 
         document
@@ -423,7 +423,7 @@ export const ResumePage = () => {
                     </Typography.Title>
                 </Flex>
                 <Card
-                    className={`${b('about-card')} ${b('reveal')}`}
+                    className={b('about-card')}
                     style={sectionStyle}
                 >
                     <Typography.Paragraph
@@ -454,9 +454,9 @@ export const ResumePage = () => {
 
                         return (
                             <article
-                                className={`${b('timeline-item', {
+                                className={b('timeline-item', {
                                     expanded: isExpanded,
-                                })} ${b('reveal')}`}
+                                })}
                                 key={item.key}
                                 onClick={() => toggleExperience(item.key)}
                             >
@@ -614,7 +614,7 @@ export const ResumePage = () => {
                 {education.map((item) => (
                     <Card
                         key={item.period}
-                        className={`${b('education-card')} ${b('reveal')}`}
+                        className={b('education-card')}
                         style={sectionStyle}
                     >
                         <Typography.Title level={4}>
@@ -655,7 +655,7 @@ export const ResumePage = () => {
                     </Typography.Title>
                 </Flex>
                 <Card
-                    className={`${b('languages-card')} ${b('reveal')}`}
+                    className={b('languages-card')}
                     style={sectionStyle}
                 >
                     <div className={b('languages-list')}>
@@ -706,7 +706,7 @@ export const ResumePage = () => {
                     {skills.map((group) => (
                         <Card
                             key={group.title}
-                            className={`${b('skill-card')} ${b('reveal')}`}
+                            className={b('skill-card')}
                             style={{
                                 backgroundColor: colorBgElevated,
                                 borderColor: colorBorderSecondary,
