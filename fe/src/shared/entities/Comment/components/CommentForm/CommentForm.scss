@@ -16,6 +16,10 @@
         flex-wrap: wrap;
     }
 
+    &__auth {
+        width: min(300px, calc(100vw - 48px));
+    }
+
     @media (max-width: 575px) {
         padding-left: min(calc(var(--comment-depth, 0) * 10px), 24px);
 

@@ -11,7 +11,7 @@ import {
 } from '@ant-design/icons';
 import {Button, Card, Flex, Image, Tag, theme, Tooltip, Typography} from 'antd';
 import block from 'bem-cn-lite';
-import {useCallback, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import {Trans, useTranslation} from 'react-i18next';
 
 import './ResumePage.scss';
@@ -355,6 +355,30 @@ export const ResumePage = () => {
         ),
     };
 
+    useEffect(() => {
+        const revealClassName = b('reveal');
+        const revealedClassName = b('reveal', {visible: true});
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
+
+                    entry.target.classList.add(revealedClassName);
+                    observer.unobserve(entry.target);
+                });
+            },
+            {threshold: 0.15}
+        );
+
+        document
+            .querySelectorAll<HTMLElement>(`.${revealClassName}`)
+            .forEach((element) => observer.observe(element));
+
+        return () => observer.disconnect();
+    }, []);
+
     return (
         <main className={b()}>
             <section
@@ -391,14 +415,17 @@ export const ResumePage = () => {
                 </div>
             </section>
 
-            <section className={b('section')}>
+            <section className={`${b('section')} ${b('reveal')}`}>
                 <Flex align='center' gap={10} className={b('section-heading')}>
                     <UserOutlined style={{color: colorPrimary}} />
                     <Typography.Title level={2}>
                         {t('resume.about.title')}
                     </Typography.Title>
                 </Flex>
-                <Card className={b('about-card')} style={sectionStyle}>
+                <Card
+                    className={`${b('about-card')} ${b('reveal')}`}
+                    style={sectionStyle}
+                >
                     <Typography.Paragraph
                         className={b('about-text')}
                         style={{color: colorTextSecondary}}
@@ -414,7 +441,7 @@ export const ResumePage = () => {
                 </Card>
             </section>
 
-            <section className={b('section')}>
+            <section className={`${b('section')} ${b('reveal')}`}>
                 <Flex align='center' gap={10} className={b('section-heading')}>
                     <IdcardOutlined style={{color: colorPrimary}} />
                     <Typography.Title level={2}>
@@ -427,9 +454,9 @@ export const ResumePage = () => {
 
                         return (
                             <article
-                                className={b('timeline-item', {
+                                className={`${b('timeline-item', {
                                     expanded: isExpanded,
-                                })}
+                                })} ${b('reveal')}`}
                                 key={item.key}
                                 onClick={() => toggleExperience(item.key)}
                             >
@@ -577,7 +604,7 @@ export const ResumePage = () => {
                 </div>
             </section>
 
-            <section className={b('section')}>
+            <section className={`${b('section')} ${b('reveal')}`}>
                 <Flex align='center' gap={10} className={b('section-heading')}>
                     <ReadOutlined style={{color: colorPrimary}} />
                     <Typography.Title level={2}>
@@ -587,7 +614,7 @@ export const ResumePage = () => {
                 {education.map((item) => (
                     <Card
                         key={item.period}
-                        className={b('education-card')}
+                        className={`${b('education-card')} ${b('reveal')}`}
                         style={sectionStyle}
                     >
                         <Typography.Title level={4}>
@@ -620,14 +647,17 @@ export const ResumePage = () => {
                 ))}
             </section>
 
-            <section className={b('section')}>
+            <section className={`${b('section')} ${b('reveal')}`}>
                 <Flex align='center' gap={10} className={b('section-heading')}>
                     <GlobalOutlined style={{color: colorPrimary}} />
                     <Typography.Title level={2}>
                         {t('resume.languages.title')}
                     </Typography.Title>
                 </Flex>
-                <Card className={b('languages-card')} style={sectionStyle}>
+                <Card
+                    className={`${b('languages-card')} ${b('reveal')}`}
+                    style={sectionStyle}
+                >
                     <div className={b('languages-list')}>
                         {languages.map((language) => (
                             <div
@@ -665,7 +695,7 @@ export const ResumePage = () => {
                 </Card>
             </section>
 
-            <section className={b('section')}>
+            <section className={`${b('section')} ${b('reveal')}`}>
                 <Flex align='center' gap={10} className={b('section-heading')}>
                     <BookOutlined style={{color: colorPrimary}} />
                     <Typography.Title level={2}>
@@ -676,7 +706,7 @@ export const ResumePage = () => {
                     {skills.map((group) => (
                         <Card
                             key={group.title}
-                            className={b('skill-card')}
+                            className={`${b('skill-card')} ${b('reveal')}`}
                             style={{
                                 backgroundColor: colorBgElevated,
                                 borderColor: colorBorderSecondary,

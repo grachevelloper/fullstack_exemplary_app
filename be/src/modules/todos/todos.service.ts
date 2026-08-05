@@ -79,7 +79,7 @@ export class TodosService {
     }
 
     async delete({id, actor}: DeleteTodoCommand): Promise<void> {
-        await this.findEntityForActor({id, actor});
+        await this.findEntityForUpdate({id, actor});
         await this.aggregateDeletionService.deleteTodoAggregate(id);
     }
 
@@ -88,7 +88,7 @@ export class TodosService {
         data,
         actor,
     }: UpdateTodoCommand): Promise<TodoResponseDto> {
-        const todo = await this.findEntityForActor({id, actor});
+        const todo = await this.findEntityForUpdate({id, actor});
         const updatedTodo = {...todo, ...removeUndefinedFields(data)};
 
         return TodosMapper.toResponse(
@@ -97,7 +97,7 @@ export class TodosService {
     }
 
     async findOne({id, actor}: FindTodoCommand): Promise<TodoResponseDto> {
-        const todo = await this.findEntityForActor({id, actor});
+        const todo = await this.findEntity(id);
 
         const hasLiked = actor
             ? await this.likesService.hasLiked({
@@ -137,7 +137,7 @@ export class TodosService {
     }
 
     async findTodoWithComments({todoId, actor}: FindTodoWithCommentsCommand) {
-        const todo = await this.findEntityForActor({id: todoId, actor});
+        const todo = await this.findEntityForUpdate({id: todoId, actor});
         const comments = await this.commentsService.findByEntity({
             actor,
             entityType: "todo",
@@ -146,17 +146,20 @@ export class TodosService {
         return {...TodosMapper.toResponse(todo), comments: comments.items};
     }
 
-    private async findEntityForActor({
-        id,
-        actor,
-    }: FindTodoCommand): Promise<Todo> {
+    private async findEntity(id: string): Promise<Todo> {
         const todo = await this.todosRepository.findOne({where: {id}});
         if (!todo) {
             throw new NotFoundException("Todo not found");
         }
-        if (actor) {
-            this.assertCanAccess(todo, actor);
-        }
+        return todo;
+    }
+
+    private async findEntityForUpdate({
+        id,
+        actor,
+    }: Required<FindTodoCommand>): Promise<Todo> {
+        const todo = await this.findEntity(id);
+        this.assertCanAccess(todo, actor);
         return todo;
     }
 

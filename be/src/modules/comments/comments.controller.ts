@@ -13,6 +13,7 @@ import {
     Query,
 } from "@nestjs/common";
 
+import {Public} from "../../shared/decorators/auth.decorator";
 import {CurrentUser} from "../../shared/decorators/current-user.decorator";
 import {AuthenticatedUser, Order} from "../../types";
 import {
@@ -55,11 +56,12 @@ export class CommentsController {
 
     @HttpCode(HttpStatus.OK)
     @Get(":entityType/:entityId")
+    @Public()
     async getByEntityId(
         @Param("entityType", new ParseEnumPipe(COMMENT_TARGET_TYPES))
         entityType: EntityCommentType,
         @Param("entityId", ParseUUIDPipe) entityId: string,
-        @CurrentUser() user: AuthenticatedUser,
+        @CurrentUser() user: AuthenticatedUser | undefined,
         @Query() query: QueryCommentsDto,
     ): Promise<ResponseGetComments> {
         const commentsPage = await this.commentsService.findByEntity({

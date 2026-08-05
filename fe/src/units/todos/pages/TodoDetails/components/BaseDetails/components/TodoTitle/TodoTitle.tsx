@@ -10,7 +10,11 @@ import './TodoTitile.scss';
 
 const b = block('todo-title');
 
-export const TodoTitle = ({content, onEnd}: BaseDetail<string>) => {
+interface TodoTitleProps extends BaseDetail<string> {
+    editable: boolean;
+}
+
+export const TodoTitle = ({content, onEnd, editable}: TodoTitleProps) => {
     const title = content ?? '';
     const [newTitle, setNewTitle] = useState<string>(title);
 
@@ -32,15 +36,19 @@ export const TodoTitle = ({content, onEnd}: BaseDetail<string>) => {
     return (
         <Typography.Title
             level={1}
-            editable={{
-                icon: <div />,
-                maxLength: TODO_TITLE_MAX_LENGTH,
-                triggerType: ['text'],
-                enterIcon: null,
-                autoSize: true,
-                onChange: setNewTitle,
-                onEnd: handleEnd,
-            }}
+            editable={
+                editable
+                    ? {
+                          icon: <div />,
+                          maxLength: TODO_TITLE_MAX_LENGTH,
+                          triggerType: ['text'],
+                          enterIcon: null,
+                          autoSize: true,
+                          onChange: setNewTitle,
+                          onEnd: handleEnd,
+                      }
+                    : undefined
+            }
             rootClassName={b('textarea')}
         >
             {title}

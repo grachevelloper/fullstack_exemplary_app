@@ -1,10 +1,12 @@
-import {Flex, Input} from 'antd';
+import {Button, Flex, Input, Popover, Space, Typography} from 'antd';
 import {TextAreaRef} from 'antd/es/input/TextArea';
 import block from 'bem-cn-lite';
 import {type CSSProperties, useEffect, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
+import {useNavigate} from 'react-router-dom';
 
 import {ButtonAccept, ButtonDeny} from '../../../../components/actions';
+import {useAuth} from '../../../../context';
 
 import './CommentForm.scss';
 
@@ -26,7 +28,10 @@ export const CommentForm = ({
     onCancel,
 }: ReplyFormProps) => {
     const {t} = useTranslation('common');
+    const navigate = useNavigate();
+    const {user} = useAuth();
     const [content, setContent] = useState(prevContent || '');
+    const [isAuthPromptOpen, setAuthPromptOpen] = useState(false);
     const textAreaRef = useRef<TextAreaRef>(null);
     const isEditMode = Boolean(prevContent);
 
@@ -57,6 +62,58 @@ export const CommentForm = ({
             setContent('');
         }
     };
+
+    if (!user) {
+        return (
+            <Popover
+                trigger='click'
+                open={isAuthPromptOpen}
+                onOpenChange={setAuthPromptOpen}
+                title={t('comments.auth.title')}
+                content={
+                    <Space direction='vertical' size={12} className={b('auth')}>
+                        <Typography.Text type='secondary'>
+                            {t('comments.auth.description')}
+                        </Typography.Text>
+                        <Space size={8} wrap>
+                            <Button
+                                type='primary'
+                                onClick={() => navigate('/auth/signin')}
+                            >
+                                {t('comments.auth.signin')}
+                            </Button>
+                            <Button onClick={() => navigate('/auth/signup')}>
+                                {t('comments.auth.signup')}
+                            </Button>
+                        </Space>
+                    </Space>
+                }
+            >
+                <Flex
+                    justify='start'
+                    vertical
+                    align='start'
+                    className={b()}
+                    style={{'--comment-depth': depth} as CSSProperties}
+                >
+                    <Input.TextArea
+                        className={b('input')}
+                        placeholder={t('comments.placeholder')}
+                        readOnly
+                        autoSize={{minRows: 3}}
+                    />
+                    <Flex justify='flex-end' gap={4} className={b('actions')}>
+                        <ButtonAccept
+                            text={t('publish')}
+                            onClick={() => setAuthPromptOpen(true)}
+                            data-marker='comment-submit-button'
+                            size='middle'
+                        />
+                    </Flex>
+                </Flex>
+            </Popover>
+        );
+    }
 
     return (
         <Flex

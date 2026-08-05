@@ -299,6 +299,22 @@ describe("CommentsService", () => {
         });
     });
 
+    it("returns public todo comments without loading a guest's liked state", async () => {
+        repository.findAndCount.mockResolvedValue([[parent], 1]);
+
+        const result = await service.findByEntity({
+            entityType: "todo",
+            entityId: targetId,
+        });
+
+        expect(todosService.findOne).toHaveBeenCalledWith({
+            id: targetId,
+            actor: undefined,
+        });
+        expect(likesRepository.find).not.toHaveBeenCalled();
+        expect(result.items[0]?.hasLiked).toBe(false);
+    });
+
     it("adds liked state for a single comment response", async () => {
         repository.findOne.mockResolvedValue(parent);
         likesService.hasLiked.mockResolvedValue(true);

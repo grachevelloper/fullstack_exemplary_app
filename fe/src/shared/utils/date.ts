@@ -2,6 +2,7 @@ export const formatDate = (date?: Date | string) => {
     if (!date) return '';
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     return dateObj.toLocaleString('ru', {
+        timeZone: 'Europe/Moscow',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',

@@ -6,6 +6,7 @@ import {useTranslation} from 'react-i18next';
 import {CommentsWrapper} from '@/shared/components/CommentsWrapper';
 import {useAuth} from '@/shared/context';
 import {Like, useToggleLikeMutation} from '@/shared/entities/Like';
+import {Role} from '@/typings/common';
 
 import {Priority} from '@/todos/components/Priority';
 import {State} from '@/todos/components/State';
@@ -32,8 +33,10 @@ export const BaseDetails = ({initialData}: BaseDetailsProps) => {
         useToggleLikeMutation();
     const {updateTitle, updatePriority, updateState, updateContent, isPending} =
         useTodoMutations();
-    const priority = initialData.priority ?? 'Medium' as TodoPriority;
-    const state = initialData.state ?? 'Planning' as TodoState;
+    const priority = initialData.priority ?? ('Medium' as TodoPriority);
+    const state = initialData.state ?? ('Planning' as TodoState);
+    const canEdit =
+        user?.id === initialData.authorId || user?.role === Role.ADMIN;
 
     const handleEnd = <T extends UpdateField>(
         newValueType: T,
@@ -71,22 +74,32 @@ export const BaseDetails = ({initialData}: BaseDetailsProps) => {
         <div className={b()}>
             <Row className={b('header')} gutter={[16, 16]} align='top'>
                 <Col xs={24} md={18}>
-                    <TodoTitle onEnd={handleEnd} content={initialData.title} />
+                    <TodoTitle
+                        onEnd={handleEnd}
+                        content={initialData.title}
+                        editable={canEdit}
+                    />
                     <Space size={[12, 12]} wrap className={b('meta')}>
                         <Priority
                             priority={priority}
-                            onUpdate={(priority: TodoPriority) =>
-                                handleEnd(
-                                    'priority',
-                                    getNextTodoPriority(priority)
-                                )
+                            onUpdate={
+                                canEdit
+                                    ? (priority: TodoPriority) =>
+                                          handleEnd(
+                                              'priority',
+                                              getNextTodoPriority(priority)
+                                          )
+                                    : undefined
                             }
                             isLoading={isPending}
                         />
                         <State
                             state={state}
-                            onUpdate={(state: TodoState) =>
-                                handleEnd('state', state)
+                            onUpdate={
+                                canEdit
+                                    ? (state: TodoState) =>
+                                          handleEnd('state', state)
+                                    : undefined
                             }
                             isLoading={isPending}
                         />
@@ -117,31 +130,32 @@ export const BaseDetails = ({initialData}: BaseDetailsProps) => {
                             defaultValue={initialData.content}
                             variant='borderless'
                             autoSize={{minRows: 8, maxRows: 24}}
-                            onBlur={(e) => handleContentChange(e.target.value)}
+                            readOnly={!canEdit}
+                            onBlur={
+                                canEdit
+                                    ? (e) => handleContentChange(e.target.value)
+                                    : undefined
+                            }
                         />
                     </Card>
 
-                    {user && (
-                        <Card
-                            className={b('panel')}
-                            title={
-                                <Typography.Text strong>
-                                    {t('todo.details.comments')}
-                                </Typography.Text>
-                            }
-                        >
-                            <CommentsWrapper
-                                entityId={initialData.id}
-                                entityType='todo'
-                            />
-                        </Card>
-                    )}
+                    <Card
+                        className={b('panel')}
+                        title={
+                            <Typography.Text strong>
+                                {t('todo.details.comments')}
+                            </Typography.Text>
+                        }
+                    >
+                        <CommentsWrapper
+                            entityId={initialData.id}
+                            entityType='todo'
+                        />
+                    </Card>
                 </Col>
-                {user && (
-                    <Col xs={24} lg={8} className={b('aside')}>
-                        <Checklist todoId={initialData.id} />
-                    </Col>
-                )}
+                <Col xs={24} lg={8} className={b('aside')}>
+                    <Checklist todoId={initialData.id} canEdit={canEdit} />
+                </Col>
             </Row>
         </div>
     );

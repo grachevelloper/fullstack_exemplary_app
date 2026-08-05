@@ -5,6 +5,7 @@ import {useTranslation} from 'react-i18next';
 import {useAuth} from '@/shared/context';
 import {
     Comment,
+    CommentForm,
     type CommentType,
     EntityCommentType,
     useCommentsQuery,
@@ -34,7 +35,7 @@ export const CommentsWrapper = ({entityId, entityType}: CommentsContainer) => {
 
     return (
         <Flex align='start' justify='start' vertical rootClassName={b()}>
-            {user && (
+            {user ? (
                 <Comment
                     isNew
                     comment={{
@@ -46,6 +47,12 @@ export const CommentsWrapper = ({entityId, entityType}: CommentsContainer) => {
                         entityId: entityId,
                         likesCount: 0,
                     }}
+                />
+            ) : (
+                <CommentForm
+                    depth={0}
+                    isCompletePending={false}
+                    onComplete={() => undefined}
                 />
             )}
             {isPending && (

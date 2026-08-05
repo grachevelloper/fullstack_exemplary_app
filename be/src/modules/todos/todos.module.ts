@@ -8,6 +8,7 @@ import {ChecklistsModule} from "./checklists/checklist.module";
 import {TodosController} from "./todos.controller";
 import {Todo} from "./todos.entity";
 import {TodosService} from "./todos.service";
+import {TodosCleanupService} from "./todos-cleanup.service";
 
 @Module({
     imports: [
@@ -18,7 +19,7 @@ import {TodosService} from "./todos.service";
         forwardRef(() => CommentsModule),
     ],
     controllers: [TodosController],
-    providers: [TodosService],
+    providers: [TodosService, TodosCleanupService],
     exports: [TodosService],
 })
 export class TodosModule {}

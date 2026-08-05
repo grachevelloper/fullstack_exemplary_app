@@ -172,12 +172,13 @@ describe("TodosService", () => {
             });
         });
 
-        it("should forbid regular users from reading another user's todo", async () => {
+        it("should allow regular users to read another user's todo", async () => {
             repository.findOne.mockResolvedValue(mockTodo);
+            likesService.hasLiked.mockResolvedValue(false);
 
             await expect(
                 service.findOne({id: "1", actor: stranger}),
-            ).rejects.toBeInstanceOf(ForbiddenException);
+            ).resolves.toMatchObject({id: mockTodo.id, hasLiked: false});
         });
 
         it("should throw NotFoundException if todo not found", async () => {

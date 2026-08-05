@@ -13,6 +13,7 @@ import {
 } from "@nestjs/common";
 import {Type} from "class-transformer";
 import {IsInt, IsNotEmpty, IsString} from "class-validator";
+import {Public} from "src/shared/decorators/auth.decorator";
 import {CurrentUser} from "src/shared/decorators/current-user.decorator";
 import {AuthenticatedUser} from "src/types";
 
@@ -53,11 +54,11 @@ export class ChecklistController {
     }
 
     @Get()
+    @Public()
     getChecklist(
         @Param("todoId", ParseUUIDPipe) todoId: string,
-        @CurrentUser() user: AuthenticatedUser,
     ) {
-        return this.checklistService.getByTodoId({todoId, actor: user});
+        return this.checklistService.getByTodoId({todoId});
     }
 
     @Post("items")

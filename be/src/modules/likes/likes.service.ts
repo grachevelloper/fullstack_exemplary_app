@@ -26,10 +26,6 @@ type HasLikedProps = {
     userId: string;
 };
 
-interface TodoAccessData {
-    authorId: string;
-}
-
 interface ArticleAccessData {
     authorId: string;
     isDraft: boolean;
@@ -136,7 +132,7 @@ export class LikesService {
     ): Promise<void> {
         switch (entityType) {
             case "todo":
-                await this.assertCanAccessTodo(entityId, actor, manager);
+                await this.assertTodoExists(entityId, manager);
                 return;
             case "article":
                 await this.assertCanAccessArticle(entityId, actor, manager);
@@ -149,25 +145,21 @@ export class LikesService {
         }
     }
 
-    private async assertCanAccessTodo(
+    private async assertTodoExists(
         todoId: string,
-        actor: AuthenticatedUser,
         manager: EntityManager,
     ): Promise<void> {
         const todo = await manager
             .createQueryBuilder()
-            .select("todo.author_id", "authorId")
+            .select("todo.id", "id")
             .from("todos", "todo")
             .where("todo.id = :todoId", {todoId})
-            .getRawOne<TodoAccessData>();
+            .getRawOne<{id: string}>();
 
         if (!todo) {
             throw new NotFoundException("Todo not found");
         }
 
-        if (todo.authorId !== actor.id && actor.role !== Role.ADMIN) {
-            throw new ForbiddenException("You do not have access to this todo");
-        }
     }
 
     private async assertCanAccessArticle(

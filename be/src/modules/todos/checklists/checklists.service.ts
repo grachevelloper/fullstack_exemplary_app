@@ -183,9 +183,8 @@ export class ChecklistService {
 
     async getByTodoId({
         todoId,
-        actor,
-    }: FindChecklistCommand): Promise<CheckList | null> {
-        await this.findTodoForActor({todoId, actor});
+    }: Pick<FindChecklistCommand, "todoId">): Promise<CheckList | null> {
+        await this.findTodo(todoId);
         return await this.checklistRepo.findOne({
             where: {todoId},
         });
@@ -195,7 +194,8 @@ export class ChecklistService {
         todoId,
         actor,
     }: FindChecklistCommand): Promise<CheckList> {
-        const checklist = await this.getByTodoId({todoId, actor});
+        await this.findTodoForActor({todoId, actor});
+        const checklist = await this.checklistRepo.findOne({where: {todoId}});
         if (!checklist) {
             throw new NotFoundException(
                 `Checklist for todo ${todoId} not found`,
@@ -204,14 +204,20 @@ export class ChecklistService {
         return checklist;
     }
 
-    private async findTodoForActor({
-        todoId,
-        actor,
-    }: FindTodoForActorCommand): Promise<Todo> {
+    private async findTodo(todoId: string): Promise<Todo> {
         const todo = await this.todosRepository.findOne({where: {id: todoId}});
         if (!todo) {
             throw new NotFoundException(`Todo with ID ${todoId} not found`);
         }
+
+        return todo;
+    }
+
+    private async findTodoForActor({
+        todoId,
+        actor,
+    }: FindTodoForActorCommand): Promise<Todo> {
+        const todo = await this.findTodo(todoId);
 
         if (todo.authorId !== actor.id && actor.role !== Role.ADMIN) {
             throw new ForbiddenException("You do not have access to this todo");

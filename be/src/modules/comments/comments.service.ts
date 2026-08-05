@@ -31,7 +31,7 @@ interface DeleteCommentCommand {
 }
 
 interface FindEntityCommentsCommand {
-    actor: AuthenticatedUser;
+    actor?: AuthenticatedUser;
     entityId: string;
     entityType: EntityCommentType;
     limit?: number;
@@ -172,10 +172,12 @@ export class CommentsService {
             skip: (page - 1) * limit,
             take: limit,
         });
-        const likedCommentIds = await this.getLikedCommentIds(
-            actor.id,
-            comments.map((comment) => comment.id),
-        );
+        const likedCommentIds = actor
+            ? await this.getLikedCommentIds(
+                  actor.id,
+                  comments.map((comment) => comment.id),
+              )
+            : new Set<string>();
         const items = comments.map((comment) =>
             Object.assign(comment, {
                 hasLiked: likedCommentIds.has(comment.id),
@@ -213,7 +215,7 @@ export class CommentsService {
     private async assertCanReadTarget(
         entityType: EntityCommentType,
         entityId: string,
-        actor: AuthenticatedUser,
+        actor?: AuthenticatedUser,
     ): Promise<void> {
         if (entityType === "todo") {
             await this.todosService.findOne({id: entityId, actor});

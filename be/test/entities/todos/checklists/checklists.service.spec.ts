@@ -90,6 +90,14 @@ describe("ChecklistService", () => {
         expect(checklistRepository.save).not.toHaveBeenCalled();
     });
 
+    it("allows everyone to read a checklist", async () => {
+        checklistRepository.findOne.mockResolvedValue(checklist);
+
+        await expect(service.getByTodoId({todoId: todo.id})).resolves.toBe(
+            checklist,
+        );
+    });
+
     it("allows an administrator to update another user's checklist", async () => {
         checklistRepository.findOne.mockResolvedValue(checklist);
 
@@ -104,7 +112,7 @@ describe("ChecklistService", () => {
         todosRepository.findOne.mockResolvedValue(null);
 
         await expect(
-            service.getByTodoId({todoId: "missing", actor: owner}),
+            service.getByTodoId({todoId: "missing"}),
         ).rejects.toBeInstanceOf(NotFoundException);
     });
 

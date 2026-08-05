@@ -30,10 +30,11 @@ const {Text} = Typography;
 const b = block('checklist');
 
 interface ChecklistProps {
+    canEdit: boolean;
     todoId: string;
 }
 
-export const Checklist = ({todoId}: ChecklistProps) => {
+export const Checklist = ({todoId, canEdit}: ChecklistProps) => {
     const {t} = useTranslation('todo');
     const [editing, setEditing] = useState(false);
     const [popoverVisible, setPopoverVisible] = useState(false);
@@ -179,18 +180,20 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                     </Text>
                 )}
             </div>
-            <Button
-                className={b('edit-button')}
-                type={editing ? 'primary' : 'text'}
-                icon={<EditOutlined />}
-                size='small'
-                onClick={() => setEditing(!editing)}
-                disabled={isPending}
-            >
-                {editing
-                    ? t('todo.checklist.edit.done')
-                    : t('todo.checklist.edit.start')}
-            </Button>
+            {canEdit && (
+                <Button
+                    className={b('edit-button')}
+                    type={editing ? 'primary' : 'text'}
+                    icon={<EditOutlined />}
+                    size='small'
+                    onClick={() => setEditing(!editing)}
+                    disabled={isPending}
+                >
+                    {editing
+                        ? t('todo.checklist.edit.done')
+                        : t('todo.checklist.edit.start')}
+                </Button>
+            )}
         </div>
     );
 
@@ -223,17 +226,19 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                 className={b({pending: isPending})}
                 data-marker='checklist-card'
                 extra={
-                    <Button
-                        type='primary'
-                        icon={<FileAddOutlined />}
-                        size='small'
-                        onClick={() => {
-                            void handleCreateChecklist();
-                        }}
-                        loading={isPending}
-                    >
-                        {t('todo.checklist.create')}
-                    </Button>
+                    canEdit ? (
+                        <Button
+                            type='primary'
+                            icon={<FileAddOutlined />}
+                            size='small'
+                            onClick={() => {
+                                void handleCreateChecklist();
+                            }}
+                            loading={isPending}
+                        >
+                            {t('todo.checklist.create')}
+                        </Button>
+                    ) : undefined
                 }
             >
                 <Empty
@@ -259,7 +264,11 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                 size='small'
                 className={b({pending: isPending})}
                 data-marker='checklist-card'
-                extra={renderAddItemButton(t('todo.checklist.add.item'))}
+                extra={
+                    canEdit
+                        ? renderAddItemButton(t('todo.checklist.add.item'))
+                        : undefined
+                }
             >
                 <Empty
                     description={t('todo.checklist.empty.no-items')}
@@ -315,7 +324,7 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                     >
                         {stepText}
                     </Text>
-                    {editing && (
+                    {canEdit && editing && (
                         <Space size='small' className={b('step-actions')}>
                             <Button
                                 type='link'
@@ -358,7 +367,9 @@ export const Checklist = ({todoId}: ChecklistProps) => {
             className={b({pending: isPending})}
             data-marker='checklist-card'
             extra={
-                editing && renderAddItemButton(t('todo.checklist.add.short'))
+                canEdit &&
+                editing &&
+                renderAddItemButton(t('todo.checklist.add.short'))
             }
         >
             <Steps
@@ -368,7 +379,7 @@ export const Checklist = ({todoId}: ChecklistProps) => {
                 size='default'
                 className={b('steps')}
                 onChange={
-                    editing || editingIndex !== null
+                    !canEdit || editing || editingIndex !== null
                         ? undefined
                         : (current) => {
                               void handleStepChange(current);

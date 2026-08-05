@@ -3,6 +3,7 @@ import "@/config/s3";
 import {Module} from "@nestjs/common";
 import {ConfigModule, ConfigService} from "@nestjs/config";
 import {APP_GUARD} from "@nestjs/core";
+import {ScheduleModule} from "@nestjs/schedule";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import * as dotenv from "dotenv";
 import {AuthGuard} from "src/shared/guards/auth.guard";
@@ -38,6 +39,7 @@ dotenv.config();
             }),
             inject: [ConfigService],
         }),
+        ScheduleModule.forRoot(),
         TodosModule,
         AuthModule,
         UsersModule,

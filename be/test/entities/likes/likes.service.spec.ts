@@ -2,7 +2,6 @@ import {beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {
     BadRequestException,
     ConflictException,
-    ForbiddenException,
     NotFoundException,
 } from "@nestjs/common";
 import {Test} from "@nestjs/testing";
@@ -128,17 +127,18 @@ describe("LikesService", () => {
         ).rejects.toBeInstanceOf(ConflictException);
     });
 
-    it("forbids liking another user's todo", async () => {
-        manager.createQueryBuilder.mockReturnValueOnce(
-            createSelectBuilder({authorId: "another-user"}) as never,
-        );
+    it("allows a signed-in user to like another user's todo", async () => {
+        const updateCounter = createUpdateBuilder();
+        manager.createQueryBuilder
+            .mockReturnValueOnce(createSelectBuilder({id: entityId}) as never)
+            .mockReturnValueOnce(updateCounter as never);
+        manager.findOne.mockResolvedValue(null);
+        manager.create.mockReturnValue({} as never);
+        manager.save.mockResolvedValue({} as never);
 
-        await expect(
-            service.create({actor, entityType: "todo", entityId}),
-        ).rejects.toBeInstanceOf(ForbiddenException);
+        await service.create({actor, entityType: "todo", entityId});
 
-        expect(manager.findOne).not.toHaveBeenCalled();
-        expect(manager.save).not.toHaveBeenCalled();
+        expect(updateCounter.update).toHaveBeenCalledWith(Todo);
     });
 
     it("allows an administrator to like another user's todo", async () => {
