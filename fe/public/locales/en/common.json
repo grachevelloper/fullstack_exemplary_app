@@ -62,7 +62,7 @@
     "admin.nowadays.error.description": "Check the values and try again.",
 
     "about.title": "About me",
-    "about.subtitle": "Developer with client- and server-side experience at leading Russian technology companies. I work on product microfrontends, microservice infrastructure, and customer-facing and internal services. I independently analyze requirements, break down work, and take changes from idea to launch and monitoring. I take ownership of outcomes and can handle tasks beyond my primary stack. I value open communication, constructive feedback, and transparency.",
+    "about.subtitle": "Developer with client- and server-side experience at <strong>leading</strong> Russian technology companies. I work on product microfrontends, microservice infrastructure, and customer-facing and internal services. I independently analyze requirements, break down work, and take changes from idea to launch and monitoring. I take ownership of outcomes and can handle tasks beyond my primary stack. I value open communication, constructive feedback, and transparency.",
     "about.timeline.uni.date": "2024 - present",
     "about.timeline.uni.content": "Bachelor's degree program in Information Systems and Technologies.",
     "about.timeline.ya.date": "July 2025 - November 2025",
@@ -93,7 +93,7 @@
     "resume.languages.english.level": "B2 · Upper-intermediate",
     "resume.languages.german.name": "German",
     "resume.languages.german.level": "A2 · Elementary",
-    "resume.experience.avito.title": "Frontend Developer Intern",
+    "resume.experience.avito.title": "Frontend Developer",
     "resume.experience.avito.company": "Avito Tech",
     "resume.experience.avito.unit": "Jobs vertical",
     "resume.experience.avito.description": "Work on <strong>product microfrontends</strong> and shared <strong>frontend infrastructure</strong>. Independently analyze, decompose, and deliver tasks and projects lasting <strong>up to two quarters</strong>.",
