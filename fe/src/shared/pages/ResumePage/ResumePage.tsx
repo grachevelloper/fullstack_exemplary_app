@@ -406,12 +406,12 @@ export const ResumePage = () => {
                     >
                         {t('resume.role')}
                     </Typography.Text>
-                    <Typography.Paragraph
+                    <Trans
+                        i18nKey='about.subtitle'
+                        components={emphasisComponents}
+                        t={t}
                         className={b('summary')}
-                        style={{color: colorTextSecondary}}
-                    >
-                        {t('about.subtitle')}
-                    </Typography.Paragraph>
+                    />
                 </div>
             </section>
 
@@ -422,10 +422,7 @@ export const ResumePage = () => {
                         {t('resume.about.title')}
                     </Typography.Title>
                 </Flex>
-                <Card
-                    className={b('about-card')}
-                    style={sectionStyle}
-                >
+                <Card className={b('about-card')} style={sectionStyle}>
                     <Typography.Paragraph
                         className={b('about-text')}
                         style={{color: colorTextSecondary}}
@@ -654,10 +651,7 @@ export const ResumePage = () => {
                         {t('resume.languages.title')}
                     </Typography.Title>
                 </Flex>
-                <Card
-                    className={b('languages-card')}
-                    style={sectionStyle}
-                >
+                <Card className={b('languages-card')} style={sectionStyle}>
                     <div className={b('languages-list')}>
                         {languages.map((language) => (
                             <div
