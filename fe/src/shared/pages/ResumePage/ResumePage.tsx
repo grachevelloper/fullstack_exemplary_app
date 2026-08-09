@@ -417,7 +417,10 @@ export const ResumePage = () => {
 
             <section className={`${b('section')} ${b('reveal')}`}>
                 <Flex align='center' gap={10} className={b('section-heading')}>
-                    <UserOutlined style={{color: colorPrimary}} />
+                    <UserOutlined
+                        className={b('section-icon')}
+                        style={{color: colorPrimary}}
+                    />
                     <Typography.Title level={2}>
                         {t('resume.about.title')}
                     </Typography.Title>
@@ -440,7 +443,10 @@ export const ResumePage = () => {
 
             <section className={`${b('section')} ${b('reveal')}`}>
                 <Flex align='center' gap={10} className={b('section-heading')}>
-                    <IdcardOutlined style={{color: colorPrimary}} />
+                    <IdcardOutlined
+                        className={b('section-icon')}
+                        style={{color: colorPrimary}}
+                    />
                     <Typography.Title level={2}>
                         {t('about.work_experience')}
                     </Typography.Title>
@@ -603,7 +609,10 @@ export const ResumePage = () => {
 
             <section className={`${b('section')} ${b('reveal')}`}>
                 <Flex align='center' gap={10} className={b('section-heading')}>
-                    <ReadOutlined style={{color: colorPrimary}} />
+                    <ReadOutlined
+                        className={b('section-icon')}
+                        style={{color: colorPrimary}}
+                    />
                     <Typography.Title level={2}>
                         {t('resume.education.title')}
                     </Typography.Title>
@@ -646,7 +655,10 @@ export const ResumePage = () => {
 
             <section className={`${b('section')} ${b('reveal')}`}>
                 <Flex align='center' gap={10} className={b('section-heading')}>
-                    <GlobalOutlined style={{color: colorPrimary}} />
+                    <GlobalOutlined
+                        className={b('section-icon')}
+                        style={{color: colorPrimary}}
+                    />
                     <Typography.Title level={2}>
                         {t('resume.languages.title')}
                     </Typography.Title>
@@ -691,7 +703,10 @@ export const ResumePage = () => {
 
             <section className={`${b('section')} ${b('reveal')}`}>
                 <Flex align='center' gap={10} className={b('section-heading')}>
-                    <BookOutlined style={{color: colorPrimary}} />
+                    <BookOutlined
+                        className={b('section-icon')}
+                        style={{color: colorPrimary}}
+                    />
                     <Typography.Title level={2}>
                         {t('about.specialization.title')}
                     </Typography.Title>

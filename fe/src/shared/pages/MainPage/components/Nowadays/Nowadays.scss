@@ -15,6 +15,20 @@
         padding: 0 16px;
     }
 
+    .slick-dots li {
+        button {
+            background: color-mix(
+                in srgb,
+                var(--ant-color-primary) 35%,
+                transparent
+            ) !important;
+        }
+
+        &.slick-active button {
+            background: var(--ant-color-primary) !important;
+        }
+    }
+
     &__block {
         width: 100%;
         min-height: 230px;

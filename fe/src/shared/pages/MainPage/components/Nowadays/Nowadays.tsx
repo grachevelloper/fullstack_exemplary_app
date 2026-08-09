@@ -70,7 +70,13 @@ export const Nowadays = () => {
     }
 
     return (
-        <Carousel className={b()} draggable waitForAnimate autoplay>
+        <Carousel
+            className={b()}
+            draggable
+            waitForAnimate
+            autoplay
+            slidesToShow={1.05}
+        >
             {data.map((one) => (
                 <section key={one.title} className={b('block')} style={{}}>
                     <div

@@ -42,6 +42,7 @@ export const Footer = () => {
                 </div>
                 <Flex className={b('contacts')} gap={10} wrap='wrap'>
                     <Button
+                        className={b('contact-button')}
                         href='https://t.me/gracheveloper'
                         target='_blank'
                         rel='noreferrer'
@@ -50,6 +51,7 @@ export const Footer = () => {
                         {TELEGRAMM}
                     </Button>
                     <Button
+                        className={b('contact-button')}
                         href={`mailto:${EMAIL}`}
                         icon={<LuMail size={16} />}
                     >

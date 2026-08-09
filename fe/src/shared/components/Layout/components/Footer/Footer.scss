@@ -23,6 +23,44 @@
         min-width: 0;
     }
 
+    &__contact-button {
+        min-height: 40px;
+        border-color: color-mix(
+            in srgb,
+            var(--ant-color-primary) 35%,
+            var(--ant-color-border)
+        );
+        color: var(--ant-color-primary);
+        font-weight: 600;
+        transition:
+            background-color 180ms ease,
+            border-color 180ms ease,
+            box-shadow 180ms ease,
+            transform 180ms ease;
+
+        .ant-btn-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        &:hover,
+        &:focus-visible {
+            border-color: var(--ant-color-primary) !important;
+            background: color-mix(
+                in srgb,
+                var(--ant-color-primary) 9%,
+                transparent
+            ) !important;
+            color: var(--ant-color-primary) !important;
+            box-shadow: 0 6px 16px
+                color-mix(in srgb, var(--ant-color-primary) 14%, transparent);
+            transform: translateY(-1px);
+        }
+    }
+
     @media (max-width: 575px) {
         width: calc(100% - 32px);
         padding: 16px;

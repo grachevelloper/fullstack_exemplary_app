@@ -31,7 +31,7 @@ const BUTTON_PADDING = {
 const TIMELINE: Partial<TimelineToken> = {
     dotSize: 22,
     tailWidth: 6,
-    colorIcon: '#4f46e5',
+    colorIcon: '#5b5fc7',
 };
 
 const STEPS: Partial<StepsToken> = {
@@ -46,7 +46,7 @@ const LAYOUT: Partial<LayoutToken> = {
 const lightTheme: CustomThemeConfig = {
     name: 'light',
     token: {
-        colorPrimary: '#4f46e5',
+        colorPrimary: '#5b5fc7',
         colorSuccess: '#10b981',
         colorWarning: '#f59e0b',
         colorError: '#ef4444',
@@ -76,8 +76,8 @@ const lightTheme: CustomThemeConfig = {
         fontSize: 14,
         lineHeight: 1.5715,
 
-        colorPrimaryBg: '#eef2ff',
-        colorPrimaryBorder: '#c7d2fe',
+        colorPrimaryBg: '#f0f1fb',
+        colorPrimaryBorder: '#d6d8ef',
     },
     components: {
         Layout: {
@@ -91,17 +91,17 @@ const lightTheme: CustomThemeConfig = {
         },
         Input: {
             colorBgContainer: '#ffffff',
-            hoverBorderColor: '#4f46e5',
-            activeBorderColor: '#4338ca',
+            hoverBorderColor: '#5b5fc7',
+            activeBorderColor: '#4c50af',
             colorText: '#1f2937',
             colorTextPlaceholder: '#9ca3af',
-            activeShadow: '0 0 0 2px rgba(79, 70, 229, 0.2)',
+            activeShadow: '0 0 0 2px rgba(91, 95, 199, 0.18)',
         },
         Button: {
             ...BUTTON_PADDING,
-            colorPrimary: '#4f46e5',
-            colorPrimaryHover: '#4338ca',
-            colorPrimaryActive: '#3730a3',
+            colorPrimary: '#5b5fc7',
+            colorPrimaryHover: '#4c50af',
+            colorPrimaryActive: '#414595',
             colorText: '#374151',
             defaultShadow: '0 2px 0 rgba(0, 0, 0, 0.02)',
             primaryShadow: '0 2px 0 rgba(0, 0, 0, 0.1)',
@@ -125,7 +125,7 @@ const lightTheme: CustomThemeConfig = {
             itemSelectedBg: 'linear-gradient(90deg, #eef2ff 0%, #e0e7ff 100%)',
             itemColor: '#1f2937',
             itemHoverColor: '#7069f0ff',
-            itemSelectedColor: '#4f46e5',
+            itemSelectedColor: '#5b5fc7',
             itemActiveBg: 'linear-gradient(90deg, #e0e7ff 0%, #c7d2fe 100%)',
         },
         Table: {
@@ -149,13 +149,13 @@ const lightTheme: CustomThemeConfig = {
         Tabs: {
             colorBgContainer: '#ffffff',
             colorBorderSecondary: '#e5e7eb',
-            itemSelectedColor: '#4f46e5',
-            inkBarColor: '#4f46e5',
+            itemSelectedColor: '#5b5fc7',
+            inkBarColor: '#5b5fc7',
         },
         Timeline: {
             ...TIMELINE,
             dotBg: '#ffffff',
-            tailColor: '#4f46e5',
+            tailColor: '#5b5fc7',
         },
     },
 };
@@ -163,7 +163,7 @@ const lightTheme: CustomThemeConfig = {
 const darkTheme: CustomThemeConfig = {
     name: 'dark',
     token: {
-        colorPrimary: '#818cf8',
+        colorPrimary: '#9699dc',
         colorSuccess: '#34d399',
         colorWarning: '#fbbf24',
         colorError: '#f87171',
@@ -187,8 +187,8 @@ const darkTheme: CustomThemeConfig = {
         fontSize: 14,
         lineHeight: 1.5715,
 
-        colorPrimaryBg: '#1e1b4b',
-        colorPrimaryBorder: '#4338ca',
+        colorPrimaryBg: '#25274d',
+        colorPrimaryBorder: '#4e518e',
     },
     components: {
         Layout: {
@@ -200,20 +200,20 @@ const darkTheme: CustomThemeConfig = {
         },
         Input: {
             colorBgContainer: '#1f2937',
-            hoverBorderColor: '#818cf8',
-            activeBorderColor: '#a5b4fc',
+            hoverBorderColor: '#9699dc',
+            activeBorderColor: '#b0b2e8',
             colorText: '#f9fafb',
             colorTextPlaceholder: '#6b7280',
             paddingBlock: 8,
             paddingBlockLG: 10,
             paddingBlockSM: 4,
-            activeShadow: '0 0 0 2px rgba(129, 140, 248, 0.3)',
+            activeShadow: '0 0 0 2px rgba(150, 153, 220, 0.26)',
         },
         Button: {
             ...BUTTON_PADDING,
-            colorPrimary: '#818cf8',
-            colorPrimaryHover: '#6366f1',
-            colorPrimaryActive: '#4f46e5',
+            colorPrimary: '#9699dc',
+            colorPrimaryHover: '#777ac3',
+            colorPrimaryActive: '#6265aa',
             colorText: '#d1d5db',
             defaultBg: '#1f2937',
             defaultBorderColor: '#4b5563',
@@ -231,7 +231,7 @@ const darkTheme: CustomThemeConfig = {
             itemBg: '#1f2937',
             itemSelectedBg: 'linear-gradient(90deg, #3730a3 0%, #312e81 100%)',
             itemColor: '#d1d5db',
-            itemSelectedColor: '#818cf8',
+            itemSelectedColor: '#9699dc',
             itemHoverBg: '#374151',
             itemActiveBg: 'linear-gradient(90deg, #312e81 0%, #1e1b4b 100%)',
         },
@@ -255,13 +255,14 @@ const darkTheme: CustomThemeConfig = {
         Tabs: {
             colorBgContainer: '#1f2937',
             colorBorderSecondary: '#374151',
-            itemSelectedColor: '#818cf8',
-            inkBarColor: '#818cf8',
+            itemSelectedColor: '#9699dc',
+            inkBarColor: '#9699dc',
         },
         Timeline: {
             ...TIMELINE,
+            colorIcon: '#9699dc',
             dotBg: '#111827',
-            tailColor: '#818cf8',
+            tailColor: '#9699dc',
         },
         Steps: {
             ...STEPS,
