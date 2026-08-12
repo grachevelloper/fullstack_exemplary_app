@@ -1,42 +1,22 @@
-import {
-    BookOutlined,
-    CalendarOutlined,
-    CodeOutlined,
-    DownOutlined,
-    GlobalOutlined,
-    IdcardOutlined,
-    ReadOutlined,
-    UpOutlined,
-    UserOutlined,
-} from '@ant-design/icons';
-import {Button, Card, Flex, Image, Tag, theme, Tooltip, Typography} from 'antd';
+import {UserOutlined} from '@ant-design/icons';
+import {Card, Flex, Image, theme, Typography} from 'antd';
 import block from 'bem-cn-lite';
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import gsap from 'gsap';
+import {
+    lazy,
+    Suspense,
+    useCallback,
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import {Trans, useTranslation} from 'react-i18next';
 
+import type {ExperienceItem} from './components/ExperienceSection';
+import type {SkillGroup} from './components/SpecializationSection';
 import './ResumePage.scss';
-
-type ResumeItem = {
-    company?: string;
-    description?: string;
-    details?: string[];
-    key: string;
-    period: string;
-    translationKey?: string;
-    technologies?: string[];
-    title: string;
-    unit?: string;
-};
-
-type SkillGroup = {
-    items: SkillItem[];
-    title: string;
-};
-
-type SkillItem = {
-    description: string;
-    title: string;
-};
 
 type Language = {
     code: string;
@@ -46,8 +26,36 @@ type Language = {
 
 const b = block('resume-page');
 
+const SpecializationSection = lazy(() =>
+    import('./components/SpecializationSection').then(
+        ({SpecializationSection}) => ({
+            default: SpecializationSection,
+        })
+    )
+);
+
+const ExperienceSection = lazy(() =>
+    import('./components/ExperienceSection').then(({ExperienceSection}) => ({
+        default: ExperienceSection,
+    }))
+);
+
+const EducationSection = lazy(() =>
+    import('./components/EducationSection').then(({EducationSection}) => ({
+        default: EducationSection,
+    }))
+);
+
+const LanguagesSection = lazy(() =>
+    import('./components/LanguagesSection').then(({LanguagesSection}) => ({
+        default: LanguagesSection,
+    }))
+);
+
 export const ResumePage = () => {
     const {t} = useTranslation('common');
+    const roleRef = useRef<HTMLElement>(null);
+    const summaryRef = useRef<HTMLDivElement>(null);
     const [expandedExperience, setExpandedExperience] = useState<
         Record<string, boolean>
     >({
@@ -62,6 +70,8 @@ export const ResumePage = () => {
             colorPrimary,
             colorPrimaryBg,
             colorTextSecondary,
+            colorWarning,
+            colorWarningBg,
         },
     } = theme.useToken();
 
@@ -78,7 +88,7 @@ export const ResumePage = () => {
         [t]
     );
 
-    const experience = useMemo<ResumeItem[]>(
+    const experience = useMemo<ExperienceItem[]>(
         () => [
             {
                 key: 'avito',
@@ -110,7 +120,7 @@ export const ResumePage = () => {
         [getStringList, t]
     );
 
-    const education = useMemo<ResumeItem[]>(
+    const education = useMemo<ExperienceItem[]>(
         () => [
             {
                 key: 'mirea',
@@ -355,6 +365,73 @@ export const ResumePage = () => {
         ),
     };
 
+    const role = t('resume.role');
+
+    useLayoutEffect(() => {
+        const roleElement = roleRef.current;
+        const summaryElement = summaryRef.current;
+        if (!roleElement || !summaryElement) return;
+
+        const context = gsap.context(() => {
+            const characters = roleElement.querySelectorAll<HTMLElement>(
+                `.${b('role-character')}`
+            );
+
+            if (
+                !characters.length ||
+                window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            ) {
+                return;
+            }
+
+            const timeline = gsap.timeline({delay: 0.5});
+
+            timeline
+                .fromTo(
+                    characters,
+                    {
+                        filter: 'blur(5px)',
+                        opacity: 0,
+                        rotation: () => gsap.utils.random(-8, 8),
+                        scale: 2.2,
+                        x: () => gsap.utils.random(-90, 90),
+                        y: () => gsap.utils.random(-130, -55),
+                    },
+                    {
+                        duration: 1.2,
+                        ease: 'power3.out',
+                        filter: 'blur(0px)',
+                        opacity: 1,
+                        rotation: 0,
+                        scale: 1,
+                        stagger: 0.035,
+                        x: 0,
+                        y: 0,
+                    }
+                )
+                .fromTo(
+                    summaryElement,
+                    {
+                        clipPath: 'inset(0 0 100% 0)',
+                        opacity: 0,
+                        y: 24,
+                    },
+                    {
+                        clipPath: 'inset(0 0 0% 0)',
+                        duration: 0.6,
+                        ease: 'power2.out',
+                        opacity: 1,
+                        y: 0,
+                    },
+                    '-=0.32'
+                );
+
+            return () => timeline.kill();
+        }, roleElement);
+
+        return () => context.revert();
+    }, [role]);
+
     useEffect(() => {
         const revealClassName = b('reveal');
         const revealedClassName = `${b()}__reveal_visible`;
@@ -369,7 +446,7 @@ export const ResumePage = () => {
                     observer.unobserve(entry.target);
                 });
             },
-            {threshold: 0.4}
+            {threshold: 0.5}
         );
 
         document
@@ -401,17 +478,28 @@ export const ResumePage = () => {
                         {t('resume.name')}
                     </Typography.Title>
                     <Typography.Text
+                        ref={roleRef}
                         className={b('role')}
+                        aria-label={role}
                         style={{color: colorPrimary}}
                     >
-                        {t('resume.role')}
+                        {Array.from(role).map((character, index) => (
+                            <span
+                                aria-hidden='true'
+                                className={b('role-character')}
+                                key={`${character}-${index}`}
+                            >
+                                {character}
+                            </span>
+                        ))}
                     </Typography.Text>
-                    <Trans
-                        i18nKey='about.subtitle'
-                        components={emphasisComponents}
-                        t={t}
-                        className={b('summary')}
-                    />
+                    <div ref={summaryRef} className={b('summary')}>
+                        <Trans
+                            i18nKey='about.subtitle'
+                            components={emphasisComponents}
+                            t={t}
+                        />
+                    </div>
                 </div>
             </section>
 
@@ -441,335 +529,51 @@ export const ResumePage = () => {
                 </Card>
             </section>
 
-            <section className={`${b('section')} ${b('reveal')}`}>
-                <Flex align='center' gap={10} className={b('section-heading')}>
-                    <IdcardOutlined
-                        className={b('section-icon')}
-                        style={{color: colorPrimary}}
-                    />
-                    <Typography.Title level={2}>
-                        {t('about.work_experience')}
-                    </Typography.Title>
-                </Flex>
-                <div className={b('timeline')}>
-                    {experience.map((item) => {
-                        const isExpanded = expandedExperience[item.key];
+            <Suspense fallback={null}>
+                <ExperienceSection
+                    colorPrimary={colorPrimary}
+                    colorTextSecondary={colorTextSecondary}
+                    expandedExperience={expandedExperience}
+                    items={experience}
+                    onToggle={toggleExperience}
+                />
+            </Suspense>
 
-                        return (
-                            <article
-                                className={b('timeline-item', {
-                                    expanded: isExpanded,
-                                })}
-                                key={item.key}
-                                onClick={() => toggleExperience(item.key)}
-                            >
-                                <div
-                                    className={b('dot')}
-                                    style={{backgroundColor: colorPrimary}}
-                                />
-                                <div className={b('timeline-content')}>
-                                    <Flex
-                                        align='flex-start'
-                                        gap={12}
-                                        wrap='wrap'
-                                        className={b('item-head')}
-                                    >
-                                        <div className={b('item-heading-copy')}>
-                                            <Typography.Title level={3}>
-                                                {item.title}
-                                            </Typography.Title>
-                                            {item.company && (
-                                                <Typography.Text
-                                                    strong
-                                                    style={{
-                                                        color: colorPrimary,
-                                                    }}
-                                                >
-                                                    {item.company}
-                                                </Typography.Text>
-                                            )}
-                                            {item.unit && (
-                                                <Typography.Text
-                                                    style={{
-                                                        color: colorTextSecondary,
-                                                    }}
-                                                >
-                                                    {item.unit}
-                                                </Typography.Text>
-                                            )}
-                                            <Typography.Text
-                                                className={b('period')}
-                                                style={{
-                                                    color: colorTextSecondary,
-                                                }}
-                                            >
-                                                <CalendarOutlined />{' '}
-                                                {item.period}
-                                            </Typography.Text>
-                                        </div>
-                                        <Button
-                                            type='text'
-                                            shape='circle'
-                                            className={b('experience-toggle')}
-                                            aria-label={t(
-                                                isExpanded
-                                                    ? 'resume.experience.collapse'
-                                                    : 'resume.experience.expand'
-                                            )}
-                                            aria-expanded={isExpanded}
-                                            icon={
-                                                isExpanded ? (
-                                                    <UpOutlined />
-                                                ) : (
-                                                    <DownOutlined />
-                                                )
-                                            }
-                                        />
-                                    </Flex>
-                                    <div
-                                        className={b('description-wrap', {
-                                            expanded: isExpanded,
-                                        })}
-                                    >
-                                        <div className={b('description-body')}>
-                                            <Typography.Paragraph
-                                                className={b('description')}
-                                                style={{
-                                                    color: colorTextSecondary,
-                                                }}
-                                            >
-                                                {item.translationKey ? (
-                                                    <Trans
-                                                        i18nKey={`${item.translationKey}.description`}
-                                                        components={
-                                                            emphasisComponents
-                                                        }
-                                                        t={t}
-                                                    />
-                                                ) : (
-                                                    item.description
-                                                )}
-                                            </Typography.Paragraph>
-                                            {item.details?.length ? (
-                                                <ul className={b('details')}>
-                                                    {item.details.map(
-                                                        (detail, index) => (
-                                                            <li key={detail}>
-                                                                <Typography.Text
-                                                                    style={{
-                                                                        color: colorTextSecondary,
-                                                                    }}
-                                                                >
-                                                                    {item.translationKey ? (
-                                                                        <Trans
-                                                                            i18nKey={`${item.translationKey}.details.${index}`}
-                                                                            components={
-                                                                                emphasisComponents
-                                                                            }
-                                                                            t={
-                                                                                t
-                                                                            }
-                                                                        />
-                                                                    ) : (
-                                                                        detail
-                                                                    )}
-                                                                </Typography.Text>
-                                                            </li>
-                                                        )
-                                                    )}
-                                                </ul>
-                                            ) : null}
-                                            {item.technologies?.length ? (
-                                                <Typography.Paragraph
-                                                    className={b(
-                                                        'technologies'
-                                                    )}
-                                                    style={{
-                                                        color: colorTextSecondary,
-                                                    }}
-                                                >
-                                                    <Typography.Text strong>
-                                                        {t(
-                                                            'resume.experience.technologies'
-                                                        )}
-                                                    </Typography.Text>{' '}
-                                                    {item.technologies.join(
-                                                        ', '
-                                                    )}
-                                                </Typography.Paragraph>
-                                            ) : null}
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                        );
-                    })}
-                </div>
-            </section>
+            <Suspense fallback={null}>
+                <EducationSection
+                    colorBgContainer={colorBgContainer}
+                    colorBorderSecondary={colorBorderSecondary}
+                    colorPrimary={colorPrimary}
+                    colorTextSecondary={colorTextSecondary}
+                    colorWarning={colorWarning}
+                    education={education}
+                    educationTitle={t('resume.education.title')}
+                />
+            </Suspense>
 
-            <section className={`${b('section')} ${b('reveal')}`}>
-                <Flex align='center' gap={10} className={b('section-heading')}>
-                    <ReadOutlined
-                        className={b('section-icon')}
-                        style={{color: colorPrimary}}
-                    />
-                    <Typography.Title level={2}>
-                        {t('resume.education.title')}
-                    </Typography.Title>
-                </Flex>
-                {education.map((item) => (
-                    <Card
-                        key={item.period}
-                        className={b('education-card')}
-                        style={sectionStyle}
-                    >
-                        <Typography.Title level={4}>
-                            {item.title}
-                        </Typography.Title>
-                        {item.company && (
-                            <Typography.Text
-                                strong
-                                className={b('education-company')}
-                                style={{color: colorPrimary}}
-                            >
-                                {item.company}
-                            </Typography.Text>
-                        )}
-                        {item.description && (
-                            <Typography.Paragraph
-                                className={b('description')}
-                                style={{color: colorTextSecondary}}
-                            >
-                                {item.description}
-                            </Typography.Paragraph>
-                        )}
-                        <Typography.Text
-                            className={b('period')}
-                            style={{color: colorTextSecondary}}
-                        >
-                            <CalendarOutlined /> {item.period}
-                        </Typography.Text>
-                    </Card>
-                ))}
-            </section>
+            <Suspense fallback={null}>
+                <LanguagesSection
+                    colorPrimary={colorPrimary}
+                    colorPrimaryBg={colorPrimaryBg}
+                    colorTextSecondary={colorTextSecondary}
+                    colorWarning={colorWarning}
+                    colorWarningBg={colorWarningBg}
+                    languages={languages}
+                    title={t('resume.languages.title')}
+                />
+            </Suspense>
 
-            <section className={`${b('section')} ${b('reveal')}`}>
-                <Flex align='center' gap={10} className={b('section-heading')}>
-                    <GlobalOutlined
-                        className={b('section-icon')}
-                        style={{color: colorPrimary}}
-                    />
-                    <Typography.Title level={2}>
-                        {t('resume.languages.title')}
-                    </Typography.Title>
-                </Flex>
-                <Card className={b('languages-card')} style={sectionStyle}>
-                    <div className={b('languages-list')}>
-                        {languages.map((language) => (
-                            <div
-                                key={language.code}
-                                className={b('language')}
-                                style={{
-                                    backgroundColor: colorPrimaryBg,
-                                    borderColor: colorBorderSecondary,
-                                }}
-                            >
-                                <Typography.Text
-                                    strong
-                                    className={b('language-code')}
-                                    style={{color: colorPrimary}}
-                                >
-                                    {language.code}
-                                </Typography.Text>
-                                <div className={b('language-copy')}>
-                                    <Typography.Text
-                                        strong
-                                        className={b('language-name')}
-                                    >
-                                        {language.name}
-                                    </Typography.Text>
-                                    <Typography.Text
-                                        className={b('language-level')}
-                                        style={{color: colorTextSecondary}}
-                                    >
-                                        {language.level}
-                                    </Typography.Text>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </Card>
-            </section>
-
-            <section className={`${b('section')} ${b('reveal')}`}>
-                <Flex align='center' gap={10} className={b('section-heading')}>
-                    <BookOutlined
-                        className={b('section-icon')}
-                        style={{color: colorPrimary}}
-                    />
-                    <Typography.Title level={2}>
-                        {t('about.specialization.title')}
-                    </Typography.Title>
-                </Flex>
-                <div className={b('skills-grid')}>
-                    {skills.map((group) => (
-                        <Card
-                            key={group.title}
-                            className={b('skill-card')}
-                            style={{
-                                backgroundColor: colorBgElevated,
-                                borderColor: colorBorderSecondary,
-                            }}
-                        >
-                            <Flex
-                                align='center'
-                                gap={8}
-                                className={b('skill-card-title')}
-                            >
-                                <CodeOutlined style={{color: colorPrimary}} />
-                                <Typography.Text
-                                    strong
-                                    className={b('skill-title')}
-                                    style={{color: colorTextSecondary}}
-                                >
-                                    {group.title}
-                                </Typography.Text>
-                            </Flex>
-                            <Flex gap={8} wrap='wrap'>
-                                {group.items.map((skill) => (
-                                    <Tooltip
-                                        key={skill.title}
-                                        title={skill.description}
-                                        placement='top'
-                                        rootClassName={b('skill-tooltip')}
-                                        styles={{
-                                            container: {
-                                                backgroundColor: '#fff',
-                                                border: `1px solid ${colorBorderSecondary}`,
-                                                borderRadius: 8,
-                                                boxShadow:
-                                                    '0 10px 28px rgb(15 23 42 / 14%)',
-                                                color: 'rgba(0, 0, 0, 0.88)',
-                                            },
-                                        }}
-                                    >
-                                        <Tag
-                                            className={b('skill-tag')}
-                                            style={{
-                                                backgroundColor: colorPrimaryBg,
-                                                borderColor:
-                                                    colorBorderSecondary,
-                                            }}
-                                        >
-                                            {skill.title}
-                                        </Tag>
-                                    </Tooltip>
-                                ))}
-                            </Flex>
-                        </Card>
-                    ))}
-                </div>
-            </section>
+            <Suspense fallback={null}>
+                <SpecializationSection
+                    colorBgElevated={colorBgElevated}
+                    colorBorderSecondary={colorBorderSecondary}
+                    colorPrimary={colorPrimary}
+                    colorPrimaryBg={colorPrimaryBg}
+                    colorTextSecondary={colorTextSecondary}
+                    skills={skills}
+                    title={t('about.specialization.title')}
+                />
+            </Suspense>
         </main>
     );
 };

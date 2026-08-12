@@ -11,9 +11,6 @@ import {AuthLayout} from '../components/AuthLayout';
 import {Layout} from '../components/Layout';
 import {ProtectedRoute} from '../components/ProtectedRoute';
 import {sharedPagesRoutes} from '../pages';
-import {AdminNowadaysPage} from '../pages/AdminNowadaysPage';
-import {MainPage} from '../pages/MainPage';
-import {ResumePage} from '../pages/ResumePage';
 
 const routes: RouteProps[] = [
     ...todosRoutes,
@@ -48,17 +45,19 @@ export const Router = () => {
         <BrowserRouter>
             <Routes>
                 <Route element={<Layout />} path='/'>
-                    <Route index element={<MainPage />} />
-                    <Route path='resume' element={<ResumePage />} />
-                    <Route
-                        path='admin/nowadays'
-                        element={<AdminNowadaysPage />}
-                    />
                     {routes.map((route: RouteProps) => (
                         <Route
                             key={route.path}
                             element={renderRouteElement(route)}
                             path={route.path}
+                        />
+                    ))}
+                    {sharedPagesRoutes.map((route: RouteProps) => (
+                        <Route
+                            key={route.path}
+                            element={route.element}
+                            path={route.path}
+                            index={route.index}
                         />
                     ))}
                 </Route>
@@ -68,16 +67,6 @@ export const Router = () => {
                             key={route.path}
                             element={route.element}
                             path={route.path}
-                        />
-                    ))}
-                </Route>
-                <Route path='/'>
-                    {sharedPagesRoutes.map((route: RouteProps) => (
-                        <Route
-                            key={route.path}
-                            element={route.element}
-                            path={route.path}
-                            index={route.index}
                         />
                     ))}
                 </Route>

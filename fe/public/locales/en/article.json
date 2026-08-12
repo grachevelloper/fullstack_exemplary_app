@@ -9,6 +9,8 @@
     "articles.create": "Write article",
     "articles.recent": "Recent articles",
 
+    "aritcle.void_container.description": "There's nothing yet",
+
     "actions.filters": "Filters",
     "actions.readMore": "Read more",
     "actions.edit": "Edit",

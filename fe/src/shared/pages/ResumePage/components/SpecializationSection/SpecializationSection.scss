@@ -1,0 +1,136 @@
+.specialization-section {
+    margin-top: var(--resume-section-margin);
+
+    &__heading {
+        margin-bottom: 24px;
+
+        h2 {
+            margin: 0 !important;
+            font-size: var(--resume-heading-size) !important;
+        }
+    }
+
+    &__icon {
+        display: inline-grid;
+        width: var(--resume-icon-size);
+        height: var(--resume-icon-size);
+        place-items: center;
+        border: 1px solid currentColor;
+        border-radius: var(--resume-icon-radius);
+        background: color-mix(in srgb, currentColor 10%, transparent);
+        font-size: 20px;
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    &__card {
+        opacity: 0;
+        transform: translateX(-18px);
+    }
+
+    &_visible &__card {
+        animation: specialization-section-card-in 360ms ease-out both;
+    }
+
+    &__card-title {
+        margin-bottom: 16px;
+    }
+
+    &__title {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    &__tag {
+        margin: 0;
+        cursor: pointer;
+        opacity: 0;
+        white-space: normal;
+        transform: translateX(-10px);
+        transition:
+            border-color 160ms ease,
+            box-shadow 160ms ease,
+            transform 160ms ease;
+
+        &:hover,
+        &:focus-visible {
+            border-color: currentColor !important;
+            box-shadow: 0 0 0 3px
+                color-mix(in srgb, currentColor 18%, transparent);
+            outline: none;
+            transform: translateY(-1px);
+        }
+    }
+
+    &_visible &__tag {
+        animation: specialization-section-tag-in 220ms ease-out both;
+    }
+
+    &__tooltip {
+        .ant-tooltip-arrow::before {
+            background: #fff;
+            border: 1px solid rgb(229 231 235);
+        }
+    }
+
+    @media (max-width: 991px) {
+        &__grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 575px) {
+        &__grid {
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        &__card,
+        &__tag {
+            opacity: 1;
+            transform: none;
+            transition: none;
+        }
+
+        &_visible &__card,
+        &_visible &__tag {
+            animation: none;
+        }
+    }
+}
+
+@keyframes specialization-section-card-in {
+    from {
+        opacity: 0;
+        transform: translateX(-18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes specialization-section-tag-in {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    70% {
+        opacity: 1;
+        box-shadow: 0 0 0 3px rgb(37 99 235 / 12%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
